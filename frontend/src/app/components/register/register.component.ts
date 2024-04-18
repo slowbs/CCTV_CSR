@@ -3,6 +3,7 @@ import { AppURL } from '../../app.url';
 
 import { Router } from '@angular/router';
 import { CctvService, IUsers } from '../../shareds/cctv.service';
+import { AuthenticationURL } from '../../authentication/authentication.url';
 
 @Component({
   selector: 'app-register',
@@ -11,7 +12,8 @@ import { CctvService, IUsers } from '../../shareds/cctv.service';
 })
 export class RegisterComponent {
 
-  Url = AppURL;
+  AppUrl = AppURL;
+  AuthUrl = AuthenticationURL
 
   constructor(
     private cctvService: CctvService,
@@ -28,18 +30,22 @@ export class RegisterComponent {
   };
 
   onSubmit() {
-    // console.log(this.model)
-
-    // this.cctvService.post_user(this.model)
     this.comparePassword(this.model)
   }
 
   private comparePassword(item: any) {
-    // console.log(item.password)
-    if (item.password === item.c_password){
-      // console.log('OK')
+    if (item.password === item.c_password) {
       this.cctvService.post_user(this.model)
-
+        .subscribe({
+          next: (result) => {
+            console.log(result)
+            this.router.navigate(['/', this.AppUrl.Authen, this.AuthUrl.Dashboard])
+          },
+          error: (excep) => {
+            console.log(excep)
+            // alert(excep.error.message)
+          }
+        })
     }
     else
       console.log('Password not Compare')

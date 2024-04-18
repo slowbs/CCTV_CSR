@@ -6,10 +6,15 @@ import { Injectable } from '@angular/core';
 })
 export class CctvService {
 
+  private backendURL = 'http://localhost/cctv_csr/backend/index.php/api/';
+
   constructor(private httpClient: HttpClient) { }
 
+  // ข้อมูลผู้ใช้งาน
+  // เพิ่มข้อมูลผู้ใช้งาน
   post_user(value: IUsers) {
-    console.log(value)
+    return this.httpClient.post(this.backendURL + 'users', value);
+    // console.log(value)
   }
 }
 
