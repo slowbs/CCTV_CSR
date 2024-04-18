@@ -10,19 +10,23 @@
             <h3 class="login-head"><i class="bi bi-person-add me-2"></i>REGISTER</h3>
             <div class="mb-3">
                 <label class="form-label">USERNAME</label>
-                <input class="form-control" type="text" placeholder="Username" autofocus>
+                <input class="form-control" type="text" [(ngModel)]="model.user_name" name="user_name"
+                    placeholder="Username" autofocus>
             </div>
             <div class="mb-3">
                 <label class="form-label">NAME</label>
-                <input class="form-control" type="text" placeholder="Name" autofocus>
+                <input class="form-control" type="text" [(ngModel)]="model.name" name="name" placeholder="Name"
+                    autofocus>
             </div>
             <div class="mb-3">
                 <label class="form-label">PASSWORD</label>
-                <input class="form-control" type="password" placeholder="Password">
+                <input class="form-control" type="password" [(ngModel)]="model.password" name="password"
+                    placeholder="Password">
             </div>
             <div class="mb-3">
                 <label class="form-label">CONFIRM_PASSWORD</label>
-                <input class="form-control" type="password" placeholder="Confirm_Password">
+                <input class="form-control" type="password" [(ngModel)]="model.c_password" name="c_password"
+                    placeholder="Confirm_Password">
             </div>
             <div class="mb-3 btn-container d-grid first_btn">
                 <button class="btn btn-primary btn-block"><i
