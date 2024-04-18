@@ -28,32 +28,32 @@ if (isset($data->user_name) && isset($data->name) && isset($data->password) && i
     }
 
     // กรณีที่เงือนไขครบถ้วน (สำหรับเช็ค)
-    echo json_encode([
-        'message' => 'valid',
-        'data' => $data->name
-    ]);
+    // echo json_encode([
+    //     'message' => 'valid',
+    //     'data' => $data->name
+    // ]);
 
     //กรณีที่เงือนไขครบถ้วน (สำหรับส่งค่าจริง)
-    // $query = "INSERT INTO student (name, room, teacher) VALUES (?, ?, ?)";
-    // $stmt = mysqli_prepare($conn, $query);
-    // mysqli_stmt_bind_param($stmt, 'sss',
-    //     $data->name,
-    //     $data->room,
-    //     $data->teacher
-    // );
-    // mysqli_stmt_execute($stmt);
-    // $error_message = mysqli_error($conn);
+    $query = "INSERT INTO user (user_name, name, password) VALUES (?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, 'sss',
+        $data->user_name,
+        $data->name,
+        $data->password
+    );
+    mysqli_stmt_execute($stmt);
+    $error_message = mysqli_error($conn);
 
-    // if($error_message){ //ใช้ในการ เช็ค error
-    //     http_response_code(500);
-    //     exit(json_encode([
-    //         'message' => $error_message
-    //     ]));
-    // }
+    if($error_message){ //ใช้ในการ เช็ค error
+        http_response_code(500);
+        exit(json_encode([
+            'message' => $error_message
+        ]));
+    }
 
-    // echo json_encode([
-    //     'message' => 'เพิ่มสำเร็จ'
-    // ]);
+    echo json_encode([
+        'message' => 'เพิ่มสำเร็จ'
+    ]);
 
 } else {
     http_response_code(400);

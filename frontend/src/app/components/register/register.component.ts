@@ -39,7 +39,8 @@ export class RegisterComponent {
         .subscribe({
           next: (result) => {
             console.log(result)
-            this.router.navigate(['/', this.AppUrl.Authen, this.AuthUrl.Dashboard])
+            // this.router.navigate(['/', this.AppUrl.Authen, this.AuthUrl.Dashboard])
+            this.router.navigate(['/', this.AppUrl.Login])
           },
           error: (excep) => {
             console.log(excep)
