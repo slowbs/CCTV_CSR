@@ -25,3 +25,9 @@ export interface IUsers {
   password: string;
   c_password: string;
 }
+
+export interface ILogin {
+  user_name: string;
+  password: string;
+  remember: boolean;
+}
