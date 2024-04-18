@@ -17,9 +17,16 @@ export class CctvService {
   }
 
   // Login
+  // ส่งข้อมูลไป Login
   post_login(value: ILogin) {
     return this.httpClient.post(this.backendURL + 'login', value);
   }
+
+  //ดึงข้อมูลมาแสดง Profile
+  get_profile() {
+    return this.httpClient.get(this.backendURL + 'login');
+  }
+  
 }
 
 export interface IUsers {

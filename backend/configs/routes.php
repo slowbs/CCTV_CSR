@@ -25,3 +25,4 @@ $routes['/api/users']['DELETE'] = 'users/delete.php';
 
 // Login
 $routes['/api/login']['POST'] = 'login/post.php';
+$routes['/api/login']['GET'] = 'login/profile.php';
