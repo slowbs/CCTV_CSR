@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { AppURL } from '../../app.url';
-import { CctvService, IUsers } from '../../cctv.service';
+
 import { Router } from '@angular/router';
+import { CctvService, IUsers } from '../../shareds/cctv.service';
 
 @Component({
   selector: 'app-register',
@@ -38,6 +39,7 @@ export class RegisterComponent {
     if (item.password === item.c_password){
       // console.log('OK')
       this.cctvService.post_user(this.model)
+
     }
     else
       console.log('Password not Compare')

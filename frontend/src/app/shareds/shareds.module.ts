@@ -5,6 +5,7 @@ import { AuthNavbarComponent } from './components/auth-navbar/auth-navbar.compon
 import { AuthSidebarComponent } from './components/auth-sidebar/auth-sidebar.component';
 import { AuthContentComponent } from './components/auth-content/auth-content.component';
 import { RouterModule } from '@angular/router';
+import { CctvService } from './cctv.service';
 
 
 
@@ -17,7 +18,7 @@ import { RouterModule } from '@angular/router';
   imports: [
     CommonModule,
     BsDropdownModule.forRoot(),
-    RouterModule
+    RouterModule,
   ],
   exports: [
     AuthNavbarComponent,
@@ -26,7 +27,8 @@ import { RouterModule } from '@angular/router';
     BsDropdownModule
   ],
   providers:[
-    { provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } }
+    { provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } },
+    // CctvService
   ],
 })
 export class SharedsModule { }
