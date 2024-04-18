@@ -6,26 +6,26 @@
         <h1>CCTV</h1>
     </div>
     <div class="login-box">
-        <form class="login-form" action="index.html" (submit)="onSubmit()">
+        <form class="login-form form-group" action="index.html" (submit)="onSubmit()" [noValidate]="false">
             <h3 class="login-head"><i class="bi bi-person-add me-2"></i>REGISTER</h3>
             <div class="mb-3">
                 <label class="form-label">USERNAME</label>
-                <input class="form-control" type="text" [(ngModel)]="model.user_name" name="user_name"
+                <input class="form-control" type="text" [(ngModel)]="model.user_name" name="user_name" required
                     placeholder="Username" autofocus>
             </div>
             <div class="mb-3">
                 <label class="form-label">NAME</label>
-                <input class="form-control" type="text" [(ngModel)]="model.name" name="name" placeholder="Name"
+                <input class="form-control" type="text" [(ngModel)]="model.name" name="name" placeholder="Name" required
                     autofocus>
             </div>
             <div class="mb-3">
                 <label class="form-label">PASSWORD</label>
-                <input class="form-control" type="password" [(ngModel)]="model.password" name="password"
+                <input class="form-control" type="password" [(ngModel)]="model.password" name="password" required
                     placeholder="Password">
             </div>
             <div class="mb-3">
                 <label class="form-label">CONFIRM_PASSWORD</label>
-                <input class="form-control" type="password" [(ngModel)]="model.c_password" name="c_password"
+                <input class="form-control" type="password" [(ngModel)]="model.c_password" name="c_password" required
                     placeholder="Confirm_Password">
             </div>
             <div class="mb-3 btn-container d-grid first_btn">

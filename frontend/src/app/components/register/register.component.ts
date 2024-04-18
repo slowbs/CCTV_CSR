@@ -27,6 +27,7 @@ export class RegisterComponent {
   };
 
   onSubmit() {
-    console.log(this.model)
+    // console.log(this.model)
+    this.cctvService.post_user(this.model)
   }
 }

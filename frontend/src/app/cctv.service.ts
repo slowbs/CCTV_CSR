@@ -8,6 +8,9 @@ export class CctvService {
 
   constructor(private httpClient: HttpClient) { }
 
+  post_user(value: IUsers) {
+    console.log(value)
+  }
 }
 
 export interface IUsers {
