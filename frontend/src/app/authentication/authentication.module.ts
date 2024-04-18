@@ -4,13 +4,17 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AuthenticationRouting } from './authentication.routing';
 import { SharedsModule } from '../shareds/shareds.module';
 import { IndexComponent } from './components/index/index.component';
+import { UsersComponent } from './components/users/users.component';
+import { UserCreateComponent } from './components/user-create/user-create.component';
 
 
 
 @NgModule({
   declarations: [
     DashboardComponent,
-    IndexComponent
+    IndexComponent,
+    UsersComponent,
+    UserCreateComponent
   ],
   imports: [
     CommonModule,
