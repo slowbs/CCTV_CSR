@@ -23,11 +23,23 @@ export class RegisterComponent {
     user_name: '',
     name: '',
     password: '',
-    c_password: ''
+    c_password: '',
   };
 
   onSubmit() {
     // console.log(this.model)
-    this.cctvService.post_user(this.model)
+
+    // this.cctvService.post_user(this.model)
+    this.comparePassword(this.model)
+  }
+
+  private comparePassword(item: any) {
+    // console.log(item.password)
+    if (item.password === item.c_password){
+      // console.log('OK')
+      this.cctvService.post_user(this.model)
+    }
+    else
+      console.log('Password not Compare')
   }
 }
