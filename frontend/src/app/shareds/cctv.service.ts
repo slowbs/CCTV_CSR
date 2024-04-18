@@ -14,7 +14,11 @@ export class CctvService {
   // เพิ่มข้อมูลผู้ใช้งาน
   post_user(value: IUsers) {
     return this.httpClient.post(this.backendURL + 'users', value);
-    // console.log(value)
+  }
+
+  // Login
+  post_login(value: ILogin) {
+    return this.httpClient.post(this.backendURL + 'login', value);
   }
 }
 

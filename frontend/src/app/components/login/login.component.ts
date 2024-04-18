@@ -26,9 +26,19 @@ export class LoginComponent {
     remember: true
   };
 
-  onSubmit(){
-    console.log(this.model)
-    this.router.navigate(['/', this.AppUrl.Authen, this.AuthUrl.Dashboard])
+  onSubmit() {
+    // this.cctvService.post_login(this.model)
+    this.cctvService.post_login(this.model)
+      .subscribe({
+        next: (result) => {
+          console.log(result)
+          this.router.navigate(['/', this.AppUrl.Authen, this.AuthUrl.Dashboard])
+        },
+        error: (excep) => {
+          console.log(excep)
+          // alert(excep.error.message)
+        }
+      })
   }
 
 }
