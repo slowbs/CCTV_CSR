@@ -5,8 +5,8 @@ $query = mysqli_query($conn, $sql);
 $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
 echo json_encode([
-                    'message' => 'test ทดสอบ',
-                    'result' => $result,
+                    // 'message' => 'test ทดสอบ',
+                    // 'result' => $result,
                     'session' => $_SESSION['login']
                     ], JSON_UNESCAPED_UNICODE);
 
