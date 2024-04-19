@@ -6,7 +6,8 @@ import { Injectable } from '@angular/core';
 })
 export class CctvService {
 
-  private backendURL = 'http://localhost/cctv_csr/backend/index.php/api/';
+  // private backendURL = 'http://localhost/cctv_csr/backend/index.php/api/';
+  private backendURL = '/backend/index.php/api/';
 
   constructor(private httpClient: HttpClient) { }
 

@@ -1,4 +1,7 @@
 <?php
+
+session_start();
+
 // header('Access-Control-Allow-Headers: Access-Control-Allow-Origin, Content-Type');
 // header('Access-Control-Allow-Origin: *');
 // header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE");

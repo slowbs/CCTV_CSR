@@ -15,10 +15,13 @@ if (isset($data->user_name) && isset($data->password)) {
         ]));
     }
 
+    $_SESSION['login'] = $data;
+
     // กรณีที่เงือนไขครบถ้วน (สำหรับเช็ค)
     echo json_encode([
         'message' => 'Login สำเร็จ',
-        'data' => $data->user_name
+        'data' => $data->user_name,
+        'session' => $_SESSION['login']
     ]);
 
     //กรณีที่เงือนไขครบถ้วน (สำหรับส่งค่าจริง)
