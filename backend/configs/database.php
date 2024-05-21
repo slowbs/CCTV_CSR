@@ -1,7 +1,5 @@
 <?php
 
-// ini_set("display_errors", 0);
-
 $host = '127.0.0.1';
 $user = 'slowbs';
 $password = '1596321';
