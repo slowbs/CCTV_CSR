@@ -14,13 +14,15 @@ export class AuthNavbarComponent {
   AppUrl = AppURL
   AuthUrl = AuthenticationURL
   public profileItem: ISession.Session
-  
+
   constructor(
     private cctvService: CctvService,
     private router: Router,
   ) {
     this.get_profile();
   }
+
+
   get_profile() {
     return this.cctvService.get_profile()
       .subscribe({
@@ -36,4 +38,11 @@ export class AuthNavbarComponent {
       })
 
   }
+
+  // ออกจากระบบ
+  onLogout() {
+    console.log('Logout')
+  }
+
+
 }
