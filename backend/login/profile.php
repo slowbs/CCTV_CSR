@@ -10,7 +10,7 @@ if (isset($_SESSION['login']) && !empty($_SESSION['login'])) {
         'session' => $result
     ], JSON_UNESCAPED_UNICODE));
 } else {
-    http_response_code(400);
+    http_response_code(401);
     exit(json_encode([
         'message' => 'Cannot Access this Page caue Session is required'
     ]));

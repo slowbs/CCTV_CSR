@@ -57,9 +57,11 @@ export namespace ISession {
   }
 
   export interface Session {
-    user_name: string
-    password: string
-    remember: boolean
+    user_id?: string;
+    user_name: string;
+    name: string;
+    password: string;
+    c_password: string;
   }
 
 }

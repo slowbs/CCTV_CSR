@@ -34,6 +34,7 @@ export class AuthNavbarComponent {
         error: (excep) => {
           console.log(excep)
           // alert(excep.error.message)
+          this.router.navigate(['/', this.AppUrl.Login])
         }
       })
 
