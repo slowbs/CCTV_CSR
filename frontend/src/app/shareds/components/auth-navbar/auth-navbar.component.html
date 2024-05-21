@@ -63,7 +63,7 @@
         </li>
         <!-- User Menu-->
         <li class="dropdown"><a class="app-nav__item" href="#" data-bs-toggle="dropdown"
-                aria-label="Open Profile Menu"><i class="bi bi-person fs-4">ชื่อผู้ใช้</i></a>
+                aria-label="Open Profile Menu"><i class="bi bi-person fs-4">{{ profileItem?.user_name }}</i></a>
             <ul class="dropdown-menu settings-menu dropdown-menu-right">
                 <li><a class="dropdown-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Index]"><i
                             class="bi bi-gear me-2 fs-5"></i> Settings</a>
