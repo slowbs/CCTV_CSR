@@ -5,7 +5,7 @@ $query = mysqli_query($conn, $sql);
 $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
 echo json_encode([
-                    // 'message' => 'test ทดสอบ',
+                    'message' => 'Profile API',
                     // 'result' => $result,
                     'session' => $_SESSION['login']
                     ], JSON_UNESCAPED_UNICODE);

@@ -25,9 +25,9 @@ export class CctvService {
 
   //ดึงข้อมูลมาแสดง Profile
   get_profile() {
-    return this.httpClient.get(this.backendURL + 'login');
+    return this.httpClient.get<ISession.Response>(this.backendURL + 'login');
   }
-  
+
 }
 
 export interface IUsers {
@@ -42,4 +42,19 @@ export interface ILogin {
   user_name: string;
   password: string;
   remember: boolean;
+}
+
+export namespace ISession {
+
+  export interface Response {
+    message: string;
+    session: Session;
+  }
+
+  export interface Session {
+    user_name: string
+    password: string
+    remember: boolean
+  }
+
 }
