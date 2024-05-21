@@ -1,8 +1,5 @@
 <?php
 
-$sql = "SELECT * FROM user WHERE '1'";
-$query = mysqli_query($conn, $sql);
-$result = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
 if (isset($_SESSION['login'])) {
     if (empty($_SESSION['login'])) {
@@ -12,10 +9,9 @@ if (isset($_SESSION['login'])) {
         ]));
     }
 
+    unset($_SESSION['login']);
     echo json_encode([
-        'message' => 'Profile API',
-        // 'result' => $result,
-        'session' => $_SESSION['login']
+        'message' => 'Logout from backend',
     ], JSON_UNESCAPED_UNICODE);
 } else {
     http_response_code(400);
@@ -23,8 +19,3 @@ if (isset($_SESSION['login'])) {
         'message' => 'The Session is invalid'
     ]));
 }
-
-
-// echo json_encode(
-//                     $result
-// , JSON_UNESCAPED_UNICODE);

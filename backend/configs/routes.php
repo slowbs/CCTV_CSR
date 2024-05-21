@@ -24,5 +24,6 @@ $routes['/api/users']['PUT'] = 'users/put.php';
 $routes['/api/users']['DELETE'] = 'users/delete.php';
 
 // Login
-$routes['/api/login']['POST'] = 'login/post.php';
+$routes['/api/login']['POST'] = 'login/login.php';
+$routes['/api/logout']['POST'] = 'login/logout.php';
 $routes['/api/login']['GET'] = 'login/profile.php';

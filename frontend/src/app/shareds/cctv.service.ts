@@ -23,6 +23,11 @@ export class CctvService {
     return this.httpClient.post(this.backendURL + 'login', value);
   }
 
+  // Logout
+  post_logout() {
+    return this.httpClient.post(this.backendURL + 'logout', null)
+  }
+
   //ดึงข้อมูลมาแสดง Profile
   get_profile() {
     return this.httpClient.get<ISession.Response>(this.backendURL + 'login');

@@ -41,7 +41,17 @@ export class AuthNavbarComponent {
 
   // ออกจากระบบ
   onLogout() {
-    console.log('Logout')
+    // console.log('Logout')
+    return this.cctvService.post_logout()
+      .subscribe({
+        next: (result) => {
+          console.log(result)
+          this.router.navigate(['/', this.AppUrl.Login])
+        },
+        error: (excep) => {
+          console.log(excep)
+        }
+      })
   }
 
 
