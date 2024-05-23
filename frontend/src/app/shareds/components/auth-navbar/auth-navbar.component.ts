@@ -29,7 +29,7 @@ export class AuthNavbarComponent {
         next: (result) => {
           // console.log(result)
           this.profileItem = result.session
-          // console.log(this.profileItem)
+          console.log(this.profileItem)
         },
         error: (excep) => {
           console.log(excep)
