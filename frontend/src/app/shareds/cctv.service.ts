@@ -33,6 +33,10 @@ export class CctvService {
     return this.httpClient.get<ISession.Response>(this.backendURL + 'login');
   }
 
+  get_cctv() {
+    return this.httpClient.get<ICctvs[]>(this.backendURL + 'cctvs');
+  }
+
 }
 
 export interface IUsers {
@@ -64,4 +68,21 @@ export namespace ISession {
     c_password: string;
   }
 
+
+}
+
+export interface ICctvs {
+  id?: string;
+  durable_no: string;
+  durable_name?: string;
+  brand?: string;
+  model?: string;
+  location?: string;
+  monitor?: string;
+  floor?: string;
+  floor_id?: string;
+  status?: string;
+  status_id?: string;
+  date_created?: string;
+  completed?: boolean;
 }
