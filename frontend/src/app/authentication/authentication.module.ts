@@ -6,6 +6,7 @@ import { SharedsModule } from '../shareds/shareds.module';
 import { IndexComponent } from './components/index/index.component';
 import { UsersComponent } from './components/users/users.component';
 import { UserCreateComponent } from './components/user-create/user-create.component';
+import { CctvComponent } from './components/cctv/cctv.component';
 
 
 
@@ -14,7 +15,8 @@ import { UserCreateComponent } from './components/user-create/user-create.compon
     DashboardComponent,
     IndexComponent,
     UsersComponent,
-    UserCreateComponent
+    UserCreateComponent,
+    CctvComponent
   ],
   imports: [
     CommonModule,
