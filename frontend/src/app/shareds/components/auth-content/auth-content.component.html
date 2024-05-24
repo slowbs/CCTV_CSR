@@ -1,5 +1,5 @@
-<app-auth-navbar></app-auth-navbar>
-<app-auth-sidebar></app-auth-sidebar>
+<app-auth-navbar #AuthNavbarComp></app-auth-navbar>
+<app-auth-sidebar [AuthNavbarComp]="AuthNavbarComp"></app-auth-sidebar>
 
 <!-- main Content -->
 <main class="app-content">
