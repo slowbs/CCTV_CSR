@@ -1,4 +1,5 @@
 <!-- รัน angular พร้อม ตั้งค่า proxy -->
 ng serve --proxy-config proxy.conf.json
 
-
+รัน live-server ของ php
+live-server

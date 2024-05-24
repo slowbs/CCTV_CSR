@@ -17,8 +17,8 @@ export class CctvComponent {
   get_Cctv() {
     return this.CctvSerivce.get_cctv()
       .subscribe(result => {
-        // this.cctvItems = result['result']
-        console.log(result['result'])
+        this.cctvItems = result['result']
+        // console.log(result['result'])
         // this.checked = false
       });
   }

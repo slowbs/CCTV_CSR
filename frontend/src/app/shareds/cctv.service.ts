@@ -83,6 +83,6 @@ export interface ICctvs {
   floor_id?: string;
   status?: string;
   status_id?: string;
-  date_created?: string;
+  date_updated?: string;
   completed?: boolean;
 }
