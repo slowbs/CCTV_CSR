@@ -11,6 +11,12 @@ $routes['/api/status']['POST'] = 'status/post.php';
 $routes['/api/status']['PUT'] = 'status/put.php';
 $routes['/api/status']['DELETE'] = 'status/delete.php';
 
+//ข้อมูลปิงสถานะกล้อง
+$routes['/api/ping']['GET'] = 'ping/get.php';
+$routes['/api/ping']['POST'] = 'ping/post.php';
+$routes['/api/ping']['PUT'] = 'ping/put.php';
+$routes['/api/ping']['DELETE'] = 'ping/delete.php';
+
 //ข้อมูลชั้นอาคาร
 $routes['/api/floors']['GET'] = 'floors/get.php';
 $routes['/api/floors']['POST'] = 'floors/post.php';
