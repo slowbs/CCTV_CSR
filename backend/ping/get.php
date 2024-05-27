@@ -6,24 +6,41 @@ $sql = "SELECT * FROM cctv WHERE '1'";
 $query = mysqli_query($conn, $sql);
 // $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
+
 if ($query->num_rows > 0) {
     // output data of each row
     while ($row = $query->fetch_assoc()) {
+        $count_ping = $row["count_ping"];
+        $notify = $row["notify"];
         echo $row["id"] . " ";
         echo $row["durable_no"] . " ";
         echo $row["ip"] . " ";
         $ip = $row["ip"];
-        exec("ping -n 1 $ip", $output, $status);
+        // exec("ping -n 1 $ip", $output, $status); ไม่กำหนด wait time 
+        exec("ping -n 1 -w 1 $ip", $output, $status);
         // print_r($output);
 
         if ($status == 0) {
-            $query2 = "UPDATE cctv SET ping = '0' where id = ?";
-            $stmt = mysqli_prepare($conn, $query2);
-            mysqli_stmt_bind_param(
-                $stmt,
-                'i',
-                $row["id"]
-            );
+            $count_ping = '0';
+            if ($notify == 1) {
+                $query2 = "UPDATE cctv SET ping = '0', count_ping = ?, notify = '0' where id = ?";
+                $stmt = mysqli_prepare($conn, $query2);
+                mysqli_stmt_bind_param(
+                    $stmt,
+                    'ii',
+                    $count_ping,
+                    $row["id"]
+                );
+            } else {
+                $query2 = "UPDATE cctv SET ping = '0', count_ping = ? where id = ?";
+                $stmt = mysqli_prepare($conn, $query2);
+                mysqli_stmt_bind_param(
+                    $stmt,
+                    'ii',
+                    $count_ping,
+                    $row["id"]
+                );
+            }
             mysqli_stmt_execute($stmt);
             $error_message = mysqli_error($conn);
 
@@ -40,21 +57,42 @@ if ($query->num_rows > 0) {
 
             echo "Online \n";
         } else {
-            $query2 = "UPDATE cctv SET ping = '1' where id = ?";
-            $stmt = mysqli_prepare($conn, $query2);
-            mysqli_stmt_bind_param(
-                $stmt,
-                'i',
-                $row["id"]
-            );
-            mysqli_stmt_execute($stmt);
-            $error_message = mysqli_error($conn);
+            if ($count_ping < 5) {
+                $count_ping++;
+                $query2 = "UPDATE cctv SET ping = '1', count_ping = ? where id = ?";
+                $stmt = mysqli_prepare($conn, $query2);
+                mysqli_stmt_bind_param(
+                    $stmt,
+                    'ii',
+                    $count_ping,
+                    $row["id"]
+                );
+                mysqli_stmt_execute($stmt);
+                $error_message = mysqli_error($conn);
 
-            if ($error_message) { //ใช้ในการ เช็ค error
-                http_response_code(500);
-                exit(json_encode([
-                    'message' => $error_message
-                ]));
+                if ($error_message) { //ใช้ในการ เช็ค error
+                    http_response_code(500);
+                    exit(json_encode([
+                        'message' => $error_message
+                    ]));
+                }
+            } else {
+                $query2 = "UPDATE cctv SET ping = '1', notify = '1' where id = ?";
+                $stmt = mysqli_prepare($conn, $query2);
+                mysqli_stmt_bind_param(
+                    $stmt,
+                    'i',
+                    $row["id"]
+                );
+                mysqli_stmt_execute($stmt);
+                $error_message = mysqli_error($conn);
+
+                if ($error_message) { //ใช้ในการ เช็ค error
+                    http_response_code(500);
+                    exit(json_encode([
+                        'message' => $error_message
+                    ]));
+                }
             }
             echo "Dead \n";
         }
