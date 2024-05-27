@@ -67,15 +67,6 @@ if ($query->num_rows > 0) {
                     $count_ping,
                     $row["id"]
                 );
-                mysqli_stmt_execute($stmt);
-                $error_message = mysqli_error($conn);
-
-                if ($error_message) { //ใช้ในการ เช็ค error
-                    http_response_code(500);
-                    exit(json_encode([
-                        'message' => $error_message
-                    ]));
-                }
             } else {
                 $query2 = "UPDATE cctv SET ping = '1', notify = '1' where id = ?";
                 $stmt = mysqli_prepare($conn, $query2);
@@ -84,15 +75,15 @@ if ($query->num_rows > 0) {
                     'i',
                     $row["id"]
                 );
-                mysqli_stmt_execute($stmt);
-                $error_message = mysqli_error($conn);
+            }
+            mysqli_stmt_execute($stmt);
+            $error_message = mysqli_error($conn);
 
-                if ($error_message) { //ใช้ในการ เช็ค error
-                    http_response_code(500);
-                    exit(json_encode([
-                        'message' => $error_message
-                    ]));
-                }
+            if ($error_message) { //ใช้ในการ เช็ค error
+                http_response_code(500);
+                exit(json_encode([
+                    'message' => $error_message
+                ]));
             }
             echo "Dead \n";
         }
