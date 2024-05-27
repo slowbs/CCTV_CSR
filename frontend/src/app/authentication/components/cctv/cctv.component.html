@@ -69,8 +69,8 @@
                                 } @else {
                                 <td>ดับ</td>
                                 }
-                                <td align="center"> <a href="#editCctvModal" class="edit"
-                                        data-toggle="modal">แก้ไข</a>&nbsp;
+                                <td align="center"> <a href="#editCctvModal" class="edit" data-toggle="modal"
+                                        (click)="onEditModal(item)">แก้ไข</a>&nbsp;
                                     <a href="#deleteCctvModal" class="delete" data-toggle="modal">ลบ</a>
                                 </td>
                             </tr>
@@ -99,7 +99,22 @@
                         <div class="form-group">
                             <label>เลขครุภัณฑ์</label>
                             <input type="text" class="form-control" required placeholder="เลขครุภัณฑ์"
-                            [(ngModel)]="model.durable_no" name="durable_no">
+                                [(ngModel)]="model.durable_no" name="durable_no">
+                        </div>
+                        <div class="form-group">
+                            <label>รายการ</label>
+                            <input type="text" class="form-control" required placeholder="รายการ"
+                                [(ngModel)]="model.durable_name" name="durable_name">
+                        </div>
+                        <div class="form-group">
+                            <label>ยี่ห้อ</label>
+                            <input type="text" class="form-control" required placeholder="ยี่ห้อ"
+                                [(ngModel)]="model.brand" name="brand">
+                        </div>
+                        <div class="form-group">
+                            <label>สถานที่</label>
+                            <input type="text" class="form-control" required placeholder="สถานที่"
+                                [(ngModel)]="model.location" name="location">
                         </div>
                     </div>
                     <div class="modal-footer">

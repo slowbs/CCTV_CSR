@@ -10,11 +10,10 @@ declare const $: any;
 export class CctvComponent {
 
   public cctvItems: ICctvs[] = [];
-  public model: ICctvs = {
-    durable_no : ''
-  }
+  public model: ICctvs;
 
   constructor(private CctvSerivce: CctvService) {
+    this.model = this.CctvSerivce.updateModel;
     this.get_Cctv()
   }
 
@@ -31,5 +30,11 @@ export class CctvComponent {
   onSubmit() {
     console.log(this.model)
   }
+
+    //Function เมื่อกดปุ่มแก้ไข
+    onEditModal(items: ICctvs) {
+      Object.assign(this.CctvSerivce.updateModel, items)
+      // console.log(this.cctvService.updateModel)
+    }
 
 }

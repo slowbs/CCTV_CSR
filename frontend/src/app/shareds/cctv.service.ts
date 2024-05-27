@@ -9,6 +9,8 @@ export class CctvService {
   // private backendURL = 'http://localhost/cctv_csr/backend/index.php/api/';
   private backendURL = '/backend/index.php/api/';
 
+  public updateModel: ICctvs = Object.assign({})
+
   constructor(private httpClient: HttpClient) { }
 
   // ข้อมูลผู้ใช้งาน
