@@ -48,7 +48,8 @@
                                 <th>ชั้น</th>
                                 <th>Monitor</th>
                                 <th>สถานะ</th>
-                                <th>แก้ไขล่าสุด</th>
+                                <th>IP</th>
+                                <th>Ping</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,7 +61,13 @@
                                 <td>{{ item.floor }}</td>
                                 <td>{{ item.monitor }}</td>
                                 <td>{{ item.status }}</td>
-                                <td>{{ item.date_updated }}</td>
+                                <td>{{ item.ip }}</td>
+                                <!-- <td>{{ item.ping }}</td> -->
+                                @if ( item.ping == '0') {
+                                <td>Online</td>
+                                } @else {
+                                <td>ดับ</td>
+                                }
                             </tr>
                         </tbody>
                         <tfoot>

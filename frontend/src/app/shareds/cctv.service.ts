@@ -83,6 +83,8 @@ export interface ICctvs {
   floor_id?: string;
   status?: string;
   status_id?: string;
+  ip?: string;
+  ping?: string;
   date_updated?: string;
   completed?: boolean;
 }
