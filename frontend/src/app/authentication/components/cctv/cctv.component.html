@@ -50,6 +50,7 @@
                                 <th>สถานะ</th>
                                 <th>IP</th>
                                 <th>Ping</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,6 +69,10 @@
                                 } @else {
                                 <td>ดับ</td>
                                 }
+                                <td align="center"> <a href="#editCctvModal" class="edit"
+                                        data-toggle="modal">แก้ไข</a>&nbsp;
+                                    <a href="#deleteCctvModal" class="delete" data-toggle="modal">ลบ</a>
+                                </td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -78,6 +83,30 @@
                     </table>
                 </div>
                 <pagination previousText="ก่อนหน้า" nextText="ถัดไป" [totalItems]="30"></pagination>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Modal HTML -->
+    <div id="editCctvModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form (submit)="onSubmit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Employee</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>เลขครุภัณฑ์</label>
+                            <input type="text" class="form-control" required placeholder="เลขครุภัณฑ์"
+                            [(ngModel)]="model.durable_no" name="durable_no">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-info" value="Save">
+                    </div>
+                </form>
             </div>
         </div>
     </div>

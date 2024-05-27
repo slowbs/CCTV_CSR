@@ -7,6 +7,7 @@ import { AuthContentComponent } from './components/auth-content/auth-content.com
 import { RouterModule } from '@angular/router';
 import { CctvService } from './cctv.service';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -20,14 +21,16 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     CommonModule,
     BsDropdownModule.forRoot(),
     RouterModule,
-    PaginationModule.forRoot()
+    PaginationModule.forRoot(),
+    FormsModule
   ],
   exports: [
     AuthNavbarComponent,
     AuthSidebarComponent,
     AuthContentComponent,
     BsDropdownModule,
-    PaginationModule
+    PaginationModule,
+    FormsModule
   ],
   providers: [
     { provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } },

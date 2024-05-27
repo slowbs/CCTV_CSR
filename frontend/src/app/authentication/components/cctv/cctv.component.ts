@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CctvService, ICctvs } from '../../../shareds/cctv.service';
+declare const $: any;
 
 @Component({
   selector: 'app-cctv',
@@ -9,6 +10,9 @@ import { CctvService, ICctvs } from '../../../shareds/cctv.service';
 export class CctvComponent {
 
   public cctvItems: ICctvs[] = [];
+  public model: ICctvs = {
+    durable_no : ''
+  }
 
   constructor(private CctvSerivce: CctvService) {
     this.get_Cctv()
@@ -21,6 +25,11 @@ export class CctvComponent {
         // console.log(result['result'])
         // this.checked = false
       });
+  }
+
+
+  onSubmit() {
+    console.log(this.model)
   }
 
 }
