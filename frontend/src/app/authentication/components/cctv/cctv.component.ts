@@ -51,19 +51,18 @@ export class CctvComponent {
 
   onSubmit() {
     // console.log(this.model)
-    // this.CctvSerivce.put_items(this.model.id, this.model)
-    //   .subscribe({
-    //     next: (result) => {
-    //       console.log(result)
-    //       $('#editCctvModal').modal('hide');
-    //       // this.get_Cctv()
-    //     },
-    //     error: (excep) => {
-    //       console.log(excep)
-    //       // alert(excep.error.message)
-    //     }
-    //   })
-    $('#editCctvModal').modal('hide');
+    this.CctvSerivce.put_items(this.model.id, this.model)
+      .subscribe({
+        next: (result) => {
+          // console.log(result)
+          $('#editCctvModal').modal('hide');
+          this.get_Cctv()
+        },
+        error: (excep) => {
+          console.log(excep)
+          // alert(excep.error.message)
+        }
+      })
   }
 
   //Function เมื่อกดปุ่มแก้ไข
