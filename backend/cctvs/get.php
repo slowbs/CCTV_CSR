@@ -7,7 +7,7 @@ cctv.date_updated, cctv.status as status_id, cctv.floor as floor_id FROM cctv
 left join floor on cctv.floor = floor.floor_id
 left join status on cctv.status = status.status_id
 where 1
-order by cctv.date_updated desc";
+order by floor_id";
 $query = mysqli_query($conn, $sql);
 $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
