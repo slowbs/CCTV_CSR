@@ -67,7 +67,7 @@
                                 @if ( item.ping == '0') {
                                 <td>Online</td>
                                 } @else {
-                                <td>ดับ</td>
+                                <td class="offline">Offline</td>
                                 }
                                 <td align="center"> <a [routerLink]="[]" data-bs-toggle="modal"
                                         data-bs-target="#editCctvModal" (click)="onEditModal(item)">แก้ไข</a>&nbsp;
@@ -92,42 +92,42 @@
             <div class="modal-content">
                 <form (submit)="onSubmit()">
                     <div class="modal-header">
-                        <h4 class="modal-title">Edit Employee</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">แก้ไขรายการกล้อง CCTV</h4>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true"><i class="bi bi-x-lg"></i></button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>เลขครุภัณฑ์</label>
+                            <h5 class="lh_modal">เลขครุภัณฑ์</h5>
                             <input type="text" class="form-control" required placeholder="เลขครุภัณฑ์"
                                 [(ngModel)]="model.durable_no" name="durable_no">
                         </div>
                         <div class="form-group">
-                            <label>รายการ</label>
+                            <h5 class="lh_modal"><label>รายการ</label></h5>
                             <input type="text" class="form-control" required placeholder="รายการ"
                                 [(ngModel)]="model.durable_name" name="durable_name">
                         </div>
                         <div class="form-group">
-                            <label>ยี่ห้อ</label>
+                            <h5 class="lh_modal"><label>ยี่ห้อ</label></h5>
                             <input type="text" class="form-control" required placeholder="ยี่ห้อ"
                                 [(ngModel)]="model.brand" name="brand">
                         </div>
                         <div class="form-group">
-                            <label>สถานที่</label>
+                            <h5 class="lh_modal"><label>สถานที่</label></h5>
                             <input type="text" class="form-control" required placeholder="สถานที่"
                                 [(ngModel)]="model.location" name="location">
                         </div>
                         <div class="form-group">
-                            <label>จอภาพ</label>
+                            <h5 class="lh_modal"><label>จอภาพ</label></h5>
                             <input type="text" class="form-control" required placeholder="จอภาพ"
                                 [(ngModel)]="model.monitor" name="monitor">
                         </div>
                         <div class="form-group">
-                            <label>IP</label>
+                            <h5 class="lh_modal"><label>IP</label></h5>
                             <input type="text" class="form-control" required placeholder="หมายเลข IP"
                                 [(ngModel)]="model.ip" name="ip">
                         </div>
                         <div class="form-group">
-                            <label>ชั้น</label>
+                            <h5 class="lh_modal"><label>ชั้น</label></h5>
                             <select class="form-select" [(ngModel)]="model.floor_id" name="floor">
                                 <option value="">กรุณาเลือกชั้น</option>
                                 <option *ngFor="let item of floorItems" value="{{item.floor_id}}">{{item.floor_name}}
@@ -135,7 +135,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>สถานะ</label>
+                            <h5 class="lh_modal"><label>สถานะ</label></h5>
                             <select class="form-select" [(ngModel)]="model.status_id" name="status">
                                 <option value="">กรุณาเลือกสถานะ</option>
                                 <option *ngFor="let item of statusItems" value="{{item.status_id}}">{{item.status_name}}

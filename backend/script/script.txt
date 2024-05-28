@@ -3,3 +3,7 @@ ng serve --proxy-config proxy.conf.json
 
 <!-- รัน live-server ของ php -->
 live-server
+
+SELECT * FROM cctv
+left join floor on cctv.floor = floor.floor_id
+ where 1
