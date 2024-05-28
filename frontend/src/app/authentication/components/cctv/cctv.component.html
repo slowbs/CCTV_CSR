@@ -116,6 +116,22 @@
                             <input type="text" class="form-control" required placeholder="สถานที่"
                                 [(ngModel)]="model.location" name="location">
                         </div>
+                        <div class="form-group">
+                            <label>ชั้น</label>
+                            <select class="form-select" [(ngModel)]="model.floor_id" name="floor">
+                                <option value="">กรุณาเลือกชั้น</option>
+                                <option *ngFor="let item of floorItems" value="{{item.floor_id}}">{{item.floor_name}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>สถานะ</label>
+                            <select class="form-select" [(ngModel)]="model.status_id" name="status">
+                                <option value="">กรุณาเลือกสถานะ</option>
+                                <option *ngFor="let item of statusItems" value="{{item.status_id}}">{{item.status_name}}
+                                </option>
+                            </select>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">

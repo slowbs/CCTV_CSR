@@ -13,7 +13,8 @@ export class CctvService {
 
   constructor(private httpClient: HttpClient) { }
 
-  // ข้อมูลผู้ใช้งาน
+
+  // Service ฝั่งข้อมูลผู้ใช้งาน
   // เพิ่มข้อมูลผู้ใช้งาน
   post_user(value: IUsers) {
     return this.httpClient.post(this.backendURL + 'users', value);
@@ -35,9 +36,31 @@ export class CctvService {
     return this.httpClient.get<ISession.Response>(this.backendURL + 'login');
   }
 
+  // Service ฝั่ง กล้อง CCTV
+  // ดึงข้อมูลกล้องมาแสดง
   get_cctv() {
     return this.httpClient.get<ICctvs[]>(this.backendURL + 'cctvs');
   }
+
+  // แก้ไขข้อมูลกล้อง
+  put_items(id: any, value: ICctvs) {
+    // return this.httpClient.put(this.backendURL + 'cctvs?id=' + id, value)
+    // return this.httpClient.put(this.backendURL + 'cctvs', value, { params : { id : id}})
+    // delete value.durable_name;
+    // value.durable_name = '';
+    return this.httpClient.put(this.backendURL + 'cctvs', value, { params: { id } })
+  }
+
+  // ดึงข้อมูลสถานะการใช้งานกล้องมาแสดง
+  get_status() {
+    return this.httpClient.get<IStatus[]>(this.backendURL + 'status');
+  }
+
+  // ดึงข้อมูลชั้นมาแสดง
+  get_floor() {
+    return this.httpClient.get<IFloor[]>(this.backendURL + 'floors');
+  }
+
 
 }
 
@@ -89,4 +112,15 @@ export interface ICctvs {
   ping?: string;
   date_updated?: string;
   completed?: boolean;
+}
+
+export interface IStatus {
+  status_id?: string;
+  status_name: string;
+}
+
+export interface IFloor {
+  floor_id?: string;
+  floor_name: string;
+  floor_status?: string;
 }

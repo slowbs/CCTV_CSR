@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CctvService, ICctvs } from '../../../shareds/cctv.service';
+import { CctvService, ICctvs, IFloor, IStatus } from '../../../shareds/cctv.service';
 declare const $: any;
 
 @Component({
@@ -9,12 +9,18 @@ declare const $: any;
 })
 export class CctvComponent {
 
+
+
   public cctvItems: ICctvs[] = [];
   public model: ICctvs;
+  public statusItems: IStatus[] = [];
+  public floorItems: IFloor[] = [];
 
   constructor(private CctvSerivce: CctvService) {
     this.model = this.CctvSerivce.updateModel;
     this.get_Cctv()
+    this.getStatus()
+    this.getFloor()
   }
 
   get_Cctv() {
@@ -26,15 +32,46 @@ export class CctvComponent {
       });
   }
 
-
-  onSubmit() {
-    console.log(this.model)
+  getStatus() {
+    return this.CctvSerivce.get_status()
+      .subscribe(result => {
+        this.statusItems = result['result']
+        // console.log(this.statusItems)
+      });
   }
 
-    //Function เมื่อกดปุ่มแก้ไข
-    onEditModal(items: ICctvs) {
-      Object.assign(this.CctvSerivce.updateModel, items)
-      // console.log(this.cctvService.updateModel)
-    }
+  getFloor() {
+    return this.CctvSerivce.get_floor()
+      .subscribe(result => {
+        this.floorItems = result['result']
+        // console.log(this.floorItems)
+      });
+  }
+
+
+  onSubmit() {
+    // console.log(this.model)
+    // this.CctvSerivce.put_items(this.model.id, this.model)
+    //   .subscribe({
+    //     next: (result) => {
+    //       console.log(result)
+    //       $('#editCctvModal').modal('hide');
+    //       // this.get_Cctv()
+    //     },
+    //     error: (excep) => {
+    //       console.log(excep)
+    //       // alert(excep.error.message)
+    //     }
+    //   })
+    $('#editCctvModal').modal('hide');
+  }
+
+  //Function เมื่อกดปุ่มแก้ไข
+  onEditModal(items: ICctvs) {
+    Object.assign(this.CctvSerivce.updateModel, items)
+    // console.log(this.cctvService.updateModel)
+  }
+
+
 
 }
