@@ -1,6 +1,6 @@
 <?php
 
-$sql = "SELECT * FROM floor WHERE '1'";
+$sql = "SELECT * FROM floor WHERE '1' order by `order`";
 $query = mysqli_query($conn, $sql);
 $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
