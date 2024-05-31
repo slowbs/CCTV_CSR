@@ -10,3 +10,10 @@ live-server
 SELECT * FROM cctv
 left join floor on cctv.floor = floor.floor_id
  where 1
+
+
+SELECT log_id, cctv_id, ping_checked, log_ping.date_created as date_created, cctv.durable_no as durable_no,
+cctv.durable_name as durablename, floor_name FROM `log_ping`
+left join cctv on cctv.id = log_ping.cctv_id
+left join floor on cctv.floor = floor.floor_id
+where 1

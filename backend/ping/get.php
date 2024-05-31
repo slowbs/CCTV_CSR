@@ -36,6 +36,28 @@ if ($query->num_rows > 0) {
                         $row["id"]
                     );
 
+                    // เก็บ Log กลับมาออนไลน์ใน db
+                    $query3 = "INSERT INTO log_ping (cctv_id, ping_checked) VALUES (?, '0')";
+                    $stmt2 = mysqli_prepare($conn, $query3);
+                    mysqli_stmt_bind_param(
+                        $stmt2,
+                        'i',
+                        $row["id"]
+                    );
+                    mysqli_stmt_execute($stmt2);
+                    $error_message = mysqli_error($conn);
+
+                    if ($error_message) { //ใช้ในการ เช็ค error
+                        http_response_code(500);
+                        exit(json_encode([
+                            'message' => $error_message
+                        ]));
+                    }
+
+                    echo json_encode([
+                        'message' => 'เพิ่ม Log กล้องกลับมาออนไลน์สำเร็จ'
+                    ], JSON_UNESCAPED_UNICODE);
+
                     // แจ้งเตือนกล้องกลับมาออนไลน์ผ่านไลน์
                     $token = "2o8uKi8xrEoTYDmGHuEW6W2j7oxY8bheDApgfYRUJo4"; // LINE Token test
                     //Message
@@ -117,6 +139,28 @@ if ($query->num_rows > 0) {
                             'i',
                             $row["id"]
                         );
+
+                        // เก็บ Log กล้องดับใน db
+                        $query3 = "INSERT INTO log_ping (cctv_id, ping_checked) VALUES (?, '1')";
+                        $stmt2 = mysqli_prepare($conn, $query3);
+                        mysqli_stmt_bind_param(
+                            $stmt2,
+                            'i',
+                            $row["id"]
+                        );
+                        mysqli_stmt_execute($stmt2);
+                        $error_message = mysqli_error($conn);
+
+                        if ($error_message) { //ใช้ในการ เช็ค error
+                            http_response_code(500);
+                            exit(json_encode([
+                                'message' => $error_message
+                            ]));
+                        }
+
+                        echo json_encode([
+                            'message' => 'เพิ่ม Log กล้องดับสำเร็จ'
+                        ], JSON_UNESCAPED_UNICODE);
 
                         // แจ้งเตือนกล้องดับผ่านไลน์
                         $token = "2o8uKi8xrEoTYDmGHuEW6W2j7oxY8bheDApgfYRUJo4"; // LINE Token test
