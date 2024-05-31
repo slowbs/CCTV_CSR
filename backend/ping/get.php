@@ -1,6 +1,6 @@
 <?php
 
-header("Refresh: 20;");
+header("Refresh: 60;");
 
 $sql = "SELECT * FROM cctv
 left join floor on cctv.floor = floor.floor_id
