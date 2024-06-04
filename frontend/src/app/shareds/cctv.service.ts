@@ -109,6 +109,7 @@ export interface ICctvs {
   status?: string;
   status_id?: string;
   ip?: string;
+  notify?: string;
   ping?: string;
   date_updated?: string;
   completed?: boolean;

@@ -12,8 +12,28 @@ left join floor on cctv.floor = floor.floor_id
  where 1
 
 
+//แสดง log ping
 SELECT log_id, cctv_id, ping_checked, log_ping.date_created as date_created, cctv.durable_no as durable_no,
-cctv.durable_name as durablename, floor_name FROM `log_ping`
+cctv.durable_name as durablename, floor_name,
+CONCAT( IF(FLOOR(TIMESTAMPDIFF(SECOND, log_ping.date_created, NOW()) / 86400) < 10, '0', ''), 
+FLOOR(TIMESTAMPDIFF(SECOND, log_ping.date_created, NOW()) / 86400), ' days ', 
+IF(FLOOR((TIMESTAMPDIFF(SECOND, log_ping.date_created, NOW()) % 86400)/3600) < 10, '0', ''), 
+FLOOR((TIMESTAMPDIFF(SECOND, log_ping.date_created, NOW()) % 86400)/3600), ' hours ', 
+IF(FLOOR((TIMESTAMPDIFF(SECOND, log_ping.date_created, NOW()) % 3600)/60) < 10, '0', ''), 
+FLOOR((TIMESTAMPDIFF(SECOND, log_ping.date_created, NOW()) % 3600)/60), ' minutes ', 
+IF((TIMESTAMPDIFF(SECOND, log_ping.date_created, NOW()) % 60) < 10, '0', ''), 
+(TIMESTAMPDIFF(SECOND, log_ping.date_created, NOW()) % 60), ' seconds' ) as duration
+ FROM `log_ping`
 left join cctv on cctv.id = log_ping.cctv_id
 left join floor on cctv.floor = floor.floor_id
 where 1
+
+//คำนวณระยะเวลา log ping
+select CONCAT( IF(FLOOR(TIMESTAMPDIFF(SECOND, date_created, NOW()) / 86400) < 10, '0', ''), 
+FLOOR(TIMESTAMPDIFF(SECOND, date_created, NOW()) / 86400), ' days ', 
+IF(FLOOR((TIMESTAMPDIFF(SECOND, date_created, NOW()) % 86400)/3600) < 10, '0', ''), 
+FLOOR((TIMESTAMPDIFF(SECOND, date_created, NOW()) % 86400)/3600), ' hours ', 
+IF(FLOOR((TIMESTAMPDIFF(SECOND, date_created, NOW()) % 3600)/60) < 10, '0', ''), 
+FLOOR((TIMESTAMPDIFF(SECOND, date_created, NOW()) % 3600)/60), ' minutes ', 
+IF((TIMESTAMPDIFF(SECOND, date_created, NOW()) % 60) < 10, '0', ''), 
+(TIMESTAMPDIFF(SECOND, date_created, NOW()) % 60), ' seconds' ) from log_ping where 1;

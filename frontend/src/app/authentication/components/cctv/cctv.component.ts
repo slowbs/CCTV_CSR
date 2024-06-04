@@ -54,7 +54,7 @@ export class CctvComponent {
     this.CctvSerivce.put_items(this.model.id, this.model)
       .subscribe({
         next: (result) => {
-          // console.log(result)
+          console.log(result)
           $('#editCctvModal').modal('hide');
           this.get_Cctv()
         },

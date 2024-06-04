@@ -38,7 +38,7 @@ if ($query->num_rows > 0) {
                             $row["id"]
                         );
                     } else {
-                        $query2 = "UPDATE cctv SET ping = '0', count_ping = ?, notify = '0' where id = ?";
+                        $query2 = "UPDATE cctv SET ping = '0', count_ping = ?, notify = '0', ping_updated = NOW() where id = ?";
                         $stmt = mysqli_prepare($conn, $query2);
                         mysqli_stmt_bind_param(
                             $stmt,
@@ -144,7 +144,7 @@ if ($query->num_rows > 0) {
                             $row["id"]
                         );
                     } else {
-                        $query2 = "UPDATE cctv SET ping = '1', notify = '1' where id = ?";
+                        $query2 = "UPDATE cctv SET ping = '1', notify = '1', ping_updated = NOW() where id = ?";
                         $stmt = mysqli_prepare($conn, $query2);
                         mysqli_stmt_bind_param(
                             $stmt,
