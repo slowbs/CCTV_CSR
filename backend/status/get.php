@@ -1,13 +1,13 @@
 <?php
 
-$sql = "SELECT * FROM status WHERE '1'";
-$query = mysqli_query($conn, $sql);
-$result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+// $sql = "SELECT * FROM status WHERE '1'";
+// $query = mysqli_query($conn, $sql);
+// $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
-echo json_encode([
-                    'message' => 'test ทดสอบ',
-                    'result' => $result
-                    ], JSON_UNESCAPED_UNICODE);
+// echo json_encode([
+//                     'message' => 'test ทดสอบ',
+//                     'result' => $result
+//                     ], JSON_UNESCAPED_UNICODE);
 
 // echo json_encode(
 //                     $result
@@ -17,9 +17,11 @@ echo json_encode([
 // exec("ping -n 4 " . $host, $output, $status);
 // print_r($output);
 
-// $ip =   "192.168.200.3";
-// exec("ping -n 3 -w 1 $ip", $output, $status);
-// print_r($output);
+// $ip =   "192.168.200.7";
+$ip =   "172.16.0.216";
+exec("ping -n 1 -w 1 $ip", $output, $status);
+print_r($output);
+print_r($status);
 
 // if ($status == 0)
 
@@ -53,3 +55,4 @@ echo json_encode([
 // } else {
 //     echo "0 results";
 // }
+
