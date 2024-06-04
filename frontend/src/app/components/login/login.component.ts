@@ -31,12 +31,13 @@ export class LoginComponent {
     this.cctvService.post_login(this.model)
       .subscribe({
         next: (result) => {
-          console.log(result)
+          // console.log(result)
           this.router.navigate(['/', this.AppUrl.Authen, this.AuthUrl.Dashboard])
         },
         error: (excep) => {
-          console.log(excep)
+          // console.log(excep)
           // alert(excep.error.message)
+          console.log(excep.error.message)
         }
       })
   }
