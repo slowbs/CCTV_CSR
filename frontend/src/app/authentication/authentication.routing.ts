@@ -5,6 +5,7 @@ import { IndexComponent } from "./components/index/index.component";
 import { UsersComponent } from "./components/users/users.component";
 import { UserCreateComponent } from "./components/user-create/user-create.component";
 import { CctvComponent } from "./components/cctv/cctv.component";
+import { LogPingComponent } from "./components/log-ping/log-ping.component";
 
 const RouteLists: Routes = [
     { path: '', redirectTo: AuthenticationURL.Index, pathMatch: 'full' },
@@ -12,7 +13,8 @@ const RouteLists: Routes = [
     { path: AuthenticationURL.Index, component: IndexComponent },
     { path: AuthenticationURL.User, component: UsersComponent },
     { path: AuthenticationURL.Create_User, component: UserCreateComponent },
-    { path: AuthenticationURL.Cctv, component: CctvComponent}
+    { path: AuthenticationURL.Cctv, component: CctvComponent },
+    { path: AuthenticationURL.Log_Ping, component: LogPingComponent }
 
 ];
 

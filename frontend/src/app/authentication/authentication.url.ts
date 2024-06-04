@@ -3,6 +3,7 @@ export const AuthenticationURL = {
     Index: 'index',
     User: 'user',
     Create_User: 'create_user',
-    Cctv: 'cctv'
+    Cctv: 'cctv',
+    Log_Ping: 'log_ping'
 
 }

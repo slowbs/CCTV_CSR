@@ -7,6 +7,7 @@ import { IndexComponent } from './components/index/index.component';
 import { UsersComponent } from './components/users/users.component';
 import { UserCreateComponent } from './components/user-create/user-create.component';
 import { CctvComponent } from './components/cctv/cctv.component';
+import { LogPingComponent } from './components/log-ping/log-ping.component';
 
 
 
@@ -16,7 +17,8 @@ import { CctvComponent } from './components/cctv/cctv.component';
     IndexComponent,
     UsersComponent,
     UserCreateComponent,
-    CctvComponent
+    CctvComponent,
+    LogPingComponent
   ],
   imports: [
     CommonModule,

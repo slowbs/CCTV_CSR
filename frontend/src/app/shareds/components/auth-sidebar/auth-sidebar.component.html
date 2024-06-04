@@ -12,14 +12,17 @@
                 <li><a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Index]"><i
                                         class="app-menu__icon bi bi-speedometer"></i><span
                                         class="app-menu__label">หน้าหลัก</span></a></li>
-                <li class="treeview" routerLinkActive="is-expanded"><a class="app-menu__item" href="#" data-toggle="treeview"><i
-                                        class="app-menu__icon bi bi-laptop"></i><span
+                <li class="treeview" routerLinkActive="is-expanded"><a class="app-menu__item" href="#"
+                                data-toggle="treeview"><i class="app-menu__icon bi bi-laptop"></i><span
                                         class="app-menu__label">รายการครุภัณฑ์</span><i
                                         class="treeview-indicator bi bi-chevron-right"></i></a>
                         <ul class="treeview-menu">
                                 <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv]"
                                                 routerLinkActive="active"><i class="icon bi bi-circle-fill"></i>
                                                 กล้องวงจรปิด</a></li>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping]"
+                                                routerLinkActive="active"><i class="icon bi bi-circle-fill"></i>
+                                                Log กล้องวงจรปิด</a></li>
                                 <li><a class="treeview-item" href="https://icons.getbootstrap.com/" target="_blank"
                                                 rel="noopener"><i class="icon bi bi-circle-fill"></i> ระบบเครือข่าย</a>
                                 </li>
