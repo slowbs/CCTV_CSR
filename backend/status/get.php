@@ -1,8 +1,8 @@
 <?php
 
-// $sql = "SELECT * FROM status WHERE '1'";
-// $query = mysqli_query($conn, $sql);
-// $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+$sql = "SELECT * FROM status WHERE '1'";
+$query = mysqli_query($conn, $sql);
+$result = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
 // echo json_encode([
 //                     'message' => 'test ทดสอบ',
@@ -18,10 +18,10 @@
 // print_r($output);
 
 // $ip =   "192.168.200.7";
-$ip =   "172.16.0.216";
-exec("ping -n 1 -w 1 $ip", $output, $status);
-print_r($output);
-print_r($status);
+// $ip =   "172.16.0.216";
+// exec("ping -n 1 -w 1 $ip", $output, $status);
+// print_r($output);
+// print_r($status);
 
 // if ($status == 0)
 
