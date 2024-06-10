@@ -10,6 +10,8 @@ $query = mysqli_query($conn, $sql);
 
 
 if ($query->num_rows > 0) {
+    $count_ping_online = 0;
+    $count_ping_offline = 0;
     // output data of each row
     while ($row = $query->fetch_assoc()) {
         if (!empty($row["ip"])) {
@@ -20,12 +22,31 @@ if ($query->num_rows > 0) {
             echo $row["durable_no"] . " ";
             echo $row["ip"] . " ";
             $ip = $row["ip"];
-            // exec("ping -n 1 $ip", $output, $status); ไม่กำหนด wait time 
-            exec("ping -n 1 -w 1 $ip", $output, $status);
-            // print_r($output);
 
-            if ($status == 0) {
+            // ใช้วิธี exec
+            // exec("ping -n 1 $ip", $output, $status); ไม่กำหนด wait time 
+            // exec("ping -n 1 -w 1 $ip", $output, $status);
+            // print_r($output);
+            // if ($status == 0) {
+
+
+            // ใช้วิธี curl
+            // $url = '172.16.0.' . $i;
+            // echo $url;
+            $ch = curl_init($ip);
+            // $timeout = '0';
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            // curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+            curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100);
+            curl_exec($ch);
+            $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            if (200 == $retcode) {
+
+
                 // $count_ping = '0';
+                $count_ping_online += 1;
                 if ($notify == 1) {
                     if ($count_ping > 0) {
                         $count_ping--;
@@ -132,6 +153,7 @@ if ($query->num_rows > 0) {
 
                 echo "Online \n";
             } else {
+                $count_ping_offline += 1;
                 if ($notify == 0) {
                     if ($count_ping < 5) {
                         $count_ping++;
@@ -225,6 +247,8 @@ if ($query->num_rows > 0) {
             }
         }
     }
+    echo "Online = " . $count_ping_online . "\n";
+    echo "Offline = " . $count_ping_offline . "\n";
 } else {
     echo "0 results";
 }
