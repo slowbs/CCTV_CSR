@@ -17,15 +17,13 @@
                         <div class="input-group-prepend" dropdown>
                             <button id="button-animated" dropdownToggle type="button"
                                 class="btn btn-primary dropdown-toggle" aria-controls="dropdown-animated">
-                                ค้นหาจาก <span class="caret"></span>
+                                {{ searchType.value }} <span class="caret"></span>
                             </button>
                             <ul id="dropdown-animated" *dropdownMenu class="dropdown-menu" role="menu"
                                 aria-labelledby="button-animated">
-                                <li role="menuitem"><a class="dropdown-item" href="#">Action</a></li>
-                                <li role="menuitem"><a class="dropdown-item" href="#">Another action</a>
+                                <li *ngFor="let item of searchTypeItem" role="menuitem">
+                                    <a [routerLink]="[]" class="dropdown-item" (click)="searchType = item">{{ item.value }}</a>
                                 </li>
-                                <li role="menuitem"><a class="dropdown-item" href="#">Something else
-                                        here</a></li>
                             </ul>
                         </div>
                         <input type="text" class="form-control" placeholder="ค้นหาข้อมูล"
@@ -93,7 +91,8 @@
                 <form (submit)="onSubmit()">
                     <div class="modal-header">
                         <h4 class="modal-title">แก้ไขรายการกล้อง CCTV</h4>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true"><i class="bi bi-x-lg"></i></button>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true"><i
+                                class="bi bi-x-lg"></i></button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">

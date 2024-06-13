@@ -16,11 +16,20 @@ export class CctvComponent {
   public statusItems: IStatus[] = [];
   public floorItems: IFloor[] = [];
 
+  searchText: string = '';
+  searchType: ICctvsSearchKey;
+  searchTypeItem: ICctvsSearchKey[] = [
+    { key: 'durable_no', value: 'เลขครุภัณฑ์' },
+    { key: 'durable_name', value: 'ชื่อครุภัณฑ์' },
+    { key: 'ip', value: 'หมายเลข IP' }
+  ]
+
   constructor(private CctvSerivce: CctvService) {
     this.model = this.CctvSerivce.updateModel;
     this.get_Cctv()
     this.getStatus()
     this.getFloor()
+    this.searchType = this.searchTypeItem[0]
   }
 
   get_Cctv() {
@@ -73,4 +82,9 @@ export class CctvComponent {
 
 
 
+}
+
+export interface ICctvsSearchKey {
+  key: string;
+  value: string;
 }
