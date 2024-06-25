@@ -1,13 +1,13 @@
 <?php
 
-// $sql = "SELECT * FROM status WHERE '1'";
-// $query = mysqli_query($conn9, $sql);
-// $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+$sql = "SELECT * FROM status WHERE '1'";
+$query = mysqli_query($conn, $sql);
+$result = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
-// echo json_encode([
-//     'message' => 'test ทดสอบ',
-//     'result' => $result
-// ], JSON_UNESCAPED_UNICODE);
+echo json_encode([
+    'message' => 'test ทดสอบ',
+    'result' => $result
+], JSON_UNESCAPED_UNICODE);
 
 // echo json_encode(
 //                     $result
@@ -87,69 +87,3 @@
 // echo "Offline = " . $count_ping_offline . "\n";
 ?>
 
-<?php
-$sql = "SELECT * FROM cctv
-left join floor on cctv.floor = floor.floor_id
- where 1";
-$query = mysqli_query($conn, $sql);
-// $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
-
-
-if ($query->num_rows > 0) {
-    $nodes = array();
-    $count_ping = array();
-    $notify = array();
-    $durable_no = array();
-    $count_ping_online = 0;
-    $count_ping_offline = 0;
-    // output data of each row
-    while ($row = $query->fetch_assoc()) {
-        if (!empty($row["ip"])) {
-
-            // $count_ping = $row["count_ping"];
-            // $notify = $row["notify"];
-            // echo $row["id"] . " ";
-            // echo $row["durable_no"] . " ";
-            // echo $row["ip"] . " \n";
-            $ip = $row["ip"];
-            $nodes[] .= $ip;
-            $count_ping[] .= $row["count_ping"];
-            $notify[] .= $row["notify"];
-            $durable_no[] .= $row["durable_no"];
-        }
-    }
-    $node_count = count($nodes);
-
-    $curl_arr = array();
-    $master = curl_multi_init();
-
-    for ($i = 0; $i < $node_count; $i++) {
-        $url = $nodes[$i];
-        $curl_arr[$i] = curl_init($url);
-        // curl_setopt($curl_arr[$i], CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl_arr[$i], CURLOPT_NOBODY, true);
-        curl_setopt($curl_arr[$i], CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($curl_arr[$i], CURLOPT_TIMEOUT, 2);
-        curl_multi_add_handle($master, $curl_arr[$i]);
-    }
-
-    do {
-        curl_multi_exec($master, $running);
-    } while ($running > 0);
-
-    // print_r($nodes);
-    // print_r($count_ping);
-    // print_r($notify);
-    for ($i = 0; $i < $node_count; $i++) {
-        // $results[] = curl_getinfo($curl_arr[$i], CURLINFO_HTTP_CODE);
-        $status = curl_getinfo($curl_arr[$i], CURLINFO_HTTP_CODE);
-        echo $durable_no[$i] . " " . $nodes[$i] . " " . $status . " \n";
-    }
-    // print_r($results);
-    echo "Online = " . $count_ping_online . "\n";
-    echo "Offline = " . $count_ping_offline . "\n";
-} else {
-    echo "0 results";
-}
-
-?>
