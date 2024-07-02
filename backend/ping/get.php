@@ -15,9 +15,9 @@ if ($query->num_rows > 0) {
     $notify = array();
     $durable_no = array();
     $durable_name = array();
-    $floor_name[] = array();
-    $location[] = array();
-    $monitor[] = array();
+    $floor_name = array();
+    $location = array();
+    $monitor = array();
     $id = array();
     $count_ping_online = 0;
     $count_ping_offline = 0;
@@ -40,7 +40,6 @@ if ($query->num_rows > 0) {
 
     $curl_arr = array();
     $master = curl_multi_init();
-
     for ($i = 0; $i < $node_count; $i++) {
         $url = $nodes[$i];
         $curl_arr[$i] = curl_init($url);
