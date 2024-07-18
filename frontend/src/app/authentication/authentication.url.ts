@@ -4,6 +4,7 @@ export const AuthenticationURL = {
     User: 'user',
     Create_User: 'create_user',
     Cctv: 'cctv',
-    Log_Ping: 'log_ping'
+    Log_Ping: 'log_ping',
+    Create_Durable: 'create_durable'
 
 }
