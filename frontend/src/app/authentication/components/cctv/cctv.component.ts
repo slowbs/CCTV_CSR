@@ -32,10 +32,19 @@ export class CctvComponent {
     this.searchType = this.searchTypeItem[0]
   }
 
-  get_Cctv() {
+  get_Cctv(options?: ICctvsSearch) {
     return this.CctvSerivce.get_cctv()
       .subscribe(result => {
-        this.cctvItems = result['result']
+        if (options) {
+          // console.log("search")
+          this.cctvItems = result['result']
+            .filter(result => result[options.searchType].toString().toLowerCase()
+              .indexOf(options.searchText.toString().toLowerCase()) >= 0)
+        }
+        else {
+          this.cctvItems = result['result']
+        }
+        // this.cctvItems = result['result']
         // console.log(result['result'])
         // this.checked = false
       });
@@ -80,10 +89,13 @@ export class CctvComponent {
     // console.log(this.cctvService.updateModel)
   }
 
-  onSearchItem(){
-    console.log(this.searchText, this.searchType)
+  onSearchItem() {
+    // console.log(this.searchText, this.searchType)
+    this.get_Cctv({
+      searchText: this.searchText,
+      searchType: this.searchType.key
+    })
   }
-
 
 
 }
@@ -91,4 +103,9 @@ export class CctvComponent {
 export interface ICctvsSearchKey {
   key: string;
   value: string;
+}
+
+export interface ICctvsSearch {
+  searchText: string;
+  searchType: string;
 }
