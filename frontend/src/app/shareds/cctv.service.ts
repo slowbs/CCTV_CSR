@@ -64,6 +64,7 @@ export class CctvService {
 
 }
 
+// ส่วนของ User
 export interface IUsers {
   user_id?: string;
   user_name: string;
@@ -95,6 +96,8 @@ export namespace ISession {
 
 
 }
+
+// ส่วนของรายการครุภัณฑ์
 
 export interface ICctvs {
   id?: string;

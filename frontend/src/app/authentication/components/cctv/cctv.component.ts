@@ -100,6 +100,8 @@ export class CctvComponent {
 
 }
 
+
+// ส่วนสำหรับการค้นหา
 export interface ICctvsSearchKey {
   key: string;
   value: string;
