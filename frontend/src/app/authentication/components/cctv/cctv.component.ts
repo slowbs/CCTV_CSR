@@ -80,6 +80,10 @@ export class CctvComponent {
     // console.log(this.cctvService.updateModel)
   }
 
+  onSearchItem(){
+    console.log(this.searchText, this.searchType)
+  }
+
 
 
 }

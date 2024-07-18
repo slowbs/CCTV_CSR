@@ -26,10 +26,9 @@
                                 </li>
                             </ul>
                         </div>
-                        <input type="text" class="form-control" placeholder="ค้นหาข้อมูล"
-                            aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        <input type="text" class="form-control" [(ngModel)] = "searchText" placeholder="ค้นหาข้อมูล">
                         <div class="input-group-append">
-                            <button class="btn btn-primary" type="button" id="button-addon1"><i
+                            <button class="btn btn-primary" type="button" id="button-addon1" (click)="onSearchItem()"><i
                                     class="bi bi-search"></i></button>
                         </div>
                     </div>
