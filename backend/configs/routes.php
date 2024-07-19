@@ -11,7 +11,7 @@ $routes['/api/status']['POST'] = 'status/post.php';
 $routes['/api/status']['PUT'] = 'status/put.php';
 $routes['/api/status']['DELETE'] = 'status/delete.php';
 
-//ข้อมูลปิงสถานะกล้อง
+//ข้อมูลการปิงสถานะกล้อง
 $routes['/api/ping']['GET'] = 'ping/get.php';
 $routes['/api/ping']['POST'] = 'ping/post.php';
 $routes['/api/ping']['PUT'] = 'ping/put.php';
@@ -22,6 +22,12 @@ $routes['/api/floors']['GET'] = 'floors/get.php';
 $routes['/api/floors']['POST'] = 'floors/post.php';
 $routes['/api/floors']['PUT'] = 'floors/put.php';
 $routes['/api/floors']['DELETE'] = 'floors/delete.php';
+
+//ข้อมูลประเภทครุภัณฑ์
+$routes['/api/types']['GET'] = 'types/get.php';
+$routes['/api/types']['POST'] = 'types/post.php';
+$routes['/api/types']['PUT'] = 'types/put.php';
+$routes['/api/types']['DELETE'] = 'types/delete.php';
 
 //ข้อมูลผู้ใช้งาน
 $routes['/api/users']['GET'] = 'users/get.php';

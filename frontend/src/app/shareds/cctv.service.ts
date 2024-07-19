@@ -65,6 +65,11 @@ export class CctvService {
     return this.httpClient.get<IFloor[]>(this.backendURL + 'floors');
   }
 
+  // ดึงข้อมูลประเภทครุภัณฑ์มาแสดง
+  get_type() {
+    return this.httpClient.get<IType[]>(this.backendURL + 'types');
+  }
+
 
 }
 
@@ -115,6 +120,7 @@ export interface ICctvs {
   floor_id?: string;
   status?: string;
   status_id?: string;
+  type: string;
   ip?: string;
   notify?: string;
   ping?: string;
@@ -125,6 +131,11 @@ export interface ICctvs {
 export interface IStatus {
   status_id?: string;
   status_name: string;
+}
+
+export interface IType {
+  type_id?: string;
+  type_name: string;
 }
 
 export interface IFloor {

@@ -19,6 +19,7 @@ if ($query->num_rows > 0) {
     $location = array();
     $monitor = array();
     $id = array();
+    $type = array();
     $count_ping_online = 0;
     $count_ping_offline = 0;
     // output data of each row
@@ -29,6 +30,7 @@ if ($query->num_rows > 0) {
             $count_ping[] .= $row["count_ping"];
             $notify[] .= $row["notify"];
             $durable_no[] .= $row["durable_no"];
+            $type[] .= $row["type"];
             $floor_name[] .= $row["floor_name"];
             $location[] .= $row["location"];
             $monitor[] .= $row["monitor"];
@@ -85,12 +87,13 @@ if ($query->num_rows > 0) {
                     );
 
                     // เก็บ Log กลับมาออนไลน์ใน db
-                    $query3 = "INSERT INTO log_ping (cctv_id, ping_checked) VALUES (?, '0')";
+                    $query3 = "INSERT INTO log_ping (cctv_id, type, ping_checked) VALUES (?, ?, '0')";
                     $stmt2 = mysqli_prepare($conn, $query3);
                     mysqli_stmt_bind_param(
                         $stmt2,
-                        'i',
-                        $id[$i]
+                        'ii',
+                        $id[$i],
+                        $type[$i]
                     );
                     mysqli_stmt_execute($stmt2);
                     $error_message = mysqli_error($conn);
@@ -191,12 +194,13 @@ if ($query->num_rows > 0) {
                     );
 
                     // เก็บ Log กล้องดับใน db
-                    $query3 = "INSERT INTO log_ping (cctv_id, ping_checked) VALUES (?, '1')";
+                    $query3 = "INSERT INTO log_ping (cctv_id, type, ping_checked) VALUES (?, ?, '1')";
                     $stmt2 = mysqli_prepare($conn, $query3);
                     mysqli_stmt_bind_param(
                         $stmt2,
-                        'i',
-                        $id[$i]
+                        'ii',
+                        $id[$i],
+                        $type[$i]
                     );
                     mysqli_stmt_execute($stmt2);
                     $error_message = mysqli_error($conn);

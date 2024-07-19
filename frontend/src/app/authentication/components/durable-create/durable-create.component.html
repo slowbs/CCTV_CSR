@@ -69,21 +69,33 @@
                     </div>
                     <div class="row align-items-center mt-3">
                         <div class="col-2 text-end">
-                            <h5 class="lh_modal">ชั้น : </h5>
+                            <h5 class="lh_modal">ประเภทครุภัณฑ์ : </h5>
                         </div>
                         <div class="col-10">
-                            <select class="form-select form-select-lg form-control" [(ngModel)]="model.floor" name="floor" required>
-                                <option value="" selected>กรุณาเลือกชั้น</option>
-                                <option *ngFor="let item of floorItems" value="{{item.floor_id}}">{{item.floor_name}}
+                            <select class="form-select form-select-lg" [(ngModel)]="model.type" name="type"
+                                required>
+                                <option value="">กรุณาเลือกประเภทครุภัณฑ์</option>
+                                <option *ngFor="let item of typeItems" value="{{item.type_id}}">{{item.type_name}}
                                 </option>
                             </select>
                         </div>
                     </div>
                     <div class="row align-items-center mt-3">
                         <div class="col-2 text-end">
+                            <h5 class="lh_modal">ชั้น : </h5>
+                        </div>
+                        <div class="col-4">
+                            <select class="form-select form-select-lg form-control" [(ngModel)]="model.floor"
+                                name="floor" required>
+                                <option value="" selected>กรุณาเลือกชั้น</option>
+                                <option *ngFor="let item of floorItems" value="{{item.floor_id}}">{{item.floor_name}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-2 text-end">
                             <h5 class="lh_modal">สถานะ : </h5>
                         </div>
-                        <div class="col-10">
+                        <div class="col-4">
                             <select class="form-select form-select-lg" [(ngModel)]="model.status" name="status"
                                 required>
                                 <option value="">กรุณาเลือกสถานะ</option>

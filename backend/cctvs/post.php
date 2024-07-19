@@ -1,7 +1,10 @@
 <?php
 $data = json_decode(file_get_contents('php://input'));
 
-if (isset($data->durable_no) && isset($data->durable_name) && isset($data->brand) && isset($data->floor) && isset($data->status)) {
+if (
+    isset($data->durable_no) && isset($data->durable_name) && isset($data->brand)
+    && isset($data->floor) && isset($data->status) && isset($data->type)
+) {
     if (empty($data->durable_no)) {
         http_response_code(400);
         exit(json_encode([
@@ -18,6 +21,12 @@ if (isset($data->durable_no) && isset($data->durable_name) && isset($data->brand
         http_response_code(400);
         exit(json_encode([
             'message' => 'Brand is required'
+        ]));
+    }
+    if (empty($data->type)) {
+        http_response_code(400);
+        exit(json_encode([
+            'message' => 'Type is required'
         ]));
     }
     if (empty($data->floor)) {
@@ -38,13 +47,16 @@ if (isset($data->durable_no) && isset($data->durable_name) && isset($data->brand
     //     'message' => 'valid',
     //     'data' => $data->name
     // ]);
-    $query = "INSERT INTO cctv (durable_no, durable_name, brand, location, monitor, ip, floor, status) VALUES (?, ?, ?, ?, ?, ? ,? ,?)";
+    $query = "INSERT INTO cctv (durable_no, durable_name, brand, location, type, monitor, ip, floor, status) VALUES (?, ?, ?, ?, ?, ?, ? ,? ,?)";
     $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, 'ssssssii',
+    mysqli_stmt_bind_param(
+        $stmt,
+        'ssssissii',
         $data->durable_no,
         $data->durable_name,
         $data->brand,
         $data->location,
+        $data->type,
         $data->monitor,
         $data->ip,
         $data->floor,
@@ -53,7 +65,7 @@ if (isset($data->durable_no) && isset($data->durable_name) && isset($data->brand
     mysqli_stmt_execute($stmt);
     $error_message = mysqli_error($conn);
 
-    if($error_message){ //ใช้ในการ เช็ค error
+    if ($error_message) { //ใช้ในการ เช็ค error
         http_response_code(500);
         exit(json_encode([
             'message' => $error_message
@@ -63,7 +75,6 @@ if (isset($data->durable_no) && isset($data->durable_name) && isset($data->brand
     echo json_encode([
         'message' => 'เพิ่มสำเร็จ'
     ]);
-
 } else {
     http_response_code(400);
     exit(json_encode([
