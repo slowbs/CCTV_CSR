@@ -12,14 +12,14 @@
     <div class="col-md-12">
         <div class="tile">
             <div class="tile-body">
-                <form>
+                <form (submit)="onSubmit()" [noValidate]="false">
                     <div class="row align-items-center">
                         <div class="col-2 text-end">
                             <h5 class="lh_modal">หมายเลขครุภัณฑ์ : </h5>
                         </div>
                         <div class="col-10">
                             <input type="text" class="form-control form-control-lg" required
-                                placeholder="หมายเลขครุภัณฑ์">
+                                [(ngModel)]="model.durable_no" name="durable_no" placeholder="หมายเลขครุภัณฑ์">
                         </div>
                     </div>
                     <div class="row align-items-center mt-3">
@@ -27,7 +27,8 @@
                             <h5 class="lh_modal">รายการ : </h5>
                         </div>
                         <div class="col-10">
-                            <input type="text" class="form-control form-control-lg" required placeholder="รายการ">
+                            <input type="text" class="form-control form-control-lg" required
+                                [(ngModel)]="model.durable_name" name="durable_name" placeholder="รายการ">
                         </div>
                     </div>
                     <div class="row align-items-center mt-3">
@@ -35,7 +36,8 @@
                             <h5 class="lh_modal">ยี่ห้อ : </h5>
                         </div>
                         <div class="col-10">
-                            <input type="text" class="form-control form-control-lg" required placeholder="ยี่ห้อ">
+                            <input type="text" class="form-control form-control-lg" required [(ngModel)]="model.brand"
+                                name="brand" placeholder="ยี่ห้อ">
                         </div>
                     </div>
                     <div class="row align-items-center mt-3">
@@ -43,7 +45,8 @@
                             <h5 class="lh_modal">สถานที่ : </h5>
                         </div>
                         <div class="col-10">
-                            <input type="text" class="form-control form-control-lg" required placeholder="สถานที่">
+                            <input type="text" class="form-control form-control-lg" [(ngModel)]="model.location"
+                                name="location" placeholder="สถานที่">
                         </div>
                     </div>
                     <div class="row align-items-center mt-3">
@@ -51,7 +54,8 @@
                             <h5 class="lh_modal">จอภาพ : </h5>
                         </div>
                         <div class="col-10">
-                            <input type="text" class="form-control form-control-lg" required placeholder="จอภาพ">
+                            <input type="text" class="form-control form-control-lg" [(ngModel)]="model.monitor"
+                                name="monitor" placeholder="จอภาพ">
                         </div>
                     </div>
                     <div class="row align-items-center mt-3">
@@ -59,7 +63,8 @@
                             <h5 class="lh_modal">IP : </h5>
                         </div>
                         <div class="col-10">
-                            <input type="text" class="form-control form-control-lg" required placeholder="IP">
+                            <input type="text" class="form-control form-control-lg" [(ngModel)]="model.ip" name="ip"
+                                placeholder="IP">
                         </div>
                     </div>
                     <div class="row align-items-center mt-3">
@@ -67,8 +72,10 @@
                             <h5 class="lh_modal">ชั้น : </h5>
                         </div>
                         <div class="col-10">
-                            <select class="form-select form-select-lg">
-                                <option value="">กรุณาเลือกชั้น</option>
+                            <select class="form-select form-select-lg form-control" [(ngModel)]="model.floor_id" name="floor_id" required>
+                                <option value="" selected>กรุณาเลือกชั้น</option>
+                                <option *ngFor="let item of floorItems" value="{{item.floor_id}}">{{item.floor_name}}
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -77,8 +84,11 @@
                             <h5 class="lh_modal">สถานะ : </h5>
                         </div>
                         <div class="col-10">
-                            <select class="form-select form-select-lg">
+                            <select class="form-select form-select-lg" [(ngModel)]="model.status_id" name="status_id"
+                                required>
                                 <option value="">กรุณาเลือกสถานะ</option>
+                                <option *ngFor="let item of statusItems" value="{{item.status_id}}">{{item.status_name}}
+                                </option>
                             </select>
                         </div>
                     </div>
