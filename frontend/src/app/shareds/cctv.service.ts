@@ -51,6 +51,10 @@ export class CctvService {
     return this.httpClient.put(this.backendURL + 'cctvs', value, { params: { id } })
   }
 
+  post_items(value: ICctvs) {
+    return this.httpClient.post(this.backendURL + 'cctvs', value)
+  }
+
   // ดึงข้อมูลสถานะการใช้งานกล้องมาแสดง
   get_status() {
     return this.httpClient.get<IStatus[]>(this.backendURL + 'status');

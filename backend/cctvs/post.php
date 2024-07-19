@@ -1,7 +1,7 @@
 <?php
 $data = json_decode(file_get_contents('php://input'));
 
-if (isset($data->durable_no) && isset($data->durable_name) && isset($data->location) && isset($data->brand) && isset($data->floor) && isset($data->status)) {
+if (isset($data->durable_no) && isset($data->durable_name) && isset($data->brand) && isset($data->floor) && isset($data->status)) {
     if (empty($data->durable_no)) {
         http_response_code(400);
         exit(json_encode([
@@ -12,12 +12,6 @@ if (isset($data->durable_no) && isset($data->durable_name) && isset($data->locat
         http_response_code(400);
         exit(json_encode([
             'message' => 'Durable name is required'
-        ]));
-    }
-    if (empty($data->location)) {
-        http_response_code(400);
-        exit(json_encode([
-            'message' => 'Location is required'
         ]));
     }
     if (empty($data->brand)) {
@@ -44,13 +38,15 @@ if (isset($data->durable_no) && isset($data->durable_name) && isset($data->locat
     //     'message' => 'valid',
     //     'data' => $data->name
     // ]);
-    $query = "INSERT INTO cctv (durable_no, durable_name, location, brand, floor, status) VALUES (?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO cctv (durable_no, durable_name, brand, location, monitor, ip, floor, status) VALUES (?, ?, ?, ?, ?, ? ,? ,?)";
     $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, 'ssssss',
+    mysqli_stmt_bind_param($stmt, 'ssssssii',
         $data->durable_no,
         $data->durable_name,
-        $data->location,
         $data->brand,
+        $data->location,
+        $data->monitor,
+        $data->ip,
         $data->floor,
         $data->status
     );

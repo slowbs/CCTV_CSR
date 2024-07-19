@@ -72,7 +72,7 @@
                             <h5 class="lh_modal">ชั้น : </h5>
                         </div>
                         <div class="col-10">
-                            <select class="form-select form-select-lg form-control" [(ngModel)]="model.floor_id" name="floor_id" required>
+                            <select class="form-select form-select-lg form-control" [(ngModel)]="model.floor" name="floor" required>
                                 <option value="" selected>กรุณาเลือกชั้น</option>
                                 <option *ngFor="let item of floorItems" value="{{item.floor_id}}">{{item.floor_name}}
                                 </option>
@@ -84,7 +84,7 @@
                             <h5 class="lh_modal">สถานะ : </h5>
                         </div>
                         <div class="col-10">
-                            <select class="form-select form-select-lg" [(ngModel)]="model.status_id" name="status_id"
+                            <select class="form-select form-select-lg" [(ngModel)]="model.status" name="status"
                                 required>
                                 <option value="">กรุณาเลือกสถานะ</option>
                                 <option *ngFor="let item of statusItems" value="{{item.status_id}}">{{item.status_name}}

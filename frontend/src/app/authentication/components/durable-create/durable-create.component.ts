@@ -10,8 +10,8 @@ export class DurableCreateComponent {
 
   public model: ICctvs = {
     durable_no: '',
-    floor_id: '',
-    status_id: ''
+    floor: '',
+    status: ''
 
   }
   public statusItems: IStatus[] = [];
@@ -40,7 +40,16 @@ export class DurableCreateComponent {
   }
 
   onSubmit() {
-    console.log(this.model)
+    // console.log(this.model)
+    this.CctvSerivce.post_items(this.model)
+      .subscribe({
+        next: (result) => {
+          console.log(result)
+        },
+        error: (excep) => {
+          console.log(excep)
+        }
+      })
   }
 
 }
