@@ -42,7 +42,7 @@ export class CctvService {
     return this.httpClient.get<ICctvs[]>(this.backendURL + 'cctvs');
   }
 
-  // แก้ไขข้อมูลกล้อง
+  // แก้ไขข้อมูลครุภัณฑ์
   put_items(id: any, value: ICctvs) {
     // return this.httpClient.put(this.backendURL + 'cctvs?id=' + id, value)
     // return this.httpClient.put(this.backendURL + 'cctvs', value, { params : { id : id}})
@@ -51,11 +51,12 @@ export class CctvService {
     return this.httpClient.put(this.backendURL + 'cctvs', value, { params: { id } })
   }
 
+  // เพิ่มข้อมูลครุภัณฑ์
   post_items(value: ICctvs) {
     return this.httpClient.post(this.backendURL + 'cctvs', value)
   }
 
-  // ดึงข้อมูลสถานะการใช้งานกล้องมาแสดง
+  // ดึงข้อมูลสถานะการใช้งานครุภัณฑ์มาแสดง
   get_status() {
     return this.httpClient.get<IStatus[]>(this.backendURL + 'status');
   }
@@ -68,6 +69,11 @@ export class CctvService {
   // ดึงข้อมูลประเภทครุภัณฑ์มาแสดง
   get_type() {
     return this.httpClient.get<IType[]>(this.backendURL + 'types');
+  }
+
+  // ดึงข้อมูลครุภัณฑ์ที่ไม่ใช่กล้องมาแสดง
+  get_network() {
+    return this.httpClient.get<ICctvs[]>(this.backendURL + 'networks');
   }
 
 

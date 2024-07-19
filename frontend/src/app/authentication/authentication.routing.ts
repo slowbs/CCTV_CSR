@@ -7,6 +7,7 @@ import { UserCreateComponent } from "./components/user-create/user-create.compon
 import { CctvComponent } from "./components/cctv/cctv.component";
 import { LogPingComponent } from "./components/log-ping/log-ping.component";
 import { DurableCreateComponent } from "./components/durable-create/durable-create.component";
+import { NetworkComponent } from "./components/network/network.component";
 
 const RouteLists: Routes = [
     { path: '', redirectTo: AuthenticationURL.Index, pathMatch: 'full' },
@@ -16,7 +17,8 @@ const RouteLists: Routes = [
     { path: AuthenticationURL.Create_User, component: UserCreateComponent },
     { path: AuthenticationURL.Cctv, component: CctvComponent },
     { path: AuthenticationURL.Log_Ping, component: LogPingComponent },
-    { path: AuthenticationURL.Create_Durable, component: DurableCreateComponent}
+    { path: AuthenticationURL.Create_Durable, component: DurableCreateComponent },
+    { path: AuthenticationURL.Network, component: NetworkComponent }
 
 ];
 

@@ -17,6 +17,12 @@ $routes['/api/ping']['POST'] = 'ping/post.php';
 $routes['/api/ping']['PUT'] = 'ping/put.php';
 $routes['/api/ping']['DELETE'] = 'ping/delete.php';
 
+//ข้อมูลอุปกรณ์ Network
+$routes['/api/networks']['GET'] = 'networks/get.php';
+$routes['/api/networks']['POST'] = 'networks/post.php';
+$routes['/api/networks']['PUT'] = 'networks/put.php';
+$routes['/api/networks']['DELETE'] = 'networks/delete.php';
+
 //ข้อมูลชั้นอาคาร
 $routes['/api/floors']['GET'] = 'floors/get.php';
 $routes['/api/floors']['POST'] = 'floors/post.php';

@@ -9,6 +9,7 @@ import { UserCreateComponent } from './components/user-create/user-create.compon
 import { CctvComponent } from './components/cctv/cctv.component';
 import { LogPingComponent } from './components/log-ping/log-ping.component';
 import { DurableCreateComponent } from './components/durable-create/durable-create.component';
+import { NetworkComponent } from './components/network/network.component';
 
 
 
@@ -20,7 +21,8 @@ import { DurableCreateComponent } from './components/durable-create/durable-crea
     UserCreateComponent,
     CctvComponent,
     LogPingComponent,
-    DurableCreateComponent
+    DurableCreateComponent,
+    NetworkComponent
   ],
   imports: [
     CommonModule,
