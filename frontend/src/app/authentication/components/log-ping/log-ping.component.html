@@ -1,8 +1,8 @@
 <app-auth-content>
     <div class="app-title">
         <div>
-            <h1><i class="bi bi-speedometer"></i> CCTV</h1>
-            <p>รายการข้อมูล Log ฑ์กล้องโทรทัศน์วงจรปิด</p>
+            <h1><i class="bi bi-speedometer"></i> Log</h1>
+            <p>รายการข้อมูล Log ครุภัณฑ์กล้องโทรทัศน์วงจรปิด</p>
         </div>
         <ul class="app-breadcrumb breadcrumb">
             <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
@@ -20,18 +20,35 @@
                                 <th>ลำดับ</th>
                                 <th>เลขครุภัณฑ์</th>
                                 <th>รายการ</th>
-                                <th>อาคาร</th>
+                                <th>ชั้น</th>
                                 <th>สถานที่</th>
                                 <th>Monitor</th>
                                 <th>IP</th>
                                 <th>สถานะ</th>
+                                <th>เวลา</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <tr *ngFor="let item of logpingItems">
+                                <td>{{ item.log_id }}</td>
+                                <td>{{ item.durable_no }}</td>
+                                <td>{{ item.durable_name }}</td>
+                                <td>{{ item.floor_name }}</td>
+                                <td>{{ item.location }}</td>
+                                <td>{{ item.monitor }}</td>
+                                <td>{{ item.ip }}</td>
+                                <!-- <td>{{ item.ping }}</td> -->
+                                @if ( item.ping_checked == '0') {
+                                <td>Online</td>
+                                } @else {
+                                <td class="offline">Offline</td>
+                                }
+                                <td>{{ item.date_created }}</td>
+                            </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="7">จำนวนรายการทั้งหมด 0 รายการ</th>
+                                <th colspan="7">จำนวนรายการทั้งหมด {{ logpingItems.length}} รายการ</th>
                             </tr>
                         </tfoot>
                     </table>

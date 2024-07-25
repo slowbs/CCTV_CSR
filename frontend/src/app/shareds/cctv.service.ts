@@ -76,6 +76,10 @@ export class CctvService {
     return this.httpClient.get<ICctvs[]>(this.backendURL + 'networks');
   }
 
+  get_logping(id: any) {
+    return this.httpClient.get<ILogPing[]>(this.backendURL + 'log_ping', { params: { id: id } });
+  }
+
 
 }
 
@@ -148,4 +152,18 @@ export interface IFloor {
   floor_id?: string;
   floor_name: string;
   floor_status?: string;
+}
+
+export interface ILogPing {
+  log_id: string
+  cctv_id: string
+  ping_checked: string
+  date_created: string
+  durable_no: string
+  durable_name: string
+  floor_name: string
+  location: string
+  monitor: string
+  ip: string
+  duration: string
 }

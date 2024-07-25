@@ -17,6 +17,12 @@ $routes['/api/ping']['POST'] = 'ping/post.php';
 $routes['/api/ping']['PUT'] = 'ping/put.php';
 $routes['/api/ping']['DELETE'] = 'ping/delete.php';
 
+//ข้อมูลการ Log การปิงสถานะกล้อง
+$routes['/api/log_ping']['GET'] = 'log_ping/get.php';
+$routes['/api/log_ping']['POST'] = 'log_ping/post.php';
+$routes['/api/log_ping']['PUT'] = 'log_ping/put.php';
+$routes['/api/log_ping']['DELETE'] = 'log_ping/delete.php';
+
 //ข้อมูลอุปกรณ์ Network
 $routes['/api/networks']['GET'] = 'networks/get.php';
 $routes['/api/networks']['POST'] = 'networks/post.php';
