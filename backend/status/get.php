@@ -1,13 +1,13 @@
 <?php
 
-$sql = "SELECT * FROM status WHERE '1'";
-$query = mysqli_query($conn, $sql);
-$result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+// $sql = "SELECT * FROM status WHERE '1'";
+// $query = mysqli_query($conn, $sql);
+// $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
-echo json_encode([
-    'message' => 'test ทดสอบ',
-    'result' => $result
-], JSON_UNESCAPED_UNICODE);
+// echo json_encode([
+//     'message' => 'test ทดสอบ',
+//     'result' => $result
+// ], JSON_UNESCAPED_UNICODE);
 
 // echo json_encode(
 //                     $result
@@ -85,5 +85,17 @@ echo json_encode([
 
 // echo "Online = " . $count_ping_online . "\n";
 // echo "Offline = " . $count_ping_offline . "\n";
-?>
 
+$url = '192.168.200.3';
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_NOBODY, true);
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+curl_exec($ch);
+$retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+if (200 == $retcode) {
+    echo "Ok";
+} else {
+    echo "NOt Ok";
+    // not so much
+}
