@@ -3,6 +3,7 @@ import concurrent.futures
 import subprocess
 import platform
 import requests
+import time
 
 # ตั้งค่า LINE Notify token
 LINE_NOTIFY_TOKEN = '2o8uKi8xrEoTYDmGHuEW6W2j7oxY8bheDApgfYRUJo4'
@@ -98,16 +99,20 @@ def get_cctv_data():
 
     return rows
 
-# ดึงข้อมูลจากตาราง cctv เฉพาะคอลัมน์ที่ต้องการ
-cctv_data = get_cctv_data()
+while True:
+    # ดึงข้อมูลจากตาราง cctv เฉพาะคอลัมน์ที่ต้องการ
+    cctv_data = get_cctv_data()
 
-# ใช้ concurrent.futures เพื่อทำการ ping และตรวจสอบสถานะพร้อมกัน โดยเพิ่มจำนวน Threads
-with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
-    results = list(executor.map(ping_and_check, cctv_data))
+    # ใช้ concurrent.futures เพื่อทำการ ping และตรวจสอบสถานะพร้อมกัน โดยเพิ่มจำนวน Threads
+    with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
+        results = list(executor.map(ping_and_check, cctv_data))
 
-# แสดงผลลัพธ์
-for data, status in results:
-    id_ = data['id']
-    durable_no = data['durable_no']
-    ip = data['ip']
-    print(f"ID: {id_}, Durable No: {durable_no}, IP: {ip} - {status}")
+    # แสดงผลลัพธ์
+    for data, status in results:
+        id_ = data['id']
+        durable_no = data['durable_no']
+        ip = data['ip']
+        print(f"ID: {id_}, Durable No: {durable_no}, IP: {ip} - {status}")
+
+    # รอ 2 นาที (120 วินาที) ก่อนทำงานใหม่
+    time.sleep(120)
