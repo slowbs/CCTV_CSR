@@ -18,6 +18,15 @@ def send_line_notification(message):
     }
     requests.post(url, headers=headers, data=data)
 
+# ฟังก์ชันสำหรับการเชื่อมต่อฐานข้อมูล
+def get_db_connection():
+    return mysql.connector.connect(
+        host='localhost',
+        user='slowbs',
+        password='1596321',
+        database='cctv'
+    )
+
 # ฟังก์ชันที่ใช้ในการ ping IP และตรวจสอบค่าสถานะการ ping กับข้อมูลในคอลัมน์ ping
 def ping_and_check(data):
     ip = data['ip']
@@ -53,43 +62,40 @@ def ping_and_check(data):
 
 # ฟังก์ชันในการอัปเดตสถานะในฐานข้อมูล
 def update_status(id_, success, ping_value, count_ping, ip):
-    connection = mysql.connector.connect(
-        host='localhost',
-        user='slowbs',
-        password='1596321',
-        database='cctv'
-    )
+    connection = get_db_connection()
     cursor = connection.cursor()
 
-    # อัปเดต count_ping ในฐานข้อมูล
-    cursor.execute("UPDATE cctv SET count_ping = %s WHERE id = %s", (count_ping, id_))
+    try:
+        # อัปเดต count_ping ในฐานข้อมูล
+        cursor.execute("UPDATE cctv SET count_ping = %s WHERE id = %s", (count_ping, id_))
 
-    # หาก count_ping > 2 ให้ปรับปรุงค่า ping และรีเซ็ต count_ping
-    if count_ping > 2:
-        new_ping_value = 1 if not success else 0
-        if new_ping_value != ping_value:
-            # อัปเดตค่า ping ในฐานข้อมูล
-            cursor.execute("UPDATE cctv SET ping = %s, count_ping = 0 WHERE id = %s", (new_ping_value, id_))
-            # ส่งการแจ้งเตือนไปยัง LINE Notify
-            message = f"อัปเดตสถานะ ping สำหรับ IP: {ip} เป็น {'ตอบสนอง' if new_ping_value == 0 else 'ไม่ตอบสนอง'}"
-            send_line_notification(message)
-    
-    connection.commit()
-    cursor.close()
-    connection.close()
+        # หาก count_ping > 2 ให้ปรับปรุงค่า ping และรีเซ็ต count_ping
+        if count_ping > 2:
+            new_ping_value = 1 if not success else 0
+            if new_ping_value != ping_value:
+                # อัปเดตค่า ping ในฐานข้อมูล
+                cursor.execute("UPDATE cctv SET ping = %s, count_ping = 0 WHERE id = %s", (new_ping_value, id_))
+                # ส่งการแจ้งเตือนไปยัง LINE Notify
+                message = f"อัปเดตสถานะ ping สำหรับ IP: {ip} เป็น {'ตอบสนอง' if new_ping_value == 0 else 'ไม่ตอบสนอง'}"
+                send_line_notification(message)
+        
+        connection.commit()  # ยืนยันการเปลี่ยนแปลง
+    finally:
+        cursor.close()
+        connection.close()
 
-# เชื่อมต่อกับฐานข้อมูลและดึงข้อมูลเฉพาะคอลัมน์ที่ต้องการ
+# ฟังก์ชันดึงข้อมูลจากฐานข้อมูล
 def get_cctv_data():
-    connection = mysql.connector.connect(
-        host='localhost',
-        user='slowbs',
-        password='1596321',
-        database='cctv'
-    )
+    connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT id, durable_no, ip, ping, count_ping FROM cctv")
-    rows = cursor.fetchall()
-    connection.close()
+
+    try:
+        cursor.execute("SELECT id, durable_no, ip, ping, count_ping FROM cctv")
+        rows = cursor.fetchall()
+    finally:
+        cursor.close()
+        connection.close()
+
     return rows
 
 # ดึงข้อมูลจากตาราง cctv เฉพาะคอลัมน์ที่ต้องการ
