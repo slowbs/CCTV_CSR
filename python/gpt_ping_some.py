@@ -34,6 +34,7 @@ def ping_and_check(data):
     id_ = data['id']
     ping_value = data['ping']  # ค่าปัจจุบันของคอลัมน์ ping ในฐานข้อมูล
     count_ping = data['count_ping']  # ค่าปัจจุบันของคอลัมน์ count_ping
+    cctv_type = data['type']  # ค่าของคอลัมน์ type
 
     # ตรวจสอบระบบปฏิบัติการและเลือกคำสั่ง ping ที่เหมาะสม
     param_count = '-n' if platform.system().lower() == 'windows' else '-c'
@@ -57,12 +58,12 @@ def ping_and_check(data):
         status = "สถานะตรงกัน (ไม่มีการเปลี่ยนแปลงค่า count_ping)"
 
     # อัปเดตสถานะในฐานข้อมูล
-    update_status(id_, success, ping_value, count_ping, ip)
+    update_status(id_, success, ping_value, count_ping, ip, cctv_type)
 
     return data, status
 
-# ฟังก์ชันในการอัปเดตสถานะในฐานข้อมูล
-def update_status(id_, success, ping_value, count_ping, ip):
+# ฟังก์ชันในการอัปเดตสถานะในฐานข้อมูลและบันทึก log
+def update_status(id_, success, ping_value, count_ping, ip, cctv_type):
     connection = get_db_connection()
     cursor = connection.cursor()
 
@@ -76,11 +77,31 @@ def update_status(id_, success, ping_value, count_ping, ip):
             if new_ping_value != ping_value:
                 # อัปเดตค่า ping ในฐานข้อมูล
                 cursor.execute("UPDATE cctv SET ping = %s, count_ping = 0 WHERE id = %s", (new_ping_value, id_))
+                
                 # ส่งการแจ้งเตือนไปยัง LINE Notify
                 message = f"อัปเดตสถานะ ping สำหรับ IP: {ip} เป็น {'ตอบสนอง' if new_ping_value == 0 else 'ไม่ตอบสนอง'}"
                 send_line_notification(message)
-        
+
+                # บันทึกข้อมูลลงในตาราง log_ping
+                log_ping_status(id_, new_ping_value, cctv_type)
+
         connection.commit()  # ยืนยันการเปลี่ยนแปลง
+    finally:
+        cursor.close()
+        connection.close()
+
+# ฟังก์ชันบันทึกการเปลี่ยนแปลงสถานะลงใน log_ping
+def log_ping_status(cctv_id, ping_checked, cctv_type):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        # บันทึกการเปลี่ยนแปลงสถานะ ping ลงใน log_ping
+        cursor.execute(
+            "INSERT INTO log_ping (cctv_id, ping_checked, type) VALUES (%s, %s, %s)",
+            (cctv_id, ping_checked, cctv_type)
+        )
+        connection.commit()
     finally:
         cursor.close()
         connection.close()
@@ -91,7 +112,7 @@ def get_cctv_data():
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT id, durable_no, ip, ping, count_ping FROM cctv")
+        cursor.execute("SELECT id, durable_no, ip, ping, count_ping, type FROM cctv")
         rows = cursor.fetchall()
     finally:
         cursor.close()
@@ -99,6 +120,7 @@ def get_cctv_data():
 
     return rows
 
+# ทำงานแบบ loop ทุก ๆ 2 นาที
 while True:
     # ดึงข้อมูลจากตาราง cctv เฉพาะคอลัมน์ที่ต้องการ
     cctv_data = get_cctv_data()
@@ -112,7 +134,8 @@ while True:
         id_ = data['id']
         durable_no = data['durable_no']
         ip = data['ip']
-        print(f"ID: {id_}, Durable No: {durable_no}, IP: {ip} - {status}")
+        cctv_type = data['type']
+        print(f"ID: {id_}, Durable No: {durable_no}, IP: {ip}, Type: {cctv_type} - {status}")
 
     # รอ 2 นาที (120 วินาที) ก่อนทำงานใหม่
     time.sleep(120)
