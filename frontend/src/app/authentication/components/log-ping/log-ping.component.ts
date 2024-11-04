@@ -15,7 +15,7 @@ export class LogPingComponent {
   }
 
   get_LogPing(id: any) {
-    return this.CctvSerivce.get_logping_cctv(id)
+    return this.CctvSerivce.get_logping(id)
       .subscribe(result => {
         this.logpingItems = result['result'];
         console.log(this.logpingItems)

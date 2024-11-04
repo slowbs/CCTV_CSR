@@ -18,10 +18,10 @@ $routes['/api/ping']['PUT'] = 'ping/put.php';
 $routes['/api/ping']['DELETE'] = 'ping/delete.php';
 
 //ข้อมูลการ Log การปิงสถานะกล้อง
-$routes['/api/log_ping_cctv']['GET'] = 'log_ping_cctv/get.php';
-$routes['/api/log_ping_cctv']['POST'] = 'log_ping_cctv/post.php';
-$routes['/api/log_ping_cctv']['PUT'] = 'log_ping_cctv/put.php';
-$routes['/api/log_ping_cctv']['DELETE'] = 'log_ping_cctv/delete.php';
+$routes['/api/log_ping']['GET'] = 'log_ping/get.php';
+$routes['/api/log_ping']['POST'] = 'log_ping/post.php';
+$routes['/api/log_ping']['PUT'] = 'log_ping/put.php';
+$routes['/api/log_ping']['DELETE'] = 'log_ping/delete.php';
 
 //ข้อมูลอุปกรณ์ Network
 $routes['/api/networks']['GET'] = 'networks/get.php';
