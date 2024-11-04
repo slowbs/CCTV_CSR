@@ -51,3 +51,6 @@ $routes['/api/users']['DELETE'] = 'users/delete.php';
 $routes['/api/login']['POST'] = 'login/login.php';
 $routes['/api/logout']['POST'] = 'login/logout.php';
 $routes['/api/login']['GET'] = 'login/profile.php';
+
+//Dashboard
+$routes['/api/dashboard']['GET'] = 'dashboard/get.php';
