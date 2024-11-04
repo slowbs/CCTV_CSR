@@ -5,8 +5,8 @@
             <p>รายการข้อมูลครุภัณฑ์กล้องโทรทัศน์วงจรปิด</p>
         </div>
         <ul class="app-breadcrumb breadcrumb">
-            <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
-            <li class="breadcrumb-item"><a href="#">Blank Page</a></li>
+            <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i> <a href="#">Home</a></li>
+            <li class="breadcrumb-item active">CCTV</li>
         </ul>
     </div>
     <div class="row">
@@ -29,8 +29,8 @@
                                     </li>
                                 </ul>
                             </div>
-                            <input type="text" class="form-control" [(ngModel)]="searchText" placeholder="ค้นหาข้อมูล"
-                                name="searchText">
+                            <input type="text" class="form-control" [(ngModel)]="searchText" (input)="onSearchItem()"
+                                placeholder="ค้นหาข้อมูล" name="searchText">
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="submit" id="button-addon1"><i
                                         class="bi bi-search"></i></button>
@@ -38,7 +38,7 @@
                         </div>
                     </div>
                 </form>
-                <div class="table">
+                <div class="table-responsive">
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
@@ -62,12 +62,23 @@
                                 <td>{{ item.floor }}</td>
                                 <td>{{ item.location }}</td>
                                 <td>{{ item.monitor }}</td>
-                                <td>{{ item.status }}</td>
+                                <td>
+                                    <span class="badge" [ngClass]="{
+                                              'bg-success': item.status_id === '1',
+                                              'bg-danger': item.status_id === '2',
+                                              'bg-warning': item.status_id === '3',
+                                              'bg-secondary': item.status_id === '4'
+                                          }">
+                                        {{ item.status }}
+                                    </span>
+                                </td>
+
                                 <td>{{ item.ip }}</td>
-                                <td *ngIf="item.ping === '0'; else offlineStatus">Online</td>
-                                <ng-template #offlineStatus>
-                                    <td class="offline">Offline</td>
-                                </ng-template>
+                                <td>
+                                    <span class="badge" [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
+                                        {{ item.ping === '0' ? 'Online' : 'Offline' }}
+                                    </span>
+                                </td>
                                 <td align="center">
                                     <a [routerLink]="[]" data-bs-toggle="modal" data-bs-target="#editCctvModal"
                                         (click)="onEditModal(item)">
