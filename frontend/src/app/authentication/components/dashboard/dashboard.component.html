@@ -16,7 +16,7 @@
                 <h5>สรุปสถานะอุปกรณ์</h5>
                 <div class="row">
                     <div class="col-md-3">
-                        <div class="card text-white bg-success mb-3">
+                        <div class="card text-white bg-success mb-3" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 1]">
                             <div class="card-header">กล้องโทรทัศน์วงจรปิด</div>
                             <div class="card-body">
                                 <h5 class="card-title">10 Online</h5>
@@ -25,7 +25,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card text-white bg-info mb-3">
+                        <div class="card text-white bg-info mb-3" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 2]">
                             <div class="card-header">เครื่องคอมพิวเตอร์แม่ข่าย</div>
                             <div class="card-body">
                                 <h5 class="card-title">5 Online</h5>
@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card text-white bg-warning mb-3">
+                        <div class="card text-white bg-warning mb-3" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 3]">
                             <div class="card-header">อุปกรณ์กระจายสัญญาณ</div>
                             <div class="card-body">
                                 <h5 class="card-title">8 Online</h5>
@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card text-white bg-danger mb-3">
+                        <div class="card text-white bg-danger mb-3" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 4]">
                             <div class="card-header">อุปกรณ์จัดเก็บข้อมูล</div>
                             <div class="card-body">
                                 <h5 class="card-title">4 Online</h5>
@@ -136,6 +136,6 @@
                     </table>
                 </div>
             </div>
-        </div>       
+        </div>
     </div>
 </app-auth-content>

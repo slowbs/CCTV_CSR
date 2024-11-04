@@ -8,7 +8,7 @@
     </div>
     <ul class="app-menu">
         <li>
-            <a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Index]" routerLinkActive="active">
+            <a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]" routerLinkActive="active">
                 <i class="app-menu__icon bi bi-speedometer"></i>
                 <span class="app-menu__label">หน้าหลัก</span>
             </a>
@@ -22,7 +22,7 @@
             <ul class="treeview-menu">
                 <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Create_Durable]" routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> เพิ่มรายการครุภัณฑ์</a></li>
                 <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 1]" routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> ดูรายการกล้องวงจรปิด</a></li>
-                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 2]" routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> ดูรายการเครื่องคอมพิวเตอร์</a></li>
+                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 2]" routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> ดูรายการเครื่องคอมพิวเตอร์แม่ข่าย</a></li>
                 <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 3]" routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> ดูรายการอุปกรณ์กระจายสัญญาณ</a></li>
                 <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 4]" routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> ดูรายการอุปกรณ์จัดเก็บข้อมูล</a></li>
             </ul>

@@ -1,0 +1,10 @@
+.card {
+    cursor: pointer;
+    /* เพิ่มบรรทัดนี้เพื่อให้ cursor เปลี่ยนเป็นรูปมือ */
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    /* เพิ่ม effect ขณะ hover */
+}
