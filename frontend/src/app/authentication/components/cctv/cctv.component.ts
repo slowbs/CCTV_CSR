@@ -34,6 +34,7 @@ export class CctvComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.cctvType = params.get('type') || undefined; // เก็บค่าประเภทของครุภัณฑ์
       this.get_Cctv(this.cctvType); // เรียกใช้ get_Cctv พร้อมพารามิเตอร์
+      this.searchText = ''; 
     });
 
     this.getStatus();
