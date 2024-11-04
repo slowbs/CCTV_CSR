@@ -76,8 +76,8 @@ export class CctvService {
     return this.httpClient.get<ICctvs[]>(this.backendURL + 'networks');
   }
 
-  get_logping(id: any) {
-    return this.httpClient.get<ILogPing[]>(this.backendURL + 'log_ping', { params: { id: id } });
+  get_logping_cctv(id: any) {
+    return this.httpClient.get<ILogPing[]>(this.backendURL + 'log_ping_cctv', { params: { id: id } });
   }
 
 
