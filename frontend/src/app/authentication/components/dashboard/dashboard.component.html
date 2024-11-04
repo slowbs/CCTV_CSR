@@ -2,77 +2,140 @@
     <div class="app-title">
         <div>
             <h1><i class="bi bi-speedometer"></i> Dashboard</h1>
-            <p>A free and open source Bootstrap 5 admin template</p>
-        </div>
-        <div class="btn-group" dropdown>
-            <button id="button-animated" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"
-                aria-controls="dropdown-animated">
-                Button dropdown <span class="caret"></span>
-            </button>
-            <ul id="dropdown-animated" *dropdownMenu class="dropdown-menu" role="menu"
-                aria-labelledby="button-animated">
-                <li role="menuitem"><a class="dropdown-item" href="#">Action</a></li>
-                <li role="menuitem"><a class="dropdown-item" href="#">Another action</a>
-                </li>
-                <li role="menuitem"><a class="dropdown-item" href="#">Something else
-                        here</a></li>
-            </ul>
+            <p>ระบบจัดการข้อมูลอุปกรณ์</p>
         </div>
         <ul class="app-breadcrumb breadcrumb">
             <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
-            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
         </ul>
     </div>
+
     <div class="row">
-        <div class="col-md-6 col-lg-3">
-            <div class="widget-small primary coloured-icon"><i class="icon bi bi-people fs-1"></i>
-                <div class="info">
-                    <h4>Users</h4>
-                    <p><b>5</b></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="widget-small info coloured-icon"><i class="icon bi bi-heart fs-1"></i>
-                <div class="info">
-                    <h4>Likes</h4>
-                    <p><b>25</b></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="widget-small warning coloured-icon"><i class="icon bi bi-folder2 fs-1"></i>
-                <div class="info">
-                    <h4>Uploades</h4>
-                    <p><b>10</b></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="widget-small danger coloured-icon"><i class="icon bi bi-star fs-1"></i>
-                <div class="info">
-                    <h4>Stars</h4>
-                    <p><b>500</b></p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="tile">
-                <h3 class="tile-title">Weekly Sales - Last week</h3>
-                <div class="ratio ratio-16x9">
-                    <div id="salesChart"></div>
+                <h5>สรุปสถานะอุปกรณ์</h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-header">กล้องโทรทัศน์วงจรปิด</div>
+                            <div class="card-body">
+                                <h5 class="card-title">10 Online</h5>
+                                <p class="card-text">2 Offline</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info mb-3">
+                            <div class="card-header">เครื่องคอมพิวเตอร์แม่ข่าย</div>
+                            <div class="card-body">
+                                <h5 class="card-title">5 Online</h5>
+                                <p class="card-text">1 Offline</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning mb-3">
+                            <div class="card-header">อุปกรณ์กระจายสัญญาณ</div>
+                            <div class="card-body">
+                                <h5 class="card-title">8 Online</h5>
+                                <p class="card-text">3 Offline</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-danger mb-3">
+                            <div class="card-header">อุปกรณ์จัดเก็บข้อมูล</div>
+                            <div class="card-body">
+                                <h5 class="card-title">4 Online</h5>
+                                <p class="card-text">1 Offline</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+
+        <div class="col-md-12">
             <div class="tile">
-                <h3 class="tile-title">Support Requests</h3>
-                <div class="ratio ratio-16x9">
-                    <div id="supportRequestChart"></div>
+                <h5>ข้อมูลอุปกรณ์ที่มีการเปลี่ยนแปลงสถานะการ ping ล่าสุด</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center">เลขครุภัณฑ์</th>
+                                <th class="text-center">รายการ</th>
+                                <th class="text-center">ประเภท</th>
+                                <th class="text-center">สถานที่</th>
+                                <th class="text-center">IP</th>
+                                <th class="text-center">สถานะ</th>
+                                <th class="text-center">เวลาที่เปลี่ยนแปลง</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center">CCTV-001</td>
+                                <td>กล้องวงจรปิด 1</td>
+                                <td>กล้องโทรทัศน์วงจรปิด</td>
+                                <td>ห้องประชุม</td>
+                                <td>192.168.1.10</td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">Online</span>
+                                </td>
+                                <td class="text-center">2024-11-04 10:30</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">CCTV-002</td>
+                                <td>กล้องวงจรปิด 2</td>
+                                <td>กล้องโทรทัศน์วงจรปิด</td>
+                                <td>ชั้น 2</td>
+                                <td>192.168.1.11</td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">Offline</span>
+                                </td>
+                                <td class="text-center">2024-11-04 10:15</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">SRV-001</td>
+                                <td>เซิร์ฟเวอร์หลัก</td>
+                                <td>เครื่องคอมพิวเตอร์แม่ข่าย</td>
+                                <td>ห้องเซิร์ฟเวอร์</td>
+                                <td>192.168.1.20</td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">Online</span>
+                                </td>
+                                <td class="text-center">2024-11-04 10:00</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">SW-001</td>
+                                <td>สวิตช์หลัก</td>
+                                <td>อุปกรณ์กระจายสัญญาณ</td>
+                                <td>ห้องเซิร์ฟเวอร์</td>
+                                <td>192.168.1.21</td>
+                                <td class="text-center">
+                                    <span class="badge bg-warning">Warning</span>
+                                </td>
+                                <td class="text-center">2024-11-04 09:45</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">ST-001</td>
+                                <td>NAS Storage</td>
+                                <td>อุปกรณ์จัดเก็บข้อมูล</td>
+                                <td>ชั้น 3</td>
+                                <td>192.168.1.30</td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">Online</span>
+                                </td>
+                                <td class="text-center">2024-11-04 09:30</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="7">จำนวนรายการทั้งหมด 5 รายการ</th>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
-        </div>
+        </div>       
     </div>
 </app-auth-content>
