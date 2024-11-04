@@ -16,7 +16,7 @@ const RouteLists: Routes = [
     { path: AuthenticationURL.User, component: UsersComponent },
     { path: AuthenticationURL.Create_User, component: UserCreateComponent },
     { path: AuthenticationURL.Cctv, component: CctvComponent },
-    { path: AuthenticationURL.Log_Ping, component: LogPingComponent },
+    { path: `${AuthenticationURL.Log_Ping}/:id`, component: LogPingComponent },
     { path: AuthenticationURL.Create_Durable, component: DurableCreateComponent },
     { path: AuthenticationURL.Network, component: NetworkComponent }
 
