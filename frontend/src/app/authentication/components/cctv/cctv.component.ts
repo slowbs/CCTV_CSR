@@ -5,8 +5,9 @@ declare const $: any;
 @Component({
   selector: 'app-cctv',
   templateUrl: './cctv.component.html',
-  styleUrl: './cctv.component.css'
+  styleUrls: ['./cctv.component.css']
 })
+
 export class CctvComponent {
 
 
