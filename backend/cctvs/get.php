@@ -1,19 +1,49 @@
 <?php
 
-$sql = "SELECT id, durable_no, durable_name, brand, location, floor.floor_name as floor, status.status_name as status, monitor, ip, ping,
-cctv.date_updated, cctv.status as status_id, cctv.floor as floor_id, floor.order as floor_order, notify FROM cctv
-left join floor on cctv.floor = floor.floor_id
-left join status on cctv.status = status.status_id
-where cctv.type = 1
-order by floor_order";
-$query = mysqli_query($conn, $sql);
-$result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+// ตรวจสอบว่ามีพารามิเตอร์ type หรือไม่
+if (isset($_GET['type'])) {
+    $type = $_GET['type'];
 
-echo json_encode([
-    'message' => 'test ทดสอบ',
-    'result' => $result
-], JSON_UNESCAPED_UNICODE);
+    // ตรวจสอบว่า type ไม่ว่างและเป็นตัวเลข
+    if (!empty($type) && is_numeric($type)) {
+        // เตรียมคำสั่ง SQL
+        $stmt = $conn->prepare("SELECT id, durable_no, durable_name, brand, location, floor.floor_name AS floor, status.status_name AS status, monitor, ip, ping,
+        cctv.date_updated, cctv.status AS status_id, cctv.floor AS floor_id, floor.order AS floor_order, notify 
+        FROM cctv
+        LEFT JOIN floor ON cctv.floor = floor.floor_id
+        LEFT JOIN status ON cctv.status = status.status_id
+        WHERE cctv.type = ?
+        ORDER BY floor_order");
 
-// echo json_encode(
-//                     $result
-// , JSON_UNESCAPED_UNICODE);
+        // ผูกพารามิเตอร์กับคำสั่ง SQL
+        $stmt->bind_param("i", $type); // 'i' indicates the type is integer
+
+        // รันคำสั่ง SQL
+        if ($stmt->execute()) {
+            $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+            echo json_encode([
+                'message' => 'Data fetched successfully',
+                'result' => $result
+            ], JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode([
+                'message' => 'Error executing query: ' . $stmt->error
+            ], JSON_UNESCAPED_UNICODE);
+        }
+
+        // ปิดคำสั่ง SQL
+        $stmt->close();
+    } else {
+        echo json_encode([
+            'message' => 'Parameter is NOT VALID'
+        ], JSON_UNESCAPED_UNICODE);
+    }
+} else {
+    echo json_encode([
+        'message' => 'Parameter is Requested'
+    ], JSON_UNESCAPED_UNICODE);
+}
+
+// ปิดการเชื่อมต่อฐานข้อมูล
+$conn->close();

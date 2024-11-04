@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CctvService, ICctvs, IFloor, IStatus } from '../../../shareds/cctv.service';
 declare const $: any;
 
@@ -8,9 +9,7 @@ declare const $: any;
   styleUrls: ['./cctv.component.css']
 })
 
-export class CctvComponent {
-
-
+export class CctvComponent implements OnInit {
 
   public cctvItems: ICctvs[] = [];
   public model: ICctvs;
@@ -23,84 +22,80 @@ export class CctvComponent {
     { key: 'durable_no', value: 'เลขครุภัณฑ์' },
     { key: 'durable_name', value: 'ชื่อครุภัณฑ์' },
     { key: 'ip', value: 'หมายเลข IP' }
-  ]
+  ];
 
-  constructor(private CctvSerivce: CctvService) {
+  constructor(private CctvSerivce: CctvService, private route: ActivatedRoute) {
     this.model = this.CctvSerivce.updateModel;
-    this.get_Cctv()
-    this.getStatus()
-    this.getFloor()
-    this.searchType = this.searchTypeItem[0]
+    this.searchType = this.searchTypeItem[0];
   }
 
-  get_Cctv(options?: ICctvsSearch) {
-    return this.CctvSerivce.get_cctv()
+  ngOnInit() {
+    // ดึงค่าพารามิเตอร์จาก URL
+    this.route.paramMap.subscribe(params => {
+      const type = params.get('type'); // ค่าพารามิเตอร์ที่เป็น string | null
+      if (type) { // ตรวจสอบว่าค่าไม่เป็น null
+        this.get_Cctv(type); // เรียกใช้ get_Cctv พร้อมพารามิเตอร์
+      } else {
+        this.get_Cctv(); // เรียกใช้ get_Cctv โดยไม่ระบุ type
+      }
+    });
+
+    this.getStatus();
+    this.getFloor();
+  }
+
+  get_Cctv(type?: string, options?: ICctvsSearch) {
+    this.CctvSerivce.get_cctv(type) // ส่ง type ไปยัง service
       .subscribe(result => {
         if (options) {
-          // console.log("search")
           this.cctvItems = result['result']
             .filter(result => result[options.searchType].toString().toLowerCase()
-              .indexOf(options.searchText.toString().toLowerCase()) >= 0)
+              .indexOf(options.searchText.toString().toLowerCase()) >= 0);
+        } else {
+          this.cctvItems = result['result'];
         }
-        else {
-          this.cctvItems = result['result']
-        }
-        // this.cctvItems = result['result']
-        // console.log(result['result'])
-        // this.checked = false
       });
   }
 
   getStatus() {
     return this.CctvSerivce.get_status()
       .subscribe(result => {
-        this.statusItems = result['result']
-        // console.log(this.statusItems)
+        this.statusItems = result['result'];
       });
   }
 
   getFloor() {
     return this.CctvSerivce.get_floor()
       .subscribe(result => {
-        this.floorItems = result['result']
-        // console.log(this.floorItems)
+        this.floorItems = result['result'];
       });
   }
 
-
   onSubmit() {
-    // console.log(this.model)
     this.CctvSerivce.put_items(this.model.id, this.model)
       .subscribe({
         next: (result) => {
-          console.log(result)
+          console.log(result);
           $('#editCctvModal').modal('hide');
-          this.get_Cctv()
+          this.get_Cctv(); // เรียก get_Cctv ใหม่หลังการบันทึก
         },
         error: (excep) => {
-          console.log(excep)
-          // alert(excep.error.message)
+          console.log(excep);
         }
-      })
+      });
   }
 
-  //Function เมื่อกดปุ่มแก้ไข
   onEditModal(items: ICctvs) {
-    Object.assign(this.CctvSerivce.updateModel, items)
-    // console.log(this.cctvService.updateModel)
+    Object.assign(this.CctvSerivce.updateModel, items);
   }
 
   onSearchItem() {
-    // console.log(this.searchText, this.searchType)
-    this.get_Cctv({
+    this.get_Cctv(undefined, {
       searchText: this.searchText,
       searchType: this.searchType.key
-    })
+    });
   }
-
-
 }
-
 
 // ส่วนสำหรับการค้นหา
 export interface ICctvsSearchKey {

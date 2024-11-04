@@ -38,8 +38,9 @@ export class CctvService {
 
   // Service ฝั่ง กล้อง CCTV
   // ดึงข้อมูลกล้องมาแสดง
-  get_cctv() {
-    return this.httpClient.get<ICctvs[]>(this.backendURL + 'cctvs');
+  get_cctv(type?: string) {
+    const params = type ? { params: { type } } : {};
+    return this.httpClient.get<ICctvs[]>(this.backendURL + 'cctvs', params);
   }
 
   // แก้ไขข้อมูลครุภัณฑ์
