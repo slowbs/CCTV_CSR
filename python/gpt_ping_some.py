@@ -32,7 +32,7 @@ def get_db_connection():
 def ping_and_check(data):
     ip = data['ip']
     id_ = data['id']
-    ping_value = data['ping']
+    ping_value = data['ping']  # ค่า ping จะเป็น string ตอนนี้
     count_ping = data['count_ping']
     cctv_type = data['type']
     floor_name = data['floor_name']
@@ -47,10 +47,11 @@ def ping_and_check(data):
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     success = result.returncode == 0
     
-    if success and ping_value == 1:
+    # เปลี่ยนการตรวจสอบค่า ping เป็น string
+    if success and ping_value == '1':
         count_ping += 1
         status = "สถานะไม่สอดคล้อง (ตอบสนอง แต่คอลัมน์ ping = 1)"
-    elif not success and ping_value == 0:
+    elif not success and ping_value == '0':
         count_ping += 1
         status = "สถานะไม่สอดคล้อง (ไม่ตอบสนอง แต่คอลัมน์ ping = 0)"
     else:
@@ -72,18 +73,18 @@ def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_n
         cursor.execute("UPDATE cctv SET count_ping = %s WHERE id = %s", (count_ping, id_))
 
         if count_ping > 2:
-            new_ping_value = 1 if not success else 0
+            new_ping_value = '1' if not success else '0'  # เปลี่ยนเป็น string
             if new_ping_value != ping_value:
                 cursor.execute("UPDATE cctv SET ping = %s, count_ping = 0 WHERE id = %s", (new_ping_value, id_))
                 
                 message = (
-                    f"{'กลับมาออนไลน์' if new_ping_value == 0 else 'ออฟไลน์'}\n"
+                    f"{'กลับมาออนไลน์' if new_ping_value == '0' else 'ออฟไลน์'}\n"
                     f"หมายเลขครุภัณฑ์ : {durable_no}\n"
                     f"รายการ : {durable_name}\n"
                     f"อาคาร : {floor_name}\n"
                     f"สถานที่ : {location}\n"
                     f"หมายเลข IP : {ip}\n"
-                    f"สถานะ : {'ออนไลน์' if new_ping_value == 0 else 'ออฟไลน์'}"
+                    f"สถานะ : {'ออนไลน์' if new_ping_value == '0' else 'ออฟไลน์'}"
                 )
                 send_line_notification(message)
 
@@ -119,11 +120,11 @@ def get_cctv_data():
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("""
+        cursor.execute(""" 
             SELECT cctv.id, cctv.durable_no, cctv.ip, cctv.ping, cctv.count_ping, cctv.type, cctv.durable_name, 
-                   cctv.location, floor.floor_name
-            FROM cctv
-            JOIN floor ON cctv.floor = floor.floor_id
+                   cctv.location, floor.floor_name 
+            FROM cctv 
+            JOIN floor ON cctv.floor = floor.floor_id 
         """)
         rows = cursor.fetchall()
     finally:
