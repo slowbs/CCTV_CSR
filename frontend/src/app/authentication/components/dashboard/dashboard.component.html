@@ -15,39 +15,17 @@
             <div class="tile">
                 <h5>สรุปสถานะอุปกรณ์</h5>
                 <div class="row">
-                    <div class="col-md-3">
-                        <div class="card text-white bg-success mb-3" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 1]">
-                            <div class="card-header">กล้องโทรทัศน์วงจรปิด</div>
+                    <div class="col-md-3" *ngFor="let item of countPingItems">
+                        <div class="card text-white" [ngClass]="{
+                               'bg-success': item.type === '1',
+                               'bg-info': item.type === '2',
+                               'bg-warning': item.type === '3',
+                               'bg-danger': item.type === '4'
+                             }" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, item.type]">
+                            <div class="card-header">{{ getTypeName(item.type) }}</div>
                             <div class="card-body">
-                                <h5 class="card-title">10 Online</h5>
-                                <p class="card-text">2 Offline</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-info mb-3" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 2]">
-                            <div class="card-header">เครื่องคอมพิวเตอร์แม่ข่าย</div>
-                            <div class="card-body">
-                                <h5 class="card-title">5 Online</h5>
-                                <p class="card-text">1 Offline</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-warning mb-3" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 3]">
-                            <div class="card-header">อุปกรณ์กระจายสัญญาณ</div>
-                            <div class="card-body">
-                                <h5 class="card-title">8 Online</h5>
-                                <p class="card-text">3 Offline</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-danger mb-3" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 4]">
-                            <div class="card-header">อุปกรณ์จัดเก็บข้อมูล</div>
-                            <div class="card-body">
-                                <h5 class="card-title">4 Online</h5>
-                                <p class="card-text">1 Offline</p>
+                                <h5 class="card-title">{{ item.online_count }} Online</h5>
+                                <p class="card-text">{{ item.offline_count }} Offline</p>
                             </div>
                         </div>
                     </div>
@@ -84,49 +62,17 @@
                                 <td class="text-center">2024-11-04 10:30</td>
                             </tr>
                             <tr>
-                                <td class="text-center">CCTV-002</td>
-                                <td>กล้องวงจรปิด 2</td>
+                                <td class="text-center">CCTV-001</td>
+                                <td>กล้องวงจรปิด 1</td>
                                 <td>กล้องโทรทัศน์วงจรปิด</td>
-                                <td>ชั้น 2</td>
-                                <td>192.168.1.11</td>
-                                <td class="text-center">
-                                    <span class="badge bg-danger">Offline</span>
-                                </td>
-                                <td class="text-center">2024-11-04 10:15</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">SRV-001</td>
-                                <td>เซิร์ฟเวอร์หลัก</td>
-                                <td>เครื่องคอมพิวเตอร์แม่ข่าย</td>
-                                <td>ห้องเซิร์ฟเวอร์</td>
-                                <td>192.168.1.20</td>
+                                <td>ห้องประชุม</td>
+                                <td>192.168.1.10</td>
                                 <td class="text-center">
                                     <span class="badge bg-success">Online</span>
                                 </td>
-                                <td class="text-center">2024-11-04 10:00</td>
+                                <td class="text-center">2024-11-04 10:30</td>
                             </tr>
-                            <tr>
-                                <td class="text-center">SW-001</td>
-                                <td>สวิตช์หลัก</td>
-                                <td>อุปกรณ์กระจายสัญญาณ</td>
-                                <td>ห้องเซิร์ฟเวอร์</td>
-                                <td>192.168.1.21</td>
-                                <td class="text-center">
-                                    <span class="badge bg-warning">Warning</span>
-                                </td>
-                                <td class="text-center">2024-11-04 09:45</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">ST-001</td>
-                                <td>NAS Storage</td>
-                                <td>อุปกรณ์จัดเก็บข้อมูล</td>
-                                <td>ชั้น 3</td>
-                                <td>192.168.1.30</td>
-                                <td class="text-center">
-                                    <span class="badge bg-success">Online</span>
-                                </td>
-                                <td class="text-center">2024-11-04 09:30</td>
-                            </tr>
+                            <!-- รายการอื่น ๆ... -->
                         </tbody>
                         <tfoot>
                             <tr>

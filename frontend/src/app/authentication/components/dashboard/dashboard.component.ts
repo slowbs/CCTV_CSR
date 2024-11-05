@@ -24,7 +24,17 @@ export class DashboardComponent implements OnInit {
     return this.CctvSerivce.get_countping()
       .subscribe(result => {
         this.countPingItems = result['result'] || []; // ป้องกัน error หาก result เป็น null
-        console.log(this.countPingItems)
       });
   }
+
+  getTypeName(type: string): string {
+    switch (type) {
+      case '1': return 'กล้องโทรทัศน์วงจรปิด';
+      case '2': return 'เครื่องคอมพิวเตอร์แม่ข่าย';
+      case '3': return 'อุปกรณ์กระจายสัญญาณ';
+      case '4': return 'อุปกรณ์จัดเก็บข้อมูล';
+      default: return 'ไม่ทราบประเภท';
+    }
+  }
+
 }
