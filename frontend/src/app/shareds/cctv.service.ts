@@ -81,6 +81,11 @@ export class CctvService {
     return this.httpClient.get<ILogPing[]>(this.backendURL + 'log_ping', { params: { id: id } });
   }
 
+  // ดึงข้อมูลจำนวนนับสถานะอุปกรณ์มาแสดงในหน้า dashboard
+  get_countping() {
+    return this.httpClient.get<ICountPing[]>(this.backendURL + 'dashboard');
+  }
+
 
 }
 
@@ -167,4 +172,10 @@ export interface ILogPing {
   monitor: string
   ip: string
   duration: string
+}
+
+export interface ICountPing {
+  type: string;
+  online_count: string;
+  offline_count: string;
 }
