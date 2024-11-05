@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AppURL } from '../../../app.url'; // แก้ไข path ใหตรงกับที่ตั้งจริงของ AppUrl
-import { AuthenticationURL } from '../../authentication.url'; // แก้ไข path ใหตรงกับที่ตั้งจริงของ AppUrl
-import { CctvService, ICountPing } from '../../../shareds/cctv.service';
+import { AppURL } from '../../../app.url';
+import { AuthenticationURL } from '../../authentication.url';
+import { CctvService, ICountPing, ILogPing } from '../../../shareds/cctv.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,21 +9,29 @@ import { CctvService, ICountPing } from '../../../shareds/cctv.service';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  // ประกาศตัวแปรที่ต้องการใช้
   AppUrl = AppURL;
   AuthUrl = AuthenticationURL;
   public countPingItems: ICountPing[] = [];
+  public recentStatusChanges: ILogPing[] = []; // ตัวแปรใหม่สำหรับเก็บข้อมูลการเปลี่ยนแปลงสถานะ
 
   constructor(private CctvSerivce: CctvService) { }
 
   ngOnInit(): void {
     this.getCountPing();
+    this.getRecentStatusChanges(); // เรียกใช้ฟังก์ชันใหม่
   }
 
   getCountPing() {
     return this.CctvSerivce.get_countping()
       .subscribe(result => {
-        this.countPingItems = result['result'] || []; // ป้องกัน error หาก result เป็น null
+        this.countPingItems = result['counts'] || [];
+      });
+  }
+
+  getRecentStatusChanges() {
+    return this.CctvSerivce.getRecentStatusChanges()
+      .subscribe(result => {
+        this.recentStatusChanges = result['logs'] || []; // เก็บข้อมูลสถานะล่าสุด
       });
   }
 
@@ -36,5 +44,4 @@ export class DashboardComponent implements OnInit {
       default: return 'ไม่ทราบประเภท';
     }
   }
-
 }

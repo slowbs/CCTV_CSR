@@ -86,6 +86,11 @@ export class CctvService {
     return this.httpClient.get<ICountPing[]>(this.backendURL + 'dashboard');
   }
 
+  // เพิ่มฟังก์ชันดึงข้อมูลการเปลี่ยนแปลงสถานะล่าสุดมาแสดงในหน้า dashboard
+  getRecentStatusChanges() {
+    return this.httpClient.get<ILogPing[]>(this.backendURL + 'dashboard'); // สมมุติว่า endpoint นี้คือ API ที่ดึงข้อมูลสถานะล่าสุด
+  }
+
 
 }
 
@@ -172,6 +177,7 @@ export interface ILogPing {
   monitor: string
   ip: string
   duration: string
+  type: string
 }
 
 export interface ICountPing {
