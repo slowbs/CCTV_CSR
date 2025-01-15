@@ -74,7 +74,7 @@ export class CctvComponent implements OnInit {
   }
 
   onSubmit() {
-    this.CctvSerivce.put_items(this.model.id, this.model)
+    this.CctvSerivce.put_cctv(this.model.id, this.model)
       .subscribe({
         next: (result) => {
           console.log(result);

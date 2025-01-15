@@ -67,7 +67,7 @@ export class NetworkComponent {
 
   onSubmit() {
     // console.log(this.model)
-    this.CctvSerivce.put_items(this.model.id, this.model)
+    this.CctvSerivce.put_cctv(this.model.id, this.model)
       .subscribe({
         next: (result) => {
           console.log(result)

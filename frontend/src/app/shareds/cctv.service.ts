@@ -45,7 +45,7 @@ export class CctvService {
   }
 
   // แก้ไขข้อมูลครุภัณฑ์
-  put_items(id: any, value: ICctvs) {
+  put_cctv(id: any, value: ICctvs) {
     // return this.httpClient.put(this.backendURL + 'cctvs?id=' + id, value)
     // return this.httpClient.put(this.backendURL + 'cctvs', value, { params : { id : id}})
     // delete value.durable_name;
@@ -95,6 +95,11 @@ export class CctvService {
   // ดึงข้อมูลผู้ใช้งานมาแสดง
   get_users() {
     return this.httpClient.get<IUsers[]>(this.backendURL + 'users');
+  }
+
+  // แก้ไขข้อมูลผู้ใช้งาน
+  put_user(user_id: any, value: IUsers) {
+    return this.httpClient.put(this.backendURL + 'users', value, { params: { user_id } })
   }
 
 

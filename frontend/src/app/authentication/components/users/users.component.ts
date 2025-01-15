@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CctvService, IUsers } from '../../../shareds/cctv.service';
+declare const $: any;
 
 @Component({
   selector: 'app-users',
@@ -23,6 +24,10 @@ export class UsersComponent implements OnInit {
   ngOnInit() {
     this.isLoading = true;
     this.hasError = false;
+    this.get_users();
+  }
+
+  get_users() {
     this.cctvService.get_users()
       .subscribe({
         next: (result) => {
@@ -43,8 +48,19 @@ export class UsersComponent implements OnInit {
     // console.log(items)
   }
 
-  onSubmit(){
+  onSubmit() {
     console.log(this.model)
+    this.cctvService.put_user(this.model.user_id, this.model)
+      .subscribe({
+        next: (result) => {
+          console.log(result);
+          $('#editUserModal').modal('hide');
+          this.get_users(); // เรียก get_users ใหม่หลังการบันทึก
+        },
+        error: (excep) => {
+          console.log(excep);
+        }
+      });
   }
 
 }
