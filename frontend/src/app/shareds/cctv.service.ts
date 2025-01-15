@@ -91,6 +91,11 @@ export class CctvService {
     return this.httpClient.get<ILogPing[]>(this.backendURL + 'dashboard'); // สมมุติว่า endpoint นี้คือ API ที่ดึงข้อมูลสถานะล่าสุด
   }
 
+  // ดึงข้อมูลผู้ใช้งานมาแสดง
+  get_users() {
+    return this.httpClient.get<ISession.Response[]>(this.backendURL + 'users');
+  }
+
 
 }
 
@@ -101,6 +106,7 @@ export interface IUsers {
   name: string;
   password: string;
   c_password: string;
+  status?: string;
 }
 
 export interface ILogin {

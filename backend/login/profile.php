@@ -13,6 +13,6 @@ if (isset($_SESSION['login']) && !empty($_SESSION['login'])) {
 } else {
     http_response_code(401);
     exit(json_encode([
-        'message' => 'Cannot Access this Page caue Session is required'
+        'message' => 'Cannot Access this Page cause Session is required'
     ]));
 }

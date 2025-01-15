@@ -15,51 +15,45 @@
                 <div class="tile-body">
                     <h2 class="mb-4">User List</h2>
                     <div class="table-responsive">
-                        <table class="table table-hover table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="user-table">
-                                <tr>
-                                    <td>1</td>
-                                    <td>John Doe</td>
-                                    <td>john.doeample.com</td>
-                                    <td><span class="badge bg-primary">Admin</span></td>
-                                    <td><span class="badge bg-success">Active</span></td>
-                                    <td>
-                                        <button class="btn btn-warning btn-sm" title="Edit" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="setEditUser(1, 'John Doe', 'john.doe@example.com', 'Admin', 'Active')">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteUserModal" onclick="setDeleteUser(1, 'John Doe')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Jane Smith</td>
-                                    <td>jane.smithample.com</td>
-                                    <td><span class="badge bg-secondary">User</span></td>
-                                    <td><span class="badge bg-danger">Inactive</span></td>
-                                    <td>
-                                        <button class="btn btn-warning btn-sm" title="Edit" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="setEditUser(2, 'Jane Smith', 'jane.smith@example.com', 'User', 'Inactive')">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteUserModal" onclick="setDeleteUser(2, 'Jane Smith')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- More user rows can be added here -->
-                            </tbody>
-                        </table>
+                        <div *ngIf="isLoading" class="text-center mt-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+
+                        <div *ngIf="hasError" class="alert alert-danger mt-5">
+                            <strong>Error:</strong> Unable to fetch user data. Please try again later.
+                        </div>
+
+                        <div *ngIf="!isLoading && !hasError">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Username</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let user of userItems">
+                                        <td>{{ user.user_id }}</td>
+                                        <td>{{ user.user_name }}</td>
+                                        <td>{{ user.name }}</td>
+                                        <td>
+                                            <span class="badge"
+                                                [ngClass]="user.status === '1' ? 'bg-success' : 'bg-danger'">
+                                                {{ user.status === '1' ? 'Admin' : 'User' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
                     <div class="d-flex justify-content-between mt-3">
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
@@ -155,7 +149,8 @@
     </div>
 
     <!-- Modal for deleting user -->
-    <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -173,4 +168,3 @@
         </div>
     </div>
 </app-auth-content>
-   
