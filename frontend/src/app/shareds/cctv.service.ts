@@ -10,6 +10,7 @@ export class CctvService {
   private backendURL = '/backend/index.php/api/';
 
   public updateModel: ICctvs = Object.assign({})
+  public updateModelUser: IUsers = Object.assign({})
 
   constructor(private httpClient: HttpClient) { }
 
@@ -93,7 +94,7 @@ export class CctvService {
 
   // ดึงข้อมูลผู้ใช้งานมาแสดง
   get_users() {
-    return this.httpClient.get<ISession.Response[]>(this.backendURL + 'users');
+    return this.httpClient.get<IUsers[]>(this.backendURL + 'users');
   }
 
 
