@@ -27,7 +27,7 @@ export class UsersComponent implements OnInit {
       .subscribe({
         next: (result) => {
           this.userItems = result['result'] || []; // รับผลลัพธ์โดยตรง
-          console.log(this.userItems);
+          // console.log(this.userItems);
           this.isLoading = false;
         },
         error: (err) => {
@@ -40,7 +40,11 @@ export class UsersComponent implements OnInit {
 
   onEditModal(items: IUsers) {
     Object.assign(this.cctvService.updateModelUser, items);
-    console.log(items)
+    // console.log(items)
+  }
+
+  onSubmit(){
+    console.log(this.model)
   }
 
 }

@@ -123,7 +123,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editUserForm">
+                    <form id="editUserForm" (submit)="onSubmit()">
                         <input type="hidden" id="editUserId">
                         <div class="mb-3">
                             <label for="editUserName" class="form-label">User Name</label>
@@ -132,26 +132,24 @@
                         </div>
                         <div class="mb-3">
                             <label for="editUserEmail" class="form-label">Name</label>
-                            <input type="email" class="form-control" id="editUserEmail" [(ngModel)]="model.name"
+                            <input type="text" class="form-control" id="editUserEmail" [(ngModel)]="model.name"
                                 name="name" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editUserRole" class="form-label">Role</label>
-                            <select class="form-select" id="editUserRole" required>
-                                <option value="">Select Role</option>
-                                <option value="Admin">Admin</option>
-                                <option value="User">User</option>
-                            </select>
+                            <label for="editUserEmail" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="editUserPassword" [(ngModel)]="model.password"
+                                name="password" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editUserStatus" class="form-label">Status</label>
-                            <select class="form-select" id="editUserStatus" required>
-                                <option value="">Select Status</option>
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
+                            <label for="editUserRole" class="form-label">Role</label>
+                            <select class="form-select" id="editUserRole" [(ngModel)]="model.status" name="status"
+                                required>
+                                <option value="">Select Role</option>
+                                <option value="1">Admin</option>
+                                <option value="0">User</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
                     </form>
                 </div>
             </div>
