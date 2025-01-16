@@ -133,6 +133,11 @@
                                 [(ngModel)]="model.brand" name="brand">
                         </div>
                         <div class="form-group">
+                            <h5 class="lh_modal">รุ่น</h5>
+                            <input type="text" class="form-control" required placeholder="รุ่น"
+                                [(ngModel)]="model.model" name="model">
+                        </div>
+                        <div class="form-group">
                             <h5 class="lh_modal">ชั้น</h5>
                             <select class="form-select" [(ngModel)]="model.floor_id" name="floor">
                                 <option value="">กรุณาเลือกชั้น</option>

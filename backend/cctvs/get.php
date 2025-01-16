@@ -7,7 +7,7 @@ if (isset($_GET['type'])) {
     // ตรวจสอบว่า type ไม่ว่างและเป็นตัวเลข
     if (!empty($type) && is_numeric($type)) {
         // เตรียมคำสั่ง SQL
-        $stmt = $conn->prepare("SELECT id, durable_no, durable_name, brand, location, floor.floor_name AS floor, status.status_name AS status, monitor, ip, ping,
+        $stmt = $conn->prepare("SELECT id, durable_no, durable_name, brand, model, location, floor.floor_name AS floor, status.status_name AS status, monitor, ip, ping,
         cctv.date_updated, cctv.status AS status_id, cctv.floor AS floor_id, floor.order AS floor_order, notify 
         FROM cctv
         LEFT JOIN floor ON cctv.floor = floor.floor_id
