@@ -15,6 +15,7 @@ export class CctvComponent implements OnInit {
   public statusItems: IStatus[] = [];
   public floorItems: IFloor[] = [];
   private cctvType: string | undefined; // ตัวแปรเก็บประเภทของครุภัณฑ์
+  public isLoading: boolean = true; // กำลังโหลดข้อมูล
 
   searchText: string = '';
   searchType: ICctvsSearchKey;
@@ -30,6 +31,8 @@ export class CctvComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.isLoading = true;
     // ดึงค่าพารามิเตอร์จาก URL
     this.route.paramMap.subscribe(params => {
       this.cctvType = params.get('type') || undefined; // เก็บค่าประเภทของครุภัณฑ์
@@ -37,7 +40,6 @@ export class CctvComponent implements OnInit {
       this.searchText = '';
       this.searchType = this.searchTypeItem[0];
     });
-
     this.getStatus();
     this.getFloor();
   }
@@ -50,11 +52,14 @@ export class CctvComponent implements OnInit {
             this.cctvItems = result['result']
               .filter(item => item[options.searchType]?.toString().toLowerCase()
                 .includes(options.searchText.toLowerCase()));
+            this.isLoading = false;
           } else {
             this.cctvItems = result['result'];
+            this.isLoading = false;
           }
         } else {
           this.cctvItems = []; // หากไม่มีผลลัพธ์ให้กำหนดให้เป็นอาร์เรย์ว่าง
+
         }
       });
   }
