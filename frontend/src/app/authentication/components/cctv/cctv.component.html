@@ -48,15 +48,16 @@
                         <thead>
                             <tr>
                                 <th class="text-center" style="width: 10%">เลขครุภัณฑ์</th>
-                                <th class="text-center">รายการ</th>
-                                <th class="text-center">ยี่ห้อ</th>
+                                <th class="text-center" style="width: 15%">รายการ</th>
+                                <th class="text-center" style="width: 8%">ยี่ห้อ</th>
+                                <th class="text-center" style="width: 8%">รุ่น</th>
                                 <th class="text-center">ชั้น</th>
-                                <th class="text-center">สถานที่</th>
-                                <th class="text-center">Monitor</th>
-                                <th class="text-center">สถานะ</th>
-                                <th class="text-center">IP</th>
-                                <th class="text-center">Ping</th>
-                                <th class="text-center">Action</th>
+                                <th class="text-center" style="width: 12%">สถานที่</th>
+                                <th class="text-center" style="width: 5%">Monitor</th>
+                                <th class="text-center" style="width: 10%">สถานะ</th>
+                                <th class="text-center" style="width: 10%">IP</th>
+                                <th class="text-center" style="width: 5%">Ping</th>
+                                <th class="text-center" style="width: 5%">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,6 +65,7 @@
                                 <td class="text-center">{{ item.durable_no }}</td>
                                 <td>{{ item.durable_name }}</td>
                                 <td>{{ item.brand }}</td>
+                                <td>{{ item.model }}</td>
                                 <td>{{ item.floor }}</td>
                                 <td>{{ item.location }}</td>
                                 <td>{{ item.monitor }}</td>
@@ -79,7 +81,7 @@
                                 </td>
 
                                 <td>{{ item.ip }}</td>
-                                <td>
+                                <td class="text-center">
                                     <span class="badge" [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
                                         {{ item.ping === '0' ? 'Online' : 'Offline' }}
                                     </span>
@@ -115,6 +117,11 @@
                         </button>
                     </div>
                     <div class="modal-body">
+                        <div class="form-group">
+                            <h5 class="lh_modal">เลขครุภัณฑ์</h5>
+                            <input type="text" class="form-control" required placeholder="เลขครุภัณฑ์"
+                                [(ngModel)]="model.durable_no" name="durable_no">
+                        </div>
                         <div class="form-group">
                             <h5 class="lh_modal">รายการ</h5>
                             <input type="text" class="form-control" required placeholder="รายการ"

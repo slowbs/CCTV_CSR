@@ -41,10 +41,15 @@
                                 <td>{{ item.location }}</td>
                                 <td>{{ item.monitor }}</td>
                                 <td>{{ item.ip }}</td>
-                                <td *ngIf="item.ping_checked === '0'; else offlineStatus">Online</td>
+                                <!-- <td *ngIf="item.ping_checked === '0'; else offlineStatus">Online</td>
                                 <ng-template #offlineStatus>
                                     <td class="offline">Offline</td>
-                                </ng-template>
+                                </ng-template> -->
+                                <td class="text-center">
+                                    <span class="badge" [ngClass]="item.ping_checked === '0' ? 'bg-success' : 'bg-danger'">
+                                        {{ item.ping_checked === '0' ? 'Online' : 'Offline' }}
+                                    </span>
+                                </td>
                                 <td>{{ item.date_created }}</td>
                             </tr>
                         </tbody>
