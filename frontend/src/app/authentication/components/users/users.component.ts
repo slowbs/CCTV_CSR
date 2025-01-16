@@ -11,6 +11,14 @@ export class UsersComponent implements OnInit {
 
   public userItems: IUsers[] = [];
   public model: IUsers;
+  // สร้างตัวแปรสำหรับ Post
+  model2: IUsers = {
+    user_name: '',
+    name: '',
+    password: '',
+    c_password: '',
+    status: ''
+  };
   public isLoading: boolean = true; // กำลังโหลดข้อมูล
   public hasError: boolean = false; // เกิดข้อผิดพลาดในการโหลด
 
@@ -48,8 +56,8 @@ export class UsersComponent implements OnInit {
     // console.log(items)
   }
 
-  onSubmit() {
-    console.log(this.model)
+  onEditSubmit() {
+    // console.log(this.model)
     this.cctvService.put_user(this.model.user_id, this.model)
       .subscribe({
         next: (result) => {
@@ -61,6 +69,41 @@ export class UsersComponent implements OnInit {
           console.log(excep);
         }
       });
+  }
+
+  onAddSubmit() {
+    // console.log(this.model2)
+    this.comparePassword(this.model2)
+  }
+
+  private comparePassword(item: any) {
+    if (item.password === item.c_password) {
+      this.cctvService.post_user(this.model2)
+        .subscribe({
+          next: (result) => {
+            console.log(result)
+            $('#addUserModal').modal('hide');
+            this.get_users(); // เรียก get_users ใหม่หลังการบันทึก
+            this.resetModel();
+          },
+          error: (excep) => {
+            console.log(excep)
+            // alert(excep.error.message)
+          }
+        })
+    }
+    else
+      console.log('Password not Compare')
+  }
+
+  resetModel() {
+    this.model2 = {
+      user_name: '',
+      name: '',
+      password: '',
+      c_password: '',
+      status: ''
+    }
   }
 
 }

@@ -65,8 +65,8 @@
                                 <td class="text-center">
                                     <span class="badge" [ngClass]="{
                                               'bg-success': item.status_id === '1',
-                                              'bg-danger': item.status_id === '2',
-                                              'bg-warning': item.status_id === '3',
+                                              'bg-warning': item.status_id === '2',
+                                              'bg-danger': item.status_id === '3',
                                               'bg-secondary': item.status_id === '4'
                                           }">
                                         {{ item.status }}
@@ -82,10 +82,7 @@
                                 <td align="center">
                                     <a [routerLink]="[]" data-bs-toggle="modal" data-bs-target="#editCctvModal"
                                         (click)="onEditModal(item)">
-                                        <i class="bi bi-pencil-square" title="Edit"></i>
-                                    </a>&nbsp;
-                                    <a href="#deleteCctvModal" class="delete" data-toggle="modal">
-                                        <i class="bi bi-trash" title="Delete"></i>
+                                        <span class="badge bg-warning"><i class="bi bi-pencil-square" title="Edit"></i></span>
                                     </a>
                                 </td>
                             </tr>
@@ -155,8 +152,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-bs-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-info" value="Save">
+                        <input type="submit" class="btn btn-info modal_button" value="Save">
+                        <input type="button" class="btn btn-danger modal_button" data-bs-dismiss="modal" value="Cancel">
                     </div>
                 </form>
             </div>

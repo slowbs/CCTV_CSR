@@ -14,6 +14,11 @@
             <div class="tile">
                 <div class="tile-body">
                     <h2 class="mb-2">User List</h2>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                            <i class="bi bi-plus-circle"></i> Add New User
+                        </button>
+                    </div>
                     <div *ngIf="isLoading" class="text-center mt-5">
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Loading...</span>
@@ -48,10 +53,8 @@
                                     <td align="center">
                                         <a [routerLink]="[]" data-bs-toggle="modal" data-bs-target="#editUserModal"
                                             (click)="onEditModal(item)">
-                                            <i class="bi bi-pencil-square" title="Edit"></i>
-                                        </a>&nbsp;
-                                        <a href="#deleteCctvModal" class="delete" data-toggle="modal">
-                                            <i class="bi bi-trash" title="Delete"></i>
+                                            <span class="badge bg-warning"><i class="bi bi-pencil-square"
+                                                    title="Edit"></i></span>
                                         </a>
                                     </td>
                                 </tr>
@@ -62,11 +65,6 @@
                                 </tr>
                             </tfoot>
                         </table>
-                    </div>
-                    <div class="d-flex justify-content-between mt-3">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                            <i class="bi bi-plus-circle"></i> Add New User
-                        </button>
                     </div>
                 </div>
             </div>
@@ -82,32 +80,42 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addUserForm">
+                    <form id="addUserForm" (submit)="onAddSubmit()" [noValidate]="false">
                         <div class="mb-3">
-                            <label for="userName" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="userName" required>
+                            <label for="userName" class="form-label">User Name</label>
+                            <input type="text" class="form-control" id="new_user_name" [(ngModel)]="model2.user_name"
+                                name="new_user_name" required placeholder="Username">
                         </div>
                         <div class="mb-3">
-                            <label for="userEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="userEmail" required>
+                            <label for="userEmail" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="new_name" [(ngModel)]="model2.name"
+                                name="new_name" required placeholder="Name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userEmail" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="new_password" [(ngModel)]="model2.password"
+                                name="new_password" required placeholder="Password">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userEmail" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="new_confirm_password"
+                                [(ngModel)]="model2.c_password" name="new_confirm_password" required
+                                placeholder="Confirm_Password">
                         </div>
                         <div class="mb-3">
                             <label for="userRole" class="form-label">Role</label>
-                            <select class="form-select" id="userRole" required>
+                            <select class="form-select" id="new_userRole" [(ngModel)]="model2.status" name="new_status"
+                                required>
                                 <option value="">Select Role</option>
-                                <option value="Admin">Admin</option>
-                                <option value="User">User</option>
+                                <option value="1">Admin</option>
+                                <option value="2">User</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="userStatus" class="form-label">Status</label>
-                            <select class="form-select" id="userStatus" required>
-                                <option value="">Select Status</option>
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
-                            </select>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-info modal_button" value="Save">
+                            <input type="button" class="btn btn-danger modal_button" data-bs-dismiss="modal"
+                                value="Cancel">
                         </div>
-                        <button type="submit" class="btn btn-primary">Add User</button>
                     </form>
                 </div>
             </div>
@@ -123,7 +131,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editUserForm" (submit)="onSubmit()">
+                    <form id="editUserForm" (submit)="onEditSubmit()" [noValidate]="false">
                         <input type="hidden" id="editUserId">
                         <div class="mb-3">
                             <label for="editUserName" class="form-label">User Name</label>
@@ -137,8 +145,9 @@
                         </div>
                         <div class="mb-3">
                             <label for="editUserEmail" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="editUserPassword" [(ngModel)]="model.password"
-                                name="password" placeholder="ไม่เปลี่ยนไม่ต้องกรอก" required>
+                            <input type="password" class="form-control" id="editUserPassword"
+                                [(ngModel)]="model.password" name="password" placeholder="ไม่เปลี่ยนไม่ต้องกรอก"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="editUserRole" class="form-label">Role</label>
@@ -146,10 +155,14 @@
                                 required>
                                 <option value="">Select Role</option>
                                 <option value="1">Admin</option>
-                                <option value="0">User</option>
+                                <option value="2">User</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-info modal_button" value="Save">
+                            <input type="button" class="btn btn-danger modal_button" data-bs-dismiss="modal"
+                                value="Cancel">
+                        </div>
                     </form>
                 </div>
             </div>
