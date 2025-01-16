@@ -10,13 +10,16 @@ import { CctvService, ILogPing } from '../../../shareds/cctv.service';
 export class LogPingComponent implements OnInit {
 
   public logpingItems: ILogPing[] = [];
+  public isLoading: boolean = true; // กำลังโหลดข้อมูล
 
   constructor(
     private cctvService: CctvService,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit() {
+
+    this.isLoading = true; //แสดง Loading
     // ดึงค่าพารามิเตอร์ id จาก route และใช้เรียกข้อมูล log ping
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -30,7 +33,8 @@ export class LogPingComponent implements OnInit {
     this.cctvService.get_logping(id)
       .subscribe(result => {
         this.logpingItems = result['result'];
-        console.log(this.logpingItems);
+        // console.log(this.logpingItems);
+        this.isLoading = false;
       });
   }
 }

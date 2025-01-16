@@ -32,7 +32,7 @@ export class CctvComponent implements OnInit {
 
   ngOnInit() {
 
-    this.isLoading = true;
+    this.isLoading = true; //แสดง Loading
     // ดึงค่าพารามิเตอร์จาก URL
     this.route.paramMap.subscribe(params => {
       this.cctvType = params.get('type') || undefined; // เก็บค่าประเภทของครุภัณฑ์
@@ -40,8 +40,8 @@ export class CctvComponent implements OnInit {
       this.searchText = '';
       this.searchType = this.searchTypeItem[0];
     });
-    this.getStatus();
-    this.getFloor();
+    this.getStatus(); //ดึงค่าสถานะมาแสดง
+    this.getFloor(); //ดึงค่าชั้นมาแสดง
   }
 
   get_Cctv(type?: string, options?: ICctvsSearch) {

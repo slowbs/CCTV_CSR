@@ -9,7 +9,12 @@
             <li class="breadcrumb-item"><a href="#">Blank Page</a></li>
         </ul>
     </div>
-    <div class="row">
+    <div *ngIf="isLoading" class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <div class="row" *ngIf="!isLoading">
         <div class="col-md-12">
             <div class="tile">
                 <div class="table">
@@ -37,7 +42,9 @@
                                 <td>{{ item.monitor }}</td>
                                 <td>{{ item.ip }}</td>
                                 <td *ngIf="item.ping_checked === '0'; else offlineStatus">Online</td>
-                                <ng-template #offlineStatus><td class="offline">Offline</td></ng-template>
+                                <ng-template #offlineStatus>
+                                    <td class="offline">Offline</td>
+                                </ng-template>
                                 <td>{{ item.date_created }}</td>
                             </tr>
                         </tbody>
