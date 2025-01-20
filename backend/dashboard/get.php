@@ -33,7 +33,8 @@ $sqlLog = "SELECT log_id, cctv_id, ping_checked,
                   cctv.durable_name AS durable_name, 
                   floor_name, location, 
                   cctv.monitor AS monitor, 
-                  cctv.ip AS ip
+                  cctv.ip AS ip,
+                  log_ping.type as type
            FROM log_ping
            LEFT JOIN cctv ON cctv.id = log_ping.cctv_id
            LEFT JOIN floor ON cctv.floor = floor.floor_id
@@ -57,6 +58,7 @@ if ($resultLog) {
             'location' => $row['location'],
             'monitor' => $row['monitor'],
             'ip' => $row['ip'],
+            'type' => $row['type']
         ];
     }
 } else {

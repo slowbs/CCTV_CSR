@@ -22,7 +22,7 @@
                                'bg-warning': item.type === '3',
                                'bg-danger': item.type === '4'
                              }" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, item.type]">
-                            <div class="card-header">{{ getTypeName(item.type) }}</div>
+                            <div class="card-header" style="text-align: center;">{{ getTypeName(item.type) }}</div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ item.online_count }} Online</h5>
                                 <p class="card-text">{{ item.offline_count }} Offline</p>
@@ -43,6 +43,7 @@
                                 <th class="text-center">เลขครุภัณฑ์</th>
                                 <th class="text-center">รายการ</th>
                                 <th class="text-center">ประเภท</th>
+                                <th class="text-center">ชั้น</th>
                                 <th class="text-center">สถานที่</th>
                                 <th class="text-center">IP</th>
                                 <th class="text-center">สถานะ</th>
@@ -51,9 +52,10 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let change of recentStatusChanges">
-                                <td class="text-center">{{ change.durable_no }}</td>
+                                <td>{{ change.durable_no }}</td>
                                 <td>{{ change.durable_name }}</td>
                                 <td>{{ getTypeName(change.type) }}</td>
+                                <td>{{ change.floor_name }}</td>
                                 <td>{{ change.location }}</td>
                                 <td>{{ change.ip }}</td>
                                 <td class="text-center">
