@@ -51,16 +51,17 @@ if (isset($_GET['id'])) {
         // }
 
         // $query = "INSERT INTO cctv (durable_no, durable_name, location, brand, floor, status) VALUES (?, ?, ?, ?, ?, ?)";
-        $query = "UPDATE cctv SET durable_no = ?, durable_name = ?, location = ?, brand = ?, model = ?, floor = ?, status = ?, 
+        $query = "UPDATE cctv SET durable_no = ?, durable_name = ?, location = ?, monitor = ?, brand = ?, model = ?, floor = ?, status = ?, 
         ip = ?, date_updated = NOW() 
         where id = ?";
         $stmt = mysqli_prepare($conn, $query);
         mysqli_stmt_bind_param(
             $stmt,
-            'ssssssssi',
+            'sssssssssi',
             $data->durable_no,
             $data->durable_name,
             $data->location,
+            $data->monitor,
             $data->brand,
             $data->model,
             $data->floor_id,

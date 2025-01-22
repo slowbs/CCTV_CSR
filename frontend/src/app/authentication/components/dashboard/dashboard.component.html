@@ -9,8 +9,13 @@
             <li class="breadcrumb-item active">Dashboard</li>
         </ul>
     </div>
+    <div *ngIf="isLoading" class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 
-    <div class="row">
+    <div class="row" *ngIf="!isLoading">
         <div class="col-md-12">
             <div class="tile">
                 <h5>สรุปสถานะอุปกรณ์</h5>

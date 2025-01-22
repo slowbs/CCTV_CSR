@@ -13,10 +13,12 @@ export class DashboardComponent implements OnInit {
   AuthUrl = AuthenticationURL;
   public countPingItems: ICountPing[] = [];
   public recentStatusChanges: ILogPing[] = []; // ตัวแปรใหม่สำหรับเก็บข้อมูลการเปลี่ยนแปลงสถานะ
+  public isLoading: boolean = true; // กำลังโหลดข้อมูล
 
   constructor(private CctvSerivce: CctvService) { }
 
   ngOnInit(): void {
+    this.isLoading = true; //แสดง Loading
     this.getCountPing();
     this.getRecentStatusChanges(); // เรียกใช้ฟังก์ชันใหม่
   }
@@ -32,6 +34,7 @@ export class DashboardComponent implements OnInit {
     return this.CctvSerivce.getRecentStatusChanges()
       .subscribe(result => {
         this.recentStatusChanges = result['logs'] || []; // เก็บข้อมูลสถานะล่าสุด
+        this.isLoading = false;
       });
   }
 
