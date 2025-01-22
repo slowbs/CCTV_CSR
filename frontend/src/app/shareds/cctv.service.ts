@@ -102,6 +102,10 @@ export class CctvService {
     return this.httpClient.put(this.backendURL + 'users', value, { params: { user_id } })
   }
 
+  //ดึงข้อมูลมาแสดงรายงาน
+  get_report(id: any) {
+    return this.httpClient.get<IReport.Report>(this.backendURL + 'report', { params: { id: id } });
+  }
 
 }
 
@@ -135,8 +139,6 @@ export namespace ISession {
     password: string;
     c_password: string;
   }
-
-
 }
 
 // ส่วนของรายการครุภัณฑ์
@@ -196,4 +198,23 @@ export interface ICountPing {
   type: string;
   online_count: string;
   offline_count: string;
+}
+
+
+export namespace IReport {
+
+  export interface Report {
+    durable_no: string
+    durable_name: string
+    location: string
+    floor: string
+    status: string
+    ping: string
+    logs: Log[]
+  }
+
+  export interface Log {
+    offline: string
+    online: string
+  }
 }
