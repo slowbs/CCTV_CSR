@@ -13,7 +13,7 @@ if (isset($_GET['type'])) {
         LEFT JOIN floor ON cctv.floor = floor.floor_id
         LEFT JOIN status ON cctv.status = status.status_id
         WHERE cctv.type = ?
-        ORDER BY floor_order");
+        ORDER BY floor_order, monitor");
 
         // ผูกพารามิเตอร์กับคำสั่ง SQL
         $stmt->bind_param("i", $type); // 'i' indicates the type is integer
