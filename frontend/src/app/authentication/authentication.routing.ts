@@ -8,6 +8,7 @@ import { CctvComponent } from "./components/cctv/cctv.component";
 import { LogPingComponent } from "./components/log-ping/log-ping.component";
 import { DurableCreateComponent } from "./components/durable-create/durable-create.component";
 import { NetworkComponent } from "./components/network/network.component";
+import { ReportComponent } from "./components/report/report.component";
 
 const RouteLists: Routes = [
     { path: '', redirectTo: AuthenticationURL.Index, pathMatch: 'full' },
@@ -17,6 +18,7 @@ const RouteLists: Routes = [
     { path: AuthenticationURL.Create_User, component: UserCreateComponent },
     { path: `${AuthenticationURL.Cctv}/:type`, component: CctvComponent },
     { path: `${AuthenticationURL.Log_Ping}/:id`, component: LogPingComponent },
+    { path: `${AuthenticationURL.Report}/:id`, component: ReportComponent },
     { path: AuthenticationURL.Create_Durable, component: DurableCreateComponent },
     { path: AuthenticationURL.Network, component: NetworkComponent }
 

@@ -8,6 +8,7 @@ export const AuthenticationURL = {
     Device: 'device',
     Storage: 'storage',
     Log_Ping: 'log_ping',
-    Create_Durable: 'create_durable'
+    Create_Durable: 'create_durable',
+    Report: 'report'
 
 }

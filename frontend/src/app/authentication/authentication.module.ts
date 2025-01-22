@@ -10,6 +10,7 @@ import { CctvComponent } from './components/cctv/cctv.component';
 import { LogPingComponent } from './components/log-ping/log-ping.component';
 import { DurableCreateComponent } from './components/durable-create/durable-create.component';
 import { NetworkComponent } from './components/network/network.component';
+import { ReportComponent } from './components/report/report.component';
 
 
 
@@ -22,7 +23,8 @@ import { NetworkComponent } from './components/network/network.component';
     CctvComponent,
     LogPingComponent,
     DurableCreateComponent,
-    NetworkComponent
+    NetworkComponent,
+    ReportComponent
   ],
   imports: [
     CommonModule,
