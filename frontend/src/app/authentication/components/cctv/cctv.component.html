@@ -51,18 +51,18 @@
                                 <th class="text-center" style="width: 15%">รายการ</th>
                                 <th class="text-center" style="width: 8%">ยี่ห้อ</th>
                                 <th class="text-center" style="width: 8%">รุ่น</th>
-                                <th class="text-center">ชั้น</th>
+                                <th class="text-center" style="width: 8%">ชั้น</th>
                                 <th class="text-center" style="width: 12%">สถานที่</th>
-                                <th class="text-center" style="width: 5%">Monitor</th>
+                                <th class="text-center" style="width: 10%">Monitor</th>
                                 <th class="text-center" style="width: 10%">สถานะ</th>
                                 <th class="text-center" style="width: 10%">IP</th>
                                 <th class="text-center" style="width: 5%">Ping</th>
-                                <th class="text-center" style="width: 5%">Action</th>
+                                <th class="text-center" style="width: 4%">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let item of cctvItems">
-                                <td class="text-center">{{ item.durable_no }}</td>
+                                <td>{{ item.durable_no }}</td>
                                 <td>{{ item.durable_name }}</td>
                                 <td>{{ item.brand }}</td>
                                 <td>{{ item.model }}</td>
