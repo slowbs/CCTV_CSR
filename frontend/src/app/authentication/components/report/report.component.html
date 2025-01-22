@@ -1,1 +1,54 @@
-<p>report works!</p>
+<app-auth-content>
+    <div class="app-title">
+        <div>
+            <h1><i class="bi bi-speedometer"></i> Report</h1>
+        </div>
+        <ul class="app-breadcrumb breadcrumb">
+            <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
+            <li class="breadcrumb-item"><a [routerLink]="[]">Report</a></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tile">
+                <div class="tile-body">
+                    <!-- ปุ่มสำหรับดาวน์โหลด PDF -->
+                    <button class="btn btn-primary mb-3" (click)="generatePDF()">
+                        <i class="bi bi-file-earmark-arrow-down"></i> Download PDF
+                    </button>
+
+                    <!-- เนื้อหาที่จะใส่ใน PDF -->
+                    <div id="report-content">
+                        <h2 class="text-center">รายงานข้อมูลเครื่องคอมพิวเตอร์แม่ข่าย</h2>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ลำดับที่</th>
+                                    <th>รายการ</th>
+                                    <th>เลขครุภัณฑ์</th>
+                                    <th>ชั้น</th>
+                                    <th>สถานที่</th>
+                                    <th>สถานะ</th>
+                                    <th>Ping</th>
+                                    <th>หมายเหตุ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let user of userItems; let i = index">
+                                    <td>{{ i+1 }}</td>
+                                    <td>{{ user.durable_name }}</td>
+                                    <td>{{ user.durable_no }}</td>
+                                    <td>{{ user.floor }}</td>
+                                    <td>{{ user.location }}</td>
+                                    <td>{{ user.status_id }} </td>
+                                    <td>{{ user.ping }}</td>
+                                    <td> Offline เมื่อ {{ user.offline }} <br> Online เมื่อ {{ user.online }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-auth-content>

@@ -54,3 +54,9 @@ $routes['/api/login']['GET'] = 'login/profile.php';
 
 //Dashboard
 $routes['/api/dashboard']['GET'] = 'dashboard/get.php';
+
+//ข้อมูล Report สถานะการ Ping
+$routes['/api/report']['GET'] = 'report/get.php';
+$routes['/api/report']['POST'] = 'report/post.php';
+$routes['/api/report']['PUT'] = 'report/put.php';
+$routes['/api/report']['DELETE'] = 'report/delete.php';

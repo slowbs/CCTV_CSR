@@ -37,3 +37,109 @@ IF(FLOOR((TIMESTAMPDIFF(SECOND, date_created, NOW()) % 3600)/60) < 10, '0', ''),
 FLOOR((TIMESTAMPDIFF(SECOND, date_created, NOW()) % 3600)/60), ' minutes ', 
 IF((TIMESTAMPDIFF(SECOND, date_created, NOW()) % 60) < 10, '0', ''), 
 (TIMESTAMPDIFF(SECOND, date_created, NOW()) % 60), ' seconds' ) from log_ping where 1;
+
+//คำนวณระยะเวลา offline
+SELECT 
+    log_id, 
+    cctv_id, 
+    ping_checked, 
+    log_ping.date_created as date_created, 
+    cctv.durable_no as durable_no,
+    cctv.durable_name as durable_name, 
+    floor_name, 
+    location, 
+    cctv.monitor as monitor, 
+    cctv.ip as ip,
+    IF(
+        ping_checked = 0 AND 
+        LAG(ping_checked) OVER (PARTITION BY cctv_id ORDER BY date_created) = 1, 
+        CONCAT(
+            FLOOR(TIMESTAMPDIFF(SECOND, 
+                LAG(log_ping.date_created) OVER (PARTITION BY cctv_id ORDER BY date_created), 
+                log_ping.date_created) / 86400), ' days ',
+            FLOOR((TIMESTAMPDIFF(SECOND, 
+                LAG(log_ping.date_created) OVER (PARTITION BY cctv_id ORDER BY date_created), 
+                log_ping.date_created) % 86400) / 3600), ' hours ',
+            FLOOR((TIMESTAMPDIFF(SECOND, 
+                LAG(log_ping.date_created) OVER (PARTITION BY cctv_id ORDER BY date_created), 
+                log_ping.date_created) % 86400) / 60), ' minutes '
+        ),
+        NULL
+    ) AS offline_duration
+FROM 
+    log_ping
+LEFT JOIN 
+    cctv ON cctv.id = log_ping.cctv_id
+LEFT JOIN 
+    floor ON cctv.floor = floor.floor_id
+WHERE 
+    log_ping.type = 1
+ORDER BY 
+    log_ping.date_created DESC;
+
+
+//ดึงรายงานตามรายการอุปกรณ์
+SELECT id, durable_no, durable_name, location, floor.floor_name AS floor, status.status_name AS status, cctv.status AS status_id, floor.order AS floor_order
+        FROM cctv
+        LEFT JOIN floor ON cctv.floor = floor.floor_id
+        LEFT JOIN status ON cctv.status = status.status_id
+        WHERE cctv.type = 2
+        ORDER BY floor_order, durable_no
+
+//ดึงรายงานตามรายการอุปกรณ์พร้อมระยะเวลา ออฟไลน์ ออนไลน์
+SELECT 
+    cctv.id, 
+    cctv.durable_no, 
+    cctv.durable_name, 
+    cctv.location, 
+    floor.floor_name AS floor, 
+    status.status_name AS status, 
+    cctv.status AS status_id, 
+    cctv.ping AS ping,  -- แสดงสถานะ ping ปัจจุบันจาก cctv.ping
+    floor.order AS floor_order, 
+    offline_log.date_created AS offline_time,
+    online_log.date_created AS online_time,
+    IF(online_log.date_created IS NOT NULL AND online_log.date_created > offline_log.date_created, 
+        CONCAT(
+            IF(FLOOR(TIMESTAMPDIFF(SECOND, offline_log.date_created, online_log.date_created) / 86400) < 10, '0', ''), 
+            FLOOR(TIMESTAMPDIFF(SECOND, offline_log.date_created, online_log.date_created) / 86400), ' days ', 
+            IF(FLOOR((TIMESTAMPDIFF(SECOND, offline_log.date_created, online_log.date_created) % 86400)/3600) < 10, '0', ''), 
+            FLOOR((TIMESTAMPDIFF(SECOND, offline_log.date_created, online_log.date_created) % 86400)/3600), ' hours ', 
+            IF(FLOOR((TIMESTAMPDIFF(SECOND, offline_log.date_created, online_log.date_created) % 3600)/60) < 10, '0', ''), 
+            FLOOR((TIMESTAMPDIFF(SECOND, offline_log.date_created, online_log.date_created) % 3600)/60), ' minutes ', 
+            IF((TIMESTAMPDIFF(SECOND, offline_log.date_created, online_log.date_created) % 60) < 10, '0', ''), 
+            (TIMESTAMPDIFF(SECOND, offline_log.date_created, online_log.date_created) % 60), ' seconds' 
+        ),
+        NULL) AS offline_duration
+FROM 
+    cctv
+LEFT JOIN floor ON cctv.floor = floor.floor_id
+LEFT JOIN status ON cctv.status = status.status_id
+LEFT JOIN log_ping AS offline_log ON cctv.id = offline_log.cctv_id AND offline_log.ping_checked = 1
+LEFT JOIN log_ping AS online_log ON cctv.id = online_log.cctv_id AND online_log.ping_checked = 0
+WHERE 
+    cctv.type = 2
+ORDER BY 
+    floor_order, durable_no;
+
+//ดึงรายงานตามรายการอุปกรณ์พร้อมระยะเวลา แต่คำนวณบน frontend
+SELECT 
+    cctv.id, 
+    cctv.durable_no, 
+    cctv.durable_name, 
+    cctv.location, 
+    floor.floor_name AS floor, 
+    cctv.status, 
+    cctv.ping,
+    GROUP_CONCAT(
+        CONCAT('{"offline":"', offline_log.date_created, '", "online":"', online_log.date_created, '"}')
+        ORDER BY offline_log.date_created ASC
+    ) AS logs
+FROM cctv
+LEFT JOIN floor ON cctv.floor = floor.floor_id
+LEFT JOIN log_ping AS offline_log ON cctv.id = offline_log.cctv_id AND offline_log.ping_checked = 0
+LEFT JOIN log_ping AS online_log ON cctv.id = online_log.cctv_id AND online_log.ping_checked = 1
+WHERE cctv.type = 2
+GROUP BY cctv.id
+ORDER BY floor.order, cctv.durable_no;
+
