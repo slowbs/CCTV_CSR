@@ -46,6 +46,14 @@ export class ReportComponent implements OnInit {
     this.cctvService.get_report(id).subscribe(result => {
       // แปลง result เป็น array
       this.reportItems = Object.values(result['result']);  // แปลง result เป็น array
+      this.reportItems.forEach(item => {
+        item.logs.forEach(log => {
+          // คำนวณระยะเวลา offline
+          log.duration = this.calculateOfflineDuration(log.offline, log.online);
+        });
+      });
+
+      console.log(this.reportItems); // ตรวจสอบข้อมูล
     });
   }
 
@@ -64,7 +72,7 @@ export class ReportComponent implements OnInit {
     return null;
   }
 
-  // คำนวณระยะเวลา Offline
+  // คำนวณระยะเวลา Offline (ปัดเศษวินาทีขึ้นเป็นนาที)
   calculateOfflineDuration(offline: string, online: string): string | null {
     if (!offline || !online) return null;
 
@@ -76,11 +84,12 @@ export class ReportComponent implements OnInit {
 
     if (diffInMs < 0) return 'N/A'; // กรณีที่เวลา online เร็วกว่าหรือผิดพลาด
 
-    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-    const days = Math.floor(diffInMinutes / (60 * 24));
-    const hours = Math.floor((diffInMinutes % (60 * 24)) / 60);
-    const minutes = diffInMinutes % 60;
+    // ปัดเศษเวลาที่ได้เป็นนาที
+    const diffInMinutes = Math.ceil(diffInMs / (1000 * 60)); // ใช้ Math.ceil() เพื่อปัดเศษวินาทีขึ้นเป็นนาที
+    const days = Math.floor(diffInMinutes / (60 * 24)); // คำนวณจำนวนวัน
+    const hours = Math.floor((diffInMinutes % (60 * 24)) / 60); // คำนวณจำนวนชั่วโมง
+    const minutes = diffInMinutes % 60; // คำนวณจำนวนวินาทีที่เหลือ
 
-    return `${days} วัน ${hours} ชั่วโมง ${minutes} นาที`;
+    return `${days} วัน ${hours} ชั่วโมง ${minutes} นาที`; // แสดงผลในรูปแบบ วัน ชั่วโมง นาที
   }
 }

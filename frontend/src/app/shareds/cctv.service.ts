@@ -221,5 +221,6 @@ export namespace IReport {
   export interface Log {
     offline: string
     online: string
+    duration?: string | null
   }
 }

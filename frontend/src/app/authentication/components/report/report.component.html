@@ -43,7 +43,8 @@
                                     <td>
                                         <div *ngFor="let log of item.logs">
                                             Offline: {{ formatDate(log.offline) }} <br />
-                                            Online: {{ formatDate(log.online) }}
+                                            Online: {{ formatDate(log.online) }} <br />
+                                            Duration: {{ log.duration }}
                                         </div>
                                     </td>
                                 </tr>
