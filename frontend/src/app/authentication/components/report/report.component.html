@@ -40,13 +40,17 @@
                                     <td>{{ item.location }}</td>
                                     <td>{{ item.status }}</td>
                                     <td>{{ item.ping }}</td>
-                                    <td>
+                                    <!-- คอลัมน์ log ที่มีข้อมูล -->
+                                    <td *ngIf="item.logs && item.logs.length > 0">
                                         <div *ngFor="let log of item.logs">
-                                            Offline: {{ formatDate(log.offline) }} <br />
-                                            Online: {{ formatDate(log.online) }} <br />
+                                            Offline: {{ formatDate(log.offline) }} <br>
+                                            Online: {{ formatDate(log.online) }} <br>
                                             Duration: {{ log.duration }}
                                         </div>
                                     </td>
+
+                                    <!-- คอลัมน์ log ถ้าไม่มีข้อมูล -->
+                                    <td *ngIf="!item.logs || item.logs.length === 0"> </td>
                                 </tr>
                             </tbody>
                         </table>

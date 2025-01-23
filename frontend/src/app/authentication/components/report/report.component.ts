@@ -46,14 +46,15 @@ export class ReportComponent implements OnInit {
     this.cctvService.get_report(id).subscribe(result => {
       // แปลง result เป็น array
       this.reportItems = Object.values(result['result']);  // แปลง result เป็น array
+
       this.reportItems.forEach(item => {
+        // ตรวจสอบว่า logs มีข้อมูลที่ไม่เป็น null และไม่ว่าง
+        item.logs = item.logs.filter(log => log.offline && log.online); // กรอง logs ที่มีข้อมูลจริง
         item.logs.forEach(log => {
           // คำนวณระยะเวลา offline
           log.duration = this.calculateOfflineDuration(log.offline, log.online);
         });
       });
-
-      console.log(this.reportItems); // ตรวจสอบข้อมูล
     });
   }
 
