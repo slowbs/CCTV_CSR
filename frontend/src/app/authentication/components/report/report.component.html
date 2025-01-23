@@ -26,7 +26,6 @@
                                     <th>ลำดับที่</th>
                                     <th>รายการ</th>
                                     <th>เลขครุภัณฑ์</th>
-                                    <th>ชั้น</th>
                                     <th>สถานที่</th>
                                     <th>สถานะ</th>
                                     <th>Ping</th>
@@ -34,15 +33,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let user of userItems; let i = index">
-                                    <td>{{ i+1 }}</td>
-                                    <td>{{ user.durable_name }}</td>
-                                    <td>{{ user.durable_no }}</td>
-                                    <td>{{ user.floor }}</td>
-                                    <td>{{ user.location }}</td>
-                                    <td>{{ user.status_id }} </td>
-                                    <td>{{ user.ping }}</td>
-                                    <td> Offline เมื่อ {{ user.offline }} <br> Online เมื่อ {{ user.online }}</td>
+                                <tr *ngFor="let item of reportItems; let i = index">
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{ item.durable_name }}</td>
+                                    <td>{{ item.durable_no }}</td>
+                                    <td>{{ item.location }}</td>
+                                    <td>{{ item.status }}</td>
+                                    <td>{{ item.ping }}</td>
+                                    <td>
+                                        <div *ngFor="let log of item.logs">
+                                            Offline: {{ formatDate(log.offline) }} <br />
+                                            Online: {{ formatDate(log.online) }}
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

@@ -12,13 +12,9 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class ReportComponent implements OnInit {
   // ข้อมูลตัวอย่างสำหรับ Report
-  public reportItems: IReport.Report
-  public userItems = [
-    { id: '1', durable_no: '416 54 0411', durable_name: 'เครื่องคอมพิวเตอร์แม่ข่าย 1', location: 'ห้อง Server', floor: 'ชั้น 3', status_id: '1', ping: '0', offline: '2025-01-22 18:47:11', online: '2025-01-22 18:47:33' },
-    { id: '2', durable_no: '416 54 0412', durable_name: 'เครื่องคอมพิวเตอร์แม่ข่าย 2', location: 'ห้อง Server', floor: 'ชั้น 3', status_id: '1', ping: '0', offline: '2025-01-22 18:47:11', online: '2025-01-22 18:47:33' },
-  ];
+  public reportItems: IReport.Report[] = [];
 
-  constructor(private cctvService: CctvService, private route: ActivatedRoute) { }
+  constructor(private cctvService: CctvService, private route: ActivatedRoute, private datePipe: DatePipe) { }
 
   ngOnInit(): void {
     // ดึงค่าพารามิเตอร์ id จาก route และใช้เรียกข้อมูล log ping
@@ -47,10 +43,48 @@ export class ReportComponent implements OnInit {
   }
 
   get_report(id: string) {
-    this.cctvService.get_report(id)
-      .subscribe(result => {
-        this.reportItems = result['result'];
-        console.log(this.reportItems);
+    this.cctvService.get_report(id).subscribe(data => {
+      this.reportItems = data.map(item => {
+        // ถ้าต้องการปรับข้อมูลเพิ่มเติม เช่น เปลี่ยนสถานะ
+        item.status = item.status === '1' ? 'Online' : 'Offline';
+        return item;
       });
+      console.log(this.reportItems);
+    });
+  }
+
+  // แปลงวันที่เป็น วัน/เดือน/ปีพ.ศ.
+  formatDate(date: string): string | null {
+    if (!date) return null;
+
+    const jsDate = new Date(date);
+    const transformedDate = this.datePipe.transform(jsDate, 'dd MMMM yyyy HH:mm', 'th-TH');
+
+    if (transformedDate) {
+      // เพิ่มปี ค.ศ. อีก 543 ปีเพื่อแปลงเป็น พ.ศ.
+      const yearInBuddhistEra = jsDate.getFullYear() + 543;
+      return transformedDate.replace(jsDate.getFullYear().toString(), yearInBuddhistEra.toString());
+    }
+    return null;
+  }
+
+  // คำนวณระยะเวลา Offline
+  calculateOfflineDuration(offline: string, online: string): string | null {
+    if (!offline || !online) return null;
+
+    const offlineDate = new Date(offline);
+    const onlineDate = new Date(online);
+
+    // คำนวณระยะเวลาระหว่างสองวัน
+    const diffInMs = onlineDate.getTime() - offlineDate.getTime();
+
+    if (diffInMs < 0) return 'N/A'; // กรณีที่เวลา online เร็วกว่าหรือผิดพลาด
+
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    const days = Math.floor(diffInMinutes / (60 * 24));
+    const hours = Math.floor((diffInMinutes % (60 * 24)) / 60);
+    const minutes = diffInMinutes % 60;
+
+    return `${days} วัน ${hours} ชั่วโมง ${minutes} นาที`;
   }
 }

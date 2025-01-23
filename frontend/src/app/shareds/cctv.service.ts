@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { map } from 'rxjs';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
   providedIn: 'root'
@@ -103,8 +105,16 @@ export class CctvService {
   }
 
   //ดึงข้อมูลมาแสดงรายงาน
-  get_report(id: any) {
-    return this.httpClient.get<IReport.Report>(this.backendURL + 'report', { params: { id: id } });
+  get_report(id: any): Observable<IReport.Report[]> {
+    return this.httpClient.get<{ message: string; result: { [key: string]: IReport.Report } }>(
+      this.backendURL + 'report',
+      { params: { id: id } }
+    ).pipe(
+      map(response => {
+        // แปลง result เป็น array
+        return Object.values(response.result);
+      })
+    );
   }
 
 }
