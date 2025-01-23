@@ -106,13 +106,13 @@ export class CctvService {
 
   //ดึงข้อมูลมาแสดงรายงาน
   get_report(id: any): Observable<IReport.Report[]> {
-    return this.httpClient.get<{ message: string; result: { [key: string]: IReport.Report } }>(
+    return this.httpClient.get<IReport.Report>(
       this.backendURL + 'report',
       { params: { id: id } }
     ).pipe(
-      map(response => {
+      map(result => {
         // แปลง result เป็น array
-        return Object.values(response.result);
+        return Object.values(result['result']);
       })
     );
   }
