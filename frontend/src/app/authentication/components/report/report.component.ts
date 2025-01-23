@@ -42,9 +42,10 @@ export class ReportComponent implements OnInit {
     });
   }
 
-  get_report(id: string) {
+  get_report(id: string): void {
     this.cctvService.get_report(id).subscribe(result => {
-      this.reportItems = result
+      // แปลง result เป็น array
+      this.reportItems = Object.values(result['result']);  // แปลง result เป็น array
     });
   }
 
