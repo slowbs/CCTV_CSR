@@ -8,12 +8,14 @@ if (isset($_GET['id'])) {
                 cctv.durable_no, 
                 cctv.durable_name, 
                 cctv.location, 
-                floor.floor_name AS floor, 
-                cctv.status, 
+                floor.floor_name AS floor,
+                cctv.status AS status_id,
+                status.status_name AS status,
                 cctv.ping,
                 online_log.date_created AS online, -- ออนไลน์
                 offline_log.date_created AS offline -- ออฟไลน์
             FROM cctv
+            LEFT JOIN status ON cctv.status = status.status_id
             LEFT JOIN floor ON cctv.floor = floor.floor_id
             LEFT JOIN log_ping AS online_log 
                 ON cctv.id = online_log.cctv_id 
@@ -36,6 +38,7 @@ if (isset($_GET['id'])) {
                     'location' => $row['location'],
                     'floor' => $row['floor'],
                     'status' => $row['status'],
+                    'status_id' => $row['status_id'],
                     'ping' => $row['ping'],
                     'logs' => []
                 ];

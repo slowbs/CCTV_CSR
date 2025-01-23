@@ -38,14 +38,27 @@
                                     <td>{{ item.durable_name }}</td>
                                     <td>{{ item.durable_no }}</td>
                                     <td>{{ item.location }}</td>
-                                    <td>{{ item.status }}</td>
-                                    <td>{{ item.ping }}</td>
+                                    <td class="text-center">
+                                        <span class="badge" [ngClass]="{
+                                                  'bg-success': item.status_id === '1',
+                                                  'bg-warning': item.status_id === '2',
+                                                  'bg-danger': item.status_id === '3',
+                                                  'bg-secondary': item.status_id === '4'
+                                              }">
+                                            {{ item.status }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge" [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
+                                            {{ item.ping === '0' ? 'Online' : 'Offline' }}
+                                        </span>
+                                    </td>
                                     <!-- คอลัมน์ log ที่มีข้อมูล -->
                                     <td *ngIf="item.logs && item.logs.length > 0">
                                         <div *ngFor="let log of item.logs">
-                                            Offline: {{ formatDate(log.offline) }} <br>
-                                            Online: {{ formatDate(log.online) }} <br>
-                                            Duration: {{ log.duration }}
+                                            ออฟไลน์: {{ formatDate(log.offline) }} <br>
+                                            ออนไลน์: {{ formatDate(log.online) }} <br>
+                                            ระยะเวลา: {{ log.duration }}
                                         </div>
                                     </td>
 

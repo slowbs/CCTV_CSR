@@ -214,6 +214,7 @@ export namespace IReport {
     location: string
     floor: string
     status: string
+    status_id: string
     ping: string
     logs: Log[]
   }
