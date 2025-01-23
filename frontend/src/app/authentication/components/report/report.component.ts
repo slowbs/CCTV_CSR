@@ -72,7 +72,7 @@ export class ReportComponent implements OnInit {
     return null;
   }
 
-  // คำนวณระยะเวลา Offline (ปัดเศษวินาทีขึ้นเป็นนาที)
+  // คำนวณระยะเวลา Offline (ไม่ปัดเศษวินาที)
   calculateOfflineDuration(offline: string, online: string): string | null {
     if (!offline || !online) return null;
 
@@ -84,12 +84,13 @@ export class ReportComponent implements OnInit {
 
     if (diffInMs < 0) return 'N/A'; // กรณีที่เวลา online เร็วกว่าหรือผิดพลาด
 
-    // ปัดเศษเวลาที่ได้เป็นนาที
-    const diffInMinutes = Math.ceil(diffInMs / (1000 * 60)); // ใช้ Math.ceil() เพื่อปัดเศษวินาทีขึ้นเป็นนาที
+    // แปลงเป็นนาทีโดยใช้ Math.floor() เพื่อไม่ให้มีการปัดเศษ
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // ใช้ Math.floor() เพื่อไม่ปัดเศษวินาที
     const days = Math.floor(diffInMinutes / (60 * 24)); // คำนวณจำนวนวัน
     const hours = Math.floor((diffInMinutes % (60 * 24)) / 60); // คำนวณจำนวนชั่วโมง
-    const minutes = diffInMinutes % 60; // คำนวณจำนวนวินาทีที่เหลือ
+    const minutes = diffInMinutes % 60; // คำนวณจำนวนนาทีที่เหลือ
 
     return `${days} วัน ${hours} ชั่วโมง ${minutes} นาที`; // แสดงผลในรูปแบบ วัน ชั่วโมง นาที
   }
+
 }
