@@ -43,13 +43,9 @@ export class ReportComponent implements OnInit {
   }
 
   get_report(id: string) {
-    this.cctvService.get_report(id).subscribe(data => {
-      this.reportItems = data.map(item => {
-        // ถ้าต้องการปรับข้อมูลเพิ่มเติม เช่น เปลี่ยนสถานะ
-        item.status = item.status === '1' ? 'Online' : 'Offline';
-        return item;
-      });
-      console.log(this.reportItems);
+    this.cctvService.get_report(id).subscribe(result => {
+      this.reportItems = result['result']
+      console.log(this.reportItems)
     });
   }
 
