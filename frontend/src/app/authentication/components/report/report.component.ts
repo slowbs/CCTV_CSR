@@ -44,8 +44,7 @@ export class ReportComponent implements OnInit {
 
   get_report(id: string) {
     this.cctvService.get_report(id).subscribe(result => {
-      this.reportItems = result['result']
-      console.log(this.reportItems)
+      this.reportItems = result
     });
   }
 
