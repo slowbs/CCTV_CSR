@@ -23,18 +23,18 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>ลำดับที่</th>
-                                    <th>รายการ</th>
-                                    <th>เลขครุภัณฑ์</th>
-                                    <th>สถานที่</th>
-                                    <th>สถานะ</th>
-                                    <th>Ping</th>
-                                    <th>หมายเหตุ</th>
+                                    <th class="text-center">ลำดับที่</th>
+                                    <th class="text-center">รายการ</th>
+                                    <th class="text-center">เลขครุภัณฑ์</th>
+                                    <th class="text-center">สถานที่</th>
+                                    <th class="text-center">สถานะ</th>
+                                    <th class="text-center">Ping</th>
+                                    <th class="text-center">หมายเหตุ</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of reportItems; let i = index">
-                                    <td>{{ i + 1 }}</td>
+                                    <td class="text-center">{{ i + 1 }}</td>
                                     <td>{{ item.durable_name }}</td>
                                     <td>{{ item.durable_no }}</td>
                                     <td>{{ item.location }}</td>
