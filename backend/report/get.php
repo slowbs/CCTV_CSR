@@ -24,7 +24,7 @@ if (isset($_GET['id'])) {
                     AND online_log.ping_checked = 0 
                     AND online_log.date_created > offline_log.date_created  -- ต้องออนไลน์หลังจากออฟไลน์
                 WHERE cctv.type = $id
-                ORDER BY floor.order, cctv.durable_no, offline_log.date_created DESC;";
+                ORDER BY floor.order, cctv.durable_no, online_log.date_created DESC;";
 
         $query = mysqli_query($conn, $sql);
         $result = [];
@@ -42,12 +42,10 @@ if (isset($_GET['id'])) {
                     'logs' => []
                 ];
             }
-            if ($row['offline'] && $row['online']) {
-                $result[$id]['logs'][] = [
-                    'offline' => $row['offline'],
-                    'online' => $row['online']
-                ];
-            }
+            $result[$id]['logs'][] = [
+                'offline' => $row['offline'],
+                'online' => $row['online'] ?? null  // ถ้า online เป็น null ก็ให้เป็น null จริง ๆ
+            ];
         }
 
         echo json_encode([

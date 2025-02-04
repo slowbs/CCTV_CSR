@@ -49,7 +49,8 @@ export class ReportComponent implements OnInit {
 
       this.reportItems.forEach(item => {
         // ตรวจสอบว่า logs มีข้อมูลที่ไม่เป็น null และไม่ว่าง
-        item.logs = item.logs.filter(log => log.offline && log.online); // กรอง logs ที่มีข้อมูลจริง
+        // item.logs = item.logs.filter(log => log.offline && log.online); // กรอง logs ที่มีข้อมูลจริง
+        item.logs = item.logs.filter(log => log.offline);
         item.logs.forEach(log => {
           // คำนวณระยะเวลา offline
           log.duration = this.calculateOfflineDuration(log.offline, log.online);
