@@ -30,6 +30,7 @@
                                 <th>IP</th>
                                 <th>สถานะ</th>
                                 <th>เวลา</th>
+                                <th>หมายเหตุ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,11 +47,18 @@
                                     <td class="offline">Offline</td>
                                 </ng-template> -->
                                 <td class="text-center">
-                                    <span class="badge" [ngClass]="item.ping_checked === '0' ? 'bg-success' : 'bg-danger'">
+                                    <span class="badge"
+                                        [ngClass]="item.ping_checked === '0' ? 'bg-success' : 'bg-danger'">
                                         {{ item.ping_checked === '0' ? 'Online' : 'Offline' }}
                                     </span>
                                 </td>
                                 <td>{{ item.date_created }}</td>
+                                <td align="center">
+                                    <a [routerLink]="[]" data-bs-toggle="modal" data-bs-target="#editCommentModal">
+                                        <span class="badge bg-warning"><i class="bi bi-pencil-square"
+                                                title="Edit"></i></span>
+                                    </a>
+                                </td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -61,6 +69,32 @@
                     </table>
                 </div>
                 <pagination previousText="ก่อนหน้า" nextText="ถัดไป" [totalItems]="30"></pagination>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal HTML -->
+    <div id="editCommentModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <h4 class="modal-title">แก้ไขหมายเหตุ</h4>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <h5 class="lh_modal">หมายเหตุ</h5>
+                            <input type="text" class="form-control" required placeholder="เลขครุภัณฑ์" name="comment">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-info modal_button" value="Save">
+                        <input type="button" class="btn btn-danger modal_button" data-bs-dismiss="modal" value="Cancel">
+                    </div>
+                </form>
             </div>
         </div>
     </div>
