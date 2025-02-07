@@ -54,7 +54,8 @@
                                 </td>
                                 <td>{{ item.date_created }}</td>
                                 <td align="center">
-                                    <a [routerLink]="[]" data-bs-toggle="modal" data-bs-target="#editCommentModal">
+                                    <a [routerLink]="[]" data-bs-toggle="modal" data-bs-target="#editCommentModal"
+                                        (click)="onEditModal(item)">
                                         <span class="badge bg-warning"><i class="bi bi-pencil-square"
                                                 title="Edit"></i></span>
                                     </a>
@@ -87,7 +88,8 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <h5 class="lh_modal">หมายเหตุ</h5>
-                            <input type="text" class="form-control" required placeholder="เลขครุภัณฑ์" name="comment">
+                            <textarea class="form-control" required placeholder="เลขครุภัณฑ์"
+                                [(ngModel)]="model.comment" name="comment" rows="5"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">

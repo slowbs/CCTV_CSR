@@ -10,12 +10,15 @@ import { CctvService, ILogPing } from '../../../shareds/cctv.service';
 export class LogPingComponent implements OnInit {
 
   public logpingItems: ILogPing[] = [];
+  public model: ILogPing;
   public isLoading: boolean = true; // กำลังโหลดข้อมูล
 
   constructor(
     private cctvService: CctvService,
     private route: ActivatedRoute
-  ) { }
+  ) {
+    this.model = this.cctvService.updateModelLogping;
+  }
 
   ngOnInit() {
 
@@ -36,5 +39,10 @@ export class LogPingComponent implements OnInit {
         // console.log(this.logpingItems);
         this.isLoading = false;
       });
+  }
+
+  onEditModal(items: ILogPing) {
+    Object.assign(this.cctvService.updateModelLogping, items);
+    console.log(items)
   }
 }

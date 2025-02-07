@@ -13,6 +13,7 @@ export class CctvService {
 
   public updateModel: ICctvs = Object.assign({})
   public updateModelUser: IUsers = Object.assign({})
+  public updateModelLogping: ILogPing = Object.assign({})
 
   constructor(private httpClient: HttpClient) { }
 
@@ -197,6 +198,7 @@ export interface ILogPing {
   ip: string
   duration: string
   type: string
+  comment: string
 }
 
 export interface ICountPing {
