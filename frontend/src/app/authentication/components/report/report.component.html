@@ -30,6 +30,7 @@
                                     <th class="text-center">สถานะ</th>
                                     <th class="text-center">Ping</th>
                                     <th class="text-center">วัน/เวลา</th>
+                                    <th class="text-center">หมายเหตุ</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -64,18 +65,27 @@
                                                 ระยะเวลา: {{ item.logs[0].duration }}
                                             </ng-container>
                                             <ng-template #noLogs>
-
+                                            </ng-template>
+                                        </td>
+                                        <td>
+                                            <ng-container *ngIf="(item.logs ?? []).length; else noComment">
+                                                หมายเหตุ 1
+                                            </ng-container>
+                                            <ng-template #noComment>
                                             </ng-template>
                                         </td>
 
                                     </tr>
 
                                     <!-- แถวเพิ่มเติมสำหรับ logs ที่เหลือ -->
-                                    <tr *ngFor="let log of item.logs?.slice(1)">
+                                    <tr *ngFor="let log of item.logs?.slice(1); let y = index">
                                         <td>
                                             ออฟไลน์: {{ formatDate(log.offline) }} <br>
                                             ออนไลน์: {{ formatDate(log.online) }} <br>
                                             ระยะเวลา: {{ log.duration }}
+                                        </td>
+                                        <td>
+                                            หมายเหตุ {{ y + 2 }}
                                         </td>
                                     </tr>
                                 </ng-container>
