@@ -30,45 +30,55 @@
                                     <th class="text-center">สถานะ</th>
                                     <th class="text-center">Ping</th>
                                     <th class="text-center">วัน/เวลา</th>
-                                    <th class="text-center">หมายเหตุ</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of reportItems; let i = index">
-                                    <td class="text-center">{{ i + 1 }}</td>
-                                    <td>{{ item.durable_name }}</td>
-                                    <td>{{ item.durable_no }}</td>
-                                    <td>{{ item.location }}</td>
-                                    <td class="text-center">
-                                        <span class="badge" [ngClass]="{
+                                <ng-container *ngFor="let item of reportItems; let i = index">
+                                    <!-- แถวแรกของแต่ละ item -->
+                                    <tr>
+                                        <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">{{ i + 1 }}
+                                        </td>
+                                        <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.durable_name }}</td>
+                                        <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.durable_no }}</td>
+                                        <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.location }}</td>
+                                        <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">
+                                            <span class="badge" [ngClass]="{
                                                   'bg-success': item.status_id === '1',
                                                   'bg-warning': item.status_id === '2',
                                                   'bg-danger': item.status_id === '3',
                                                   'bg-secondary': item.status_id === '4'
                                               }">
-                                            {{ item.status }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge" [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
-                                            {{ item.ping === '0' ? 'Online' : 'Offline' }}
-                                        </span>
-                                    </td>
-                                    <!-- คอลัมน์ log ที่มีข้อมูล -->
-                                    <td *ngIf="item.logs && item.logs.length > 0">
-                                        <div *ngFor="let log of item.logs">
+                                                {{ item.status }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">
+                                            <span class="badge"
+                                                [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
+                                                {{ item.ping === '0' ? 'Online' : 'Offline' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <ng-container *ngIf="(item.logs ?? []).length; else noLogs">
+                                                ออฟไลน์: {{ formatDate(item.logs[0].offline) }} <br>
+                                                ออนไลน์: {{ formatDate(item.logs[0].online) }} <br>
+                                                ระยะเวลา: {{ item.logs[0].duration }}
+                                            </ng-container>
+                                            <ng-template #noLogs>
+
+                                            </ng-template>
+                                        </td>
+
+                                    </tr>
+
+                                    <!-- แถวเพิ่มเติมสำหรับ logs ที่เหลือ -->
+                                    <tr *ngFor="let log of item.logs?.slice(1)">
+                                        <td>
                                             ออฟไลน์: {{ formatDate(log.offline) }} <br>
                                             ออนไลน์: {{ formatDate(log.online) }} <br>
                                             ระยะเวลา: {{ log.duration }}
-                                        </div>
-                                    </td>
-                                    <!-- คอลัมน์ log ถ้าไม่มีข้อมูล -->
-                                    <td *ngIf="!item.logs || item.logs.length === 0"></td>
-                                    <!-- คอลัมน์ หมายเหตุ ถ้ามีข้อมูล -->
-                                    <td *ngIf="item.logs && item.logs.length > 0">หมายเหตุ</td>
-                                    <!-- คอลัมน์ หมายเหตุ ถ้าไม่มีข้อมูล -->
-                                    <td *ngIf="!item.logs || item.logs.length === 0"></td>
-                                </tr>
+                                        </td>
+                                    </tr>
+                                </ng-container>
                             </tbody>
                         </table>
                     </div>
