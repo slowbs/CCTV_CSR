@@ -225,5 +225,6 @@ export namespace IReport {
     offline: string
     online: string
     duration?: string | null
+    comment?: string | null
   }
 }

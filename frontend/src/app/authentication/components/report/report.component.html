@@ -69,7 +69,7 @@
                                         </td>
                                         <td>
                                             <ng-container *ngIf="(item.logs ?? []).length; else noComment">
-                                                หมายเหตุ 1
+                                                {{ item.logs[0].comment}}
                                             </ng-container>
                                             <ng-template #noComment>
                                             </ng-template>
@@ -85,7 +85,7 @@
                                             ระยะเวลา: {{ log.duration }}
                                         </td>
                                         <td>
-                                            หมายเหตุ {{ y + 2 }}
+                                            {{ log.comment}}
                                         </td>
                                     </tr>
                                 </ng-container>

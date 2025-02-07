@@ -21,21 +21,21 @@
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>ลำดับ</th>
-                                <th>เลขครุภัณฑ์</th>
-                                <th>รายการ</th>
-                                <th>ชั้น</th>
-                                <th>สถานที่</th>
-                                <th>Monitor</th>
-                                <th>IP</th>
-                                <th>สถานะ</th>
-                                <th>เวลา</th>
-                                <th>หมายเหตุ</th>
+                                <th class="text-center">ลำดับ</th>
+                                <th class="text-center">เลขครุภัณฑ์</th>
+                                <th class="text-center">รายการ</th>
+                                <th class="text-center">ชั้น</th>
+                                <th class="text-center">สถานที่</th>
+                                <th class="text-center">Monitor</th>
+                                <th class="text-center">IP</th>
+                                <th class="text-center">สถานะ</th>
+                                <th class="text-center">เวลา</th>
+                                <th class="text-center">หมายเหตุ</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let item of logpingItems">
-                                <td>{{ item.log_id }}</td>
+                                <td class="text-center">{{ item.log_id }}</td>
                                 <td>{{ item.durable_no }}</td>
                                 <td>{{ item.durable_name }}</td>
                                 <td>{{ item.floor_name }}</td>
@@ -53,13 +53,22 @@
                                     </span>
                                 </td>
                                 <td>{{ item.date_created }}</td>
-                                <td align="center">
-                                    <a [routerLink]="[]" data-bs-toggle="modal" data-bs-target="#editCommentModal"
-                                        (click)="onEditModal(item)">
-                                        <span class="badge bg-warning"><i class="bi bi-pencil-square"
-                                                title="Edit"></i></span>
-                                    </a>
-                                </td>
+                                <ng-container *ngIf="item.ping_checked === '1' ; else noComment">
+                                    <td class="text-center">
+                                        <a [routerLink]=" []" data-bs-toggle="modal" data-bs-target="#editCommentModal"
+                                            (click)="onEditModal(item)">
+                                            <!-- <span class="badge bg-warning"><i class="bi bi-pencil-square"
+                                                    title="Edit"></i></span> -->
+                                            <span class="badge"
+                                                [ngClass]="item.comment === null ? 'bg-warning' : 'bg-success'">
+                                                <i class="bi bi-pencil-square" title="Edit"></i>
+                                            </span>
+                                        </a>
+                                    </td>
+                                </ng-container>
+                                <ng-template #noComment>
+                                    <td></td>
+                                </ng-template>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -88,8 +97,8 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <h5 class="lh_modal">หมายเหตุ</h5>
-                            <textarea class="form-control" required placeholder="เลขครุภัณฑ์"
-                                [(ngModel)]="model.comment" name="comment" rows="5"></textarea>
+                            <textarea class="form-control" required [(ngModel)]="model.comment" name="comment"
+                                rows="5"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">

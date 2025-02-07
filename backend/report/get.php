@@ -12,7 +12,8 @@ if (isset($_GET['id'])) {
                     status.status_name AS status,
                     cctv.ping,
                     offline_log.date_created AS offline,
-                    online_log.date_created AS online
+                    online_log.date_created AS online,
+					offline_log.comment as comment
                 FROM cctv
                 LEFT JOIN status ON cctv.status = status.status_id
                 LEFT JOIN floor ON cctv.floor = floor.floor_id
@@ -44,7 +45,8 @@ if (isset($_GET['id'])) {
             }
             $result[$id]['logs'][] = [
                 'offline' => $row['offline'],
-                'online' => $row['online'] ?? null  // ถ้า online เป็น null ก็ให้เป็น null จริง ๆ
+                'online' => $row['online'] ?? null,  // ถ้า online เป็น null ก็ให้เป็น null จริง ๆ
+                'comment' => $row['comment'] ?? null  // ถ้า comment เป็น null ก็ให้เป็น null จริง ๆ
             ];
         }
 
