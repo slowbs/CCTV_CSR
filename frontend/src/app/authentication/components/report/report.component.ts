@@ -13,16 +13,29 @@ import { ActivatedRoute } from '@angular/router';
 export class ReportComponent implements OnInit {
   // ข้อมูลตัวอย่างสำหรับ Report
   public reportItems: IReport.Report[] = [];
+  reportTitle = 'รายงานข้อมูล'; // ตั้งค่าหัวข้อเริ่มต้น
 
   constructor(private cctvService: CctvService, private route: ActivatedRoute, private datePipe: DatePipe) { }
 
   ngOnInit(): void {
     // ดึงค่าพารามิเตอร์ id จาก route และใช้เรียกข้อมูล log ping
     this.route.paramMap.subscribe(params => {
+      
+      // กำหนดชื่อตัวแปรเก็บ paramteter
       const id = params.get('id');
+
+      // กำหนดชื่อหัวข้อตามประเภท
+      const titles: { [key: string]: string } = {
+        '1': 'รายงานข้อมูลกล้องโทรทัศน์วงจรปิด',
+        '2': 'รายงานข้อมูลเครื่องคอมพิวเตอร์แม่ข่าย',
+        '3': 'รายงานข้อมูลอุปกรณ์กระจายสัญญาณ',
+        '4': 'รายงานข้อมูลอุปกรณ์จัดเก็บข้อมูล'
+      };
       if (id) {
         this.get_report(id);
+        this.reportTitle = titles[id] || 'รายงานข้อมูล';
       }
+
     });
   }
 
