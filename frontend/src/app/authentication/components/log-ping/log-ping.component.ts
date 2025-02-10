@@ -43,6 +43,28 @@ export class LogPingComponent implements OnInit {
 
   onEditModal(items: ILogPing) {
     Object.assign(this.cctvService.updateModelLogping, items);
-    console.log(items)
+    // console.log(items)
   }
+
+  onEditSubmit() {
+    // console.log(this.model)
+    this.cctvService.put_logping(this.model.log_id, this.model)
+      .subscribe({
+        next: (result) => {
+          console.log(result);
+          // $('#editUserModal').modal('hide');
+          this.route.paramMap.subscribe(params => {
+            const id = params.get('id');
+            if (id) {
+              this.get_LogPing(id);
+            }
+          });
+        },
+        error: (excep) => {
+          console.log(excep);
+        }
+      });
+  }
+
+
 }

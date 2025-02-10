@@ -81,8 +81,14 @@ export class CctvService {
     return this.httpClient.get<ICctvs[]>(this.backendURL + 'networks');
   }
 
+  // แสดงข้อมูล Log
   get_logping(id: any) {
     return this.httpClient.get<ILogPing[]>(this.backendURL + 'log_ping', { params: { id: id } });
+  }
+
+  // แสดงข้อมูล Log
+  put_logping(log_id: any, value: ILogPing) {
+    return this.httpClient.put(this.backendURL + 'log_ping', value, { params: { log_id: log_id } })
   }
 
   // ดึงข้อมูลจำนวนนับสถานะอุปกรณ์มาแสดงในหน้า dashboard
