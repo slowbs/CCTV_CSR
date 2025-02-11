@@ -60,7 +60,7 @@
                                             <!-- <span class="badge bg-warning"><i class="bi bi-pencil-square"
                                                     title="Edit"></i></span> -->
                                             <span class="badge"
-                                                [ngClass]="item.comment === null ? 'bg-warning' : 'bg-success'">
+                                                [ngClass]="item.comment === null || item.comment === '' ? 'bg-warning' : 'bg-success'">
                                                 <i class="bi bi-pencil-square" title="Edit"></i>
                                             </span>
                                         </a>

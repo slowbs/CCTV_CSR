@@ -95,17 +95,18 @@ export class ReportComponent implements OnInit {
       styles: {
         font: 'Sarabun',
         fontSize: 8,
+        overflow: 'linebreak',
         lineColor: [0, 0, 0],   // กำหนดสีเส้น cell border เป็นสีดำ
-        lineWidth: 0.1          // กำหนดความหนาเส้นของ cell border
+        lineWidth: 0.1,          // กำหนดความหนาเส้นของ cell border
       },
-      headStyles: { fillColor: [41, 128, 185] },
+      headStyles: { fillColor: [41, 128, 185], overflow: 'linebreak', halign: 'center' },
       columnStyles: {
-        index: { cellWidth: 10 },
+        index: { cellWidth: 12, halign: 'center' },
         durable_name: { cellWidth: 30 },
-        durable_no: { cellWidth: 25 },
-        location: { cellWidth: 30 },
-        status: { cellWidth: 20 },
-        ping: { cellWidth: 15 },
+        durable_no: { cellWidth: 25, halign: 'center' },
+        location: { cellWidth: 30, overflow: 'linebreak' },
+        status: { cellWidth: 20, halign: 'center' },
+        ping: { cellWidth: 15, halign: 'center' },
         log_time: { cellWidth: 40 },
       },
       tableLineColor: [0, 0, 0],   // สีดำ

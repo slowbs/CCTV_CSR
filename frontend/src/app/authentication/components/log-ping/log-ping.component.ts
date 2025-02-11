@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CctvService, ILogPing } from '../../../shareds/cctv.service';
+declare const $: any;
 
 @Component({
   selector: 'app-log-ping',
@@ -52,7 +53,7 @@ export class LogPingComponent implements OnInit {
       .subscribe({
         next: (result) => {
           console.log(result);
-          // $('#editUserModal').modal('hide');
+          $('#editCommentModal').modal('hide');
           this.route.paramMap.subscribe(params => {
             const id = params.get('id');
             if (id) {
