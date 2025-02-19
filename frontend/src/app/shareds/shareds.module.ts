@@ -1,6 +1,7 @@
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { BsDropdownConfig, BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { BsDatepickerConfig, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { AuthNavbarComponent } from './components/auth-navbar/auth-navbar.component';
 import { AuthSidebarComponent } from './components/auth-sidebar/auth-sidebar.component';
 import { AuthContentComponent } from './components/auth-content/auth-content.component';
@@ -27,7 +28,8 @@ registerLocaleData(localeTh); // ลงทะเบียน locale ภาษา
     BsDropdownModule.forRoot(),
     RouterModule,
     PaginationModule.forRoot(),
-    FormsModule
+    FormsModule,
+    // BsDatepickerModule.forRoot()
   ],
   exports: [
     AuthNavbarComponent,
@@ -35,7 +37,8 @@ registerLocaleData(localeTh); // ลงทะเบียน locale ภาษา
     AuthContentComponent,
     BsDropdownModule,
     PaginationModule,
-    FormsModule
+    FormsModule,
+    BsDatepickerModule
   ],
   providers: [
     {

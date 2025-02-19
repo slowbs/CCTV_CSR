@@ -5,6 +5,11 @@ import { CctvService, IReport } from '../../../shareds/cctv.service';
 // นำเข้า pdfMake และ pdfFonts จาก pdfmake package
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from '../../../../assets/font/vfs_fonts';
+import { BsLocaleService } from 'ngx-bootstrap/datepicker';
+import { defineLocale } from 'ngx-bootstrap/chronos';
+import { thLocale } from 'ngx-bootstrap/locale';
+
+defineLocale('th', thLocale);
 
 // ใช้ฟอนต์ที่มาพร้อมกับ pdfMake (Roboto)
 // หากคุณต้องการใช้ฟอนต์ภาษาไทย (เช่น Sarabun) คุณต้อง embed ฟอนต์ภาษาไทยเองและตั้งค่า pdfMake.fonts ให้ถูกต้อง
@@ -29,8 +34,11 @@ export class ReportComponent implements OnInit {
   constructor(
     private cctvService: CctvService,
     private route: ActivatedRoute,
-    private datePipe: DatePipe
-  ) { }
+    private datePipe: DatePipe,
+    private localeService: BsLocaleService
+  ) {
+    this.localeService.use('th');
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {

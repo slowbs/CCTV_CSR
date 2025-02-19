@@ -9,17 +9,30 @@
             <li class="breadcrumb-item"><a [routerLink]="[]">Report</a></li>
         </ul>
     </div>
+
+    <!-- Row สำหรับ Date Range และปุ่ม Submit (ด้านซ้าย) กับ Download PDF (ด้านขวา) -->
+    <div class="row mb-3">
+        <div class="col-md-6 d-flex align-items-center">
+            <!-- Date range inputs -->
+            <input type="text" placeholder="ตั้งแต่วันที่" class="form-control" bsDatepicker
+                [bsConfig]="{ isAnimated: true }">
+            <input type="text" placeholder="ถึงวันที่" class="form-control me-2" bsDatepicker
+                [bsConfig]="{ isAnimated: true }">
+            <!-- Submit button -->
+            <button class="btn btn-primary">Submit</button>
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-primary" (click)="generatePDF()">
+                <i class="bi bi-file-earmark-arrow-down"></i> Download PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- ส่วนของรายงาน -->
     <div class="row">
         <div class="col-md-12">
             <div class="tile">
                 <div class="tile-body">
-                    <!-- ปุ่มสำหรับดาวน์โหลด PDF -->
-                    <div class="text-end"> <button class="btn btn-primary mb-3" (click)="generatePDF()">
-                            <i class="bi bi-file-earmark-arrow-down"></i> Download PDF
-                        </button>
-                    </div>
-
-                    <!-- เนื้อหาที่จะใส่ใน PDF -->
                     <div id="report-content">
                         <h2 class="text-center">{{ reportTitle }}</h2>
                         <table class="table table-bordered">
@@ -46,11 +59,11 @@
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.location }}</td>
                                         <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">
                                             <span class="badge" [ngClass]="{
-                                                  'bg-success': item.status_id === '1',
-                                                  'bg-warning': item.status_id === '2',
-                                                  'bg-danger': item.status_id === '3',
-                                                  'bg-secondary': item.status_id === '4'
-                                              }">
+                          'bg-success': item.status_id === '1',
+                          'bg-warning': item.status_id === '2',
+                          'bg-danger': item.status_id === '3',
+                          'bg-secondary': item.status_id === '4'
+                        }">
                                                 {{ item.status }}
                                             </span>
                                         </td>
@@ -66,19 +79,15 @@
                                                 ออนไลน์: {{ formatDate(item.logs[0].online) }} <br>
                                                 ระยะเวลา: {{ item.logs[0].duration }}
                                             </ng-container>
-                                            <ng-template #noLogs>
-                                            </ng-template>
+                                            <ng-template #noLogs></ng-template>
                                         </td>
                                         <td>
                                             <ng-container *ngIf="(item.logs ?? []).length; else noComment">
-                                                {{ item.logs[0].comment}}
+                                                {{ item.logs[0].comment }}
                                             </ng-container>
-                                            <ng-template #noComment>
-                                            </ng-template>
+                                            <ng-template #noComment></ng-template>
                                         </td>
-
                                     </tr>
-
                                     <!-- แถวเพิ่มเติมสำหรับ logs ที่เหลือ -->
                                     <tr *ngFor="let log of item.logs?.slice(1); let y = index">
                                         <td>
@@ -87,7 +96,7 @@
                                             ระยะเวลา: {{ log.duration }}
                                         </td>
                                         <td>
-                                            {{ log.comment}}
+                                            {{ log.comment }}
                                         </td>
                                     </tr>
                                 </ng-container>
