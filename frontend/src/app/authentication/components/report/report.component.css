@@ -1,7 +1,5 @@
 #report-content {
-    padding: 20px;
     background: #ffffff;
-    border: 1px solid #ddd;
 }
 
 .table {
@@ -12,7 +10,6 @@
 
 .table th,
 .table td {
-    padding: 0.75rem;
     vertical-align: top;
     border-top: 1px solid #dee2e6;
 }

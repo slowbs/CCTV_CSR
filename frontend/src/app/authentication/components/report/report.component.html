@@ -2,6 +2,7 @@
     <div class="app-title">
         <div>
             <h1><i class="bi bi-speedometer"></i> Report</h1>
+            <p>สรุปรายงานสถานะครุภัณฑ์กล้องโทรทัศน์วงจรปิด</p>
         </div>
         <ul class="app-breadcrumb breadcrumb">
             <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
@@ -13,9 +14,10 @@
             <div class="tile">
                 <div class="tile-body">
                     <!-- ปุ่มสำหรับดาวน์โหลด PDF -->
-                    <button class="btn btn-primary mb-3" (click)="generatePDF()">
-                        <i class="bi bi-file-earmark-arrow-down"></i> Download PDF
-                    </button>
+                    <div class="text-end"> <button class="btn btn-primary mb-3" (click)="generatePDF()">
+                            <i class="bi bi-file-earmark-arrow-down"></i> Download PDF
+                        </button>
+                    </div>
 
                     <!-- เนื้อหาที่จะใส่ใน PDF -->
                     <div id="report-content">
