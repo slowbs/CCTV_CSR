@@ -1,10 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import { CctvService, IReport } from '../../../shareds/cctv.service';
-import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { sarabunRegular } from '../../../../assets/font/Sarabun-Regular-normal'; // นำเข้า Base64
+import { DatePipe } from '@angular/common';
+import { CctvService, IReport } from '../../../shareds/cctv.service';
+// นำเข้า pdfMake และ pdfFonts จาก pdfmake package
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from '../../../../assets/font/vfs_fonts';
+
+// ใช้ฟอนต์ที่มาพร้อมกับ pdfMake (Roboto)
+// หากคุณต้องการใช้ฟอนต์ภาษาไทย (เช่น Sarabun) คุณต้อง embed ฟอนต์ภาษาไทยเองและตั้งค่า pdfMake.fonts ให้ถูกต้อง
+(<any>pdfMake).addVirtualFileSystem(pdfFonts);
+
+pdfMake.addFonts({
+  Sarabun: {
+    normal: 'Sarabun-Regular.ttf',
+    bold: 'Sarabun-Bold.ttf',
+  },
+});
 
 @Component({
   selector: 'app-report',
@@ -15,19 +26,21 @@ export class ReportComponent implements OnInit {
   public reportItems: IReport.Report[] = [];
   reportTitle = 'รายงานข้อมูล';
 
-  constructor(private cctvService: CctvService, private route: ActivatedRoute, private datePipe: DatePipe) { }
+  constructor(
+    private cctvService: CctvService,
+    private route: ActivatedRoute,
+    private datePipe: DatePipe
+  ) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-
       const titles: { [key: string]: string } = {
         '1': 'รายงานข้อมูลกล้องโทรทัศน์วงจรปิด',
         '2': 'รายงานข้อมูลเครื่องคอมพิวเตอร์แม่ข่าย',
         '3': 'รายงานข้อมูลอุปกรณ์กระจายสัญญาณ',
         '4': 'รายงานข้อมูลอุปกรณ์จัดเก็บข้อมูล'
       };
-
       if (id) {
         this.get_report(id);
         this.reportTitle = titles[id] || 'รายงานข้อมูล';
@@ -35,92 +48,114 @@ export class ReportComponent implements OnInit {
     });
   }
 
-  generatePDF() {
-    const doc = new jsPDF('p', 'mm', 'a4');
+  // ฟังก์ชันสำหรับแยกคำภาษาไทยด้วย Intl.Segmenter
+  // join ด้วยช่องว่าง เพื่อให้มี breakpoint สำหรับการ wrap
+  private segmentThaiText(text: string): string {
+    if (!text) return "";
+    if ('Segmenter' in Intl) {
+      const segmenter = new Intl.Segmenter('th', { granularity: 'word' });
+      const segments = Array.from(segmenter.segment(text));
+      // join ด้วย space (คุณสามารถเปลี่ยนเป็น '\u200B' หรือ soft hyphen (\u00AD) ได้ตามที่ต้องการ)
+      return segments.map(segment => segment.segment).join('\u00AD');
+    }
+    return text;
+  }
 
-    // โหลดฟอนต์จาก Base64
-    doc.addFileToVFS('Sarabun-Regular.ttf', sarabunRegular);
-    doc.addFont('Sarabun-Regular.ttf', 'Sarabun', 'normal');
-    doc.setFont('Sarabun'); // ตั้งค่าเริ่มต้น
+  generatePDF(): void {
+    const documentDefinition = {
+      defaultStyle: {
+        font: 'Sarabun', // เปลี่ยนเป็น 'Sarabun' หากคุณ embedฟอนต์ภาษาไทยไว้แล้ว
+        fontSize: 8
+      },
+      content: [
+        { text: this.reportTitle, style: 'header', alignment: 'center', margin: [0, 0, 0, 20] },
+        this.getTableContent()
+      ],
+      styles: {
+        header: {
+          fontSize: 14,
+          bold: true
+        },
+        tableHeader: {
+          bold: true,
+          fillColor: '#2980b9',
+          color: 'white'
+        }
+      }
+    };
 
-    doc.setFontSize(12);
-    doc.text(this.reportTitle, 105, 15, { align: 'center' });
+    pdfMake.createPdf(documentDefinition).download('report.pdf');
+  }
 
-    const columns = [
-      { header: 'ลำดับที่', dataKey: 'index' },
-      { header: 'รายการ', dataKey: 'durable_name' },
-      { header: 'เลขครุภัณฑ์', dataKey: 'durable_no' },
-      { header: 'สถานที่', dataKey: 'location' },
-      { header: 'สถานะ', dataKey: 'status' },
-      { header: 'Ping', dataKey: 'ping' },
-      { header: 'วัน/เวลา', dataKey: 'log_time' },
-      { header: 'หมายเหตุ', dataKey: 'comment' }
-    ];
+  // สร้างเนื้อหาตารางสำหรับ pdfMake
+  getTableContent() {
+    const body: any[] = [];
+    // header row (เพิ่มคอลัมน์ "หมายเหตุ")
+    body.push([
+      { text: 'ลำดับที่', style: 'tableHeader', alignment: 'center' },
+      { text: 'รายการ', style: 'tableHeader', alignment: 'center' },
+      { text: 'เลขครุภัณฑ์', style: 'tableHeader', alignment: 'center' },
+      { text: 'สถานที่', style: 'tableHeader', alignment: 'center' },
+      { text: 'สถานะ', style: 'tableHeader', alignment: 'center' },
+      { text: 'Ping', style: 'tableHeader', alignment: 'center' },
+      { text: 'วัน/เวลา', style: 'tableHeader', alignment: 'center' },
+      { text: 'หมายเหตุ', style: 'tableHeader', alignment: 'center' }
+    ]);
 
-    const rows: any[] = [];
-
-    this.reportItems.forEach((item, i) => {
-      if (item.logs?.length) {
-        item.logs.forEach((log, j) => {
-          rows.push({
-            index: j === 0 ? i + 1 : '',
-            durable_name: j === 0 ? item.durable_name : '',
-            durable_no: j === 0 ? item.durable_no : '',
-            location: j === 0 ? item.location : '',
-            status: j === 0 ? item.status : '',
-            ping: j === 0 ? (item.ping === '0' ? 'Online' : 'Offline') : '',
-            log_time: `ออฟไลน์: ${this.formatDate(log.offline) || ''}\nออนไลน์: ${this.formatDate(log.online) || ''}\nระยะเวลา: ${log.duration || ''}`,
-            comment: log.comment || ''
-          });
+    this.reportItems.forEach((item, index) => {
+      if (item.logs && item.logs.length > 0) {
+        item.logs.forEach((log, logIndex) => {
+          if (logIndex === 0) {
+            body.push([
+              { text: (index + 1).toString(), alignment: 'center' },
+              { text: this.segmentThaiText(item.durable_name) },
+              { text: item.durable_no },
+              { text: this.segmentThaiText(item.location) },
+              { text: this.segmentThaiText(item.status), alignment: 'center' },
+              { text: item.ping === '0' ? 'Online' : 'Offline' },
+              { text: `ออฟไลน์: ${this.formatDate(log.offline)}\nออนไลน์: ${this.formatDate(log.online)}\nระยะเวลา: ${log.duration}` },
+              { text: log.comment || '' }
+            ]);
+          } else {
+            body.push([
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: `ออฟไลน์: ${this.formatDate(log.offline)}\nออนไลน์: ${this.formatDate(log.online)}\nระยะเวลา: ${log.duration}` },
+              { text: log.comment || '' }
+            ]);
+          }
         });
       } else {
-        rows.push({
-          index: i + 1,
-          durable_name: item.durable_name,
-          durable_no: item.durable_no,
-          location: item.location,
-          status: item.status,
-          ping: item.ping === '0' ? 'Online' : 'Offline',
-          log_time: '',
-          comment: ''
-        });
+        body.push([
+          { text: (index + 1).toString(), alignment: 'center' },
+          { text: this.segmentThaiText(item.durable_name) },
+          { text: item.durable_no },
+          { text: this.segmentThaiText(item.location) },
+          { text: this.segmentThaiText(item.status), alignment: 'center' },
+          { text: item.ping === '0' ? 'Online' : 'Offline' },
+          { text: '' },
+          { text: '' }
+        ]);
       }
     });
 
-    autoTable(doc, {
-      columns,
-      body: rows,
-      startY: 20,
-      theme: 'grid',  // เปลี่ยนเป็น grid เพื่อแสดงเส้นขอบทั้งหมด
-      styles: {
-        font: 'Sarabun',
-        fontSize: 8,
-        overflow: 'linebreak',
-        lineColor: [0, 0, 0],   // กำหนดสีเส้น cell border เป็นสีดำ
-        lineWidth: 0.1,          // กำหนดความหนาเส้นของ cell border
-      },
-      headStyles: { fillColor: [41, 128, 185], overflow: 'linebreak', halign: 'center' },
-      columnStyles: {
-        index: { cellWidth: 12, halign: 'center' },
-        durable_name: { cellWidth: 30 },
-        durable_no: { cellWidth: 25, halign: 'center' },
-        location: { cellWidth: 30, overflow: 'linebreak' },
-        status: { cellWidth: 20, halign: 'center' },
-        ping: { cellWidth: 15, halign: 'center' },
-        log_time: { cellWidth: 40 },
-      },
-      tableLineColor: [0, 0, 0],   // สีดำ
-      tableLineWidth: 0.1,         // ความหนา 0.1 มม.
-      margin: { top: 20, left: 5, right: 5 }
-    });
-
-    doc.save('report.pdf');
+    return {
+      table: {
+        headerRows: 1,
+        widths: ['auto', 60, 'auto', 70, 40, 'auto', 110, '*'],
+        body: body
+      }
+    };
   }
+
 
   get_report(id: string): void {
     this.cctvService.get_report(id).subscribe(result => {
       this.reportItems = Object.values(result['result']);
-
       this.reportItems.forEach(item => {
         item.logs = item.logs.filter(log => log.offline);
         item.logs.forEach(log => {
@@ -130,19 +165,19 @@ export class ReportComponent implements OnInit {
     });
   }
 
-  formatDate(date: string): string | null {
-    if (!date) return null;
+  formatDate(date: string): string {
+    if (!date) return "";
     const jsDate = new Date(date);
     const transformedDate = this.datePipe.transform(jsDate, 'dd MMM yyyy HH:mm', 'th-TH');
     if (transformedDate) {
       const yearInBuddhistEra = jsDate.getFullYear() + 543;
       return transformedDate.replace(jsDate.getFullYear().toString(), yearInBuddhistEra.toString());
     }
-    return null;
+    return "";
   }
 
-  calculateOfflineDuration(offline: string, online: string): string | null {
-    if (!offline || !online) return null;
+  calculateOfflineDuration(offline: string, online: string): string {
+    if (!offline || !online) return "";
     const offlineDate = new Date(offline);
     const onlineDate = new Date(online);
     const diffInMs = onlineDate.getTime() - offlineDate.getTime();
