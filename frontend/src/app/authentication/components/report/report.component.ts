@@ -88,9 +88,11 @@ export class ReportComponent implements OnInit {
   }
 
   // สร้างเนื้อหาตารางสำหรับ pdfMake
+  // ฟังก์ชัน getTableContent() ที่สร้าง table body โดยใช้ rowSpan สำหรับคอลัมน์ 1-6
   getTableContent() {
-    const body: any[] = [];
-    // header row (เพิ่มคอลัมน์ "หมายเหตุ")
+    const body: any[][] = [];
+
+    // สร้าง header row (8 คอลัมน์)
     body.push([
       { text: 'ลำดับที่', style: 'tableHeader', alignment: 'center' },
       { text: 'รายการ', style: 'tableHeader', alignment: 'center' },
@@ -102,41 +104,41 @@ export class ReportComponent implements OnInit {
       { text: 'หมายเหตุ', style: 'tableHeader', alignment: 'center' }
     ]);
 
+    // วนลูปข้อมูลแต่ละ item
     this.reportItems.forEach((item, index) => {
-      if (item.logs && item.logs.length > 0) {
-        item.logs.forEach((log, logIndex) => {
-          if (logIndex === 0) {
-            body.push([
-              { text: (index + 1).toString(), alignment: 'center' },
-              { text: this.segmentThaiText(item.durable_name) },
-              { text: item.durable_no },
-              { text: this.segmentThaiText(item.location) },
-              { text: this.segmentThaiText(item.status), alignment: 'center' },
-              { text: item.ping === '0' ? 'Online' : 'Offline' },
-              { text: `ออฟไลน์: ${this.formatDate(log.offline)}\nออนไลน์: ${this.formatDate(log.online)}\nระยะเวลา: ${log.duration}` },
-              { text: log.comment || '' }
-            ]);
-          } else {
-            body.push([
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: `ออฟไลน์: ${this.formatDate(log.offline)}\nออนไลน์: ${this.formatDate(log.online)}\nระยะเวลา: ${log.duration}` },
-              { text: log.comment || '' }
-            ]);
-          }
-        });
+      const logs = item.logs && item.logs.length > 0 ? item.logs : [];
+      const rowSpan = logs.length > 0 ? logs.length : 1;
+
+      if (logs.length > 0) {
+        // แถวแรกของ item: รวมข้อมูลหลักด้วย rowSpan แล้วแสดง log แรกในคอลัมน์ "วัน/เวลา" และ "หมายเหตุ"
+        body.push([
+          { text: (index + 1).toString(), alignment: 'center', rowSpan: rowSpan },
+          { text: this.segmentThaiText(item.durable_name), rowSpan: rowSpan },
+          { text: item.durable_no, alignment: 'center', rowSpan: rowSpan },
+          { text: this.segmentThaiText(item.location), rowSpan: rowSpan },
+          { text: this.segmentThaiText(item.status), alignment: 'center', rowSpan: rowSpan },
+          { text: item.ping === '0' ? 'Online' : 'Offline', alignment: 'center', rowSpan: rowSpan },
+          { text: `ออฟไลน์: ${this.formatDate(logs[0].offline)}\nออนไลน์: ${this.formatDate(logs[0].online)}\nระยะเวลา: ${logs[0].duration}` },
+          { text: logs[0].comment || '' }
+        ]);
+
+        // แถวสำหรับ log ที่เหลือ (ถ้ามี)
+        for (let i = 1; i < logs.length; i++) {
+          body.push([
+            '', '', '', '', '', '',
+            { text: `ออฟไลน์: ${this.formatDate(logs[i].offline)}\nออนไลน์: ${this.formatDate(logs[i].online)}\nระยะเวลา: ${logs[i].duration}` },
+            { text: logs[i].comment || '' }
+          ]);
+        }
       } else {
+        // ถ้าไม่มี logs ให้สร้างแถวเดียวโดยไม่มี rowSpan
         body.push([
           { text: (index + 1).toString(), alignment: 'center' },
           { text: this.segmentThaiText(item.durable_name) },
-          { text: item.durable_no },
+          { text: item.durable_no, alignment: 'center' },
           { text: this.segmentThaiText(item.location) },
           { text: this.segmentThaiText(item.status), alignment: 'center' },
-          { text: item.ping === '0' ? 'Online' : 'Offline' },
+          { text: item.ping === '0' ? 'Online' : 'Offline', alignment: 'center' },
           { text: '' },
           { text: '' }
         ]);
@@ -146,11 +148,13 @@ export class ReportComponent implements OnInit {
     return {
       table: {
         headerRows: 1,
+        // กำหนดความกว้างของคอลัมน์ (คุณสามารถปรับแต่งเพิ่มเติมตามความเหมาะสม)
         widths: ['auto', 60, 'auto', 70, 40, 'auto', 110, '*'],
         body: body
       }
     };
   }
+
 
 
   get_report(id: string): void {
