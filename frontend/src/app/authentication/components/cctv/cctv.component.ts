@@ -20,6 +20,7 @@ export class CctvComponent implements OnInit {
   public isLoading: boolean = true; // กำลังโหลดข้อมูล
   AppUrl = AppURL
   AuthUrl = AuthenticationURL
+  Title = 'รายงานข้อมูล';
 
   searchText: string = '';
   searchType: ICctvsSearchKey;
@@ -40,9 +41,18 @@ export class CctvComponent implements OnInit {
     // ดึงค่าพารามิเตอร์จาก URL
     this.route.paramMap.subscribe(params => {
       this.cctvType = params.get('type') || undefined; // เก็บค่าประเภทของครุภัณฑ์
-      this.get_Cctv(this.cctvType); // เรียกใช้ get_Cctv พร้อมพารามิเตอร์
-      this.searchText = '';
-      this.searchType = this.searchTypeItem[0];
+      const titles: { [key: string]: string } = {
+        '1': 'กล้องโทรทัศน์วงจรปิด',
+        '2': 'เครื่องคอมพิวเตอร์แม่ข่าย',
+        '3': 'อุปกรณ์กระจายสัญญาณ',
+        '4': 'อุปกรณ์จัดเก็บข้อมูล'
+      };
+      if (this.cctvType) {
+        this.get_Cctv(this.cctvType); // เรียกใช้ get_Cctv พร้อมพารามิเตอร์
+        this.searchText = '';
+        this.searchType = this.searchTypeItem[0];
+        this.Title = titles[this.cctvType] || 'รายงานข้อมูล';
+      }
     });
     this.getStatus(); //ดึงค่าสถานะมาแสดง
     this.getFloor(); //ดึงค่าชั้นมาแสดง
