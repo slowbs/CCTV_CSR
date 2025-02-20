@@ -4,6 +4,7 @@ import subprocess
 import platform
 import requests
 import time
+import datetime
 
 # ตั้งค่า Telegram Bot Token และ Chat ID
 TELEGRAM_BOT_TOKEN = '7725475514:AAESQ0vZWNyphDaa630sQaaLgvl7dMkCvuo'
@@ -160,7 +161,7 @@ while True:
         monitor = data['monitor']
         floor_name = data['floor_name']
         
-        print(f"ID: {id_}, Durable No: {durable_no}, IP: {ip}, Type: {cctv_type}, Durable Name: {durable_name}, Location: {location}, Monitor: {monitor}, Floor: {floor_name} - {status}")
+        # print(f"ID: {id_}, Durable No: {durable_no}, IP: {ip}, Type: {cctv_type}, Durable Name: {durable_name}, Location: {location}, Monitor: {monitor}, Floor: {floor_name} - {status}")
         
         if success:
             responsive_count += 1
@@ -173,5 +174,7 @@ while True:
     print(f"จำนวนอุปกรณ์ที่ตอบสนอง: {responsive_count}")
     print(f"จำนวนอุปกรณ์ที่ไม่ตอบสนอง: {non_responsive_count}")
     print(f"จำนวนอุปกรณ์ที่เปลี่ยนแปลงสถานะ: {status_changed_count}")
+    now = datetime.datetime.now()
+    print(now.strftime("%Y-%m-%d %H:%M:%S"))
 
     time.sleep(120)
