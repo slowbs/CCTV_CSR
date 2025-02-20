@@ -30,6 +30,8 @@ pdfMake.addFonts({
 export class ReportComponent implements OnInit {
   public reportItems: IReport.Report[] = [];
   reportTitle = 'รายงานข้อมูล';
+  startDate: string;
+  endDate: string;
 
   constructor(
     private cctvService: CctvService,
@@ -163,8 +165,6 @@ export class ReportComponent implements OnInit {
     };
   }
 
-
-
   get_report(id: string): void {
     this.cctvService.get_report(id).subscribe(result => {
       this.reportItems = Object.values(result['result']);
@@ -187,6 +187,7 @@ export class ReportComponent implements OnInit {
     }
     return "";
   }
+ 
 
   calculateOfflineDuration(offline: string, online: string): string {
     if (!offline || !online) return "";
@@ -199,5 +200,11 @@ export class ReportComponent implements OnInit {
     const hours = Math.floor((diffInMinutes % (60 * 24)) / 60);
     const minutes = diffInMinutes % 60;
     return `${days} วัน ${hours} ชั่วโมง ${minutes} นาที`;
+  }
+
+  onSubmitDateRange() {
+    // ดำเนินการตามที่คุณต้องการเมื่อกดปุ่ม Submit
+    console.log('Start Date:', this.startDate, 'End Date:', this.endDate);
+    // ตัวอย่าง: เรียกฟังก์ชัน get_report ด้วยเงื่อนไขวันที่ หรือ filter ข้อมูลใน reportItems
   }
 }

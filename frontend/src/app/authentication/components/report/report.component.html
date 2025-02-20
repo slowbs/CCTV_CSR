@@ -14,12 +14,12 @@
     <div class="row mb-3">
         <div class="col-md-6 d-flex align-items-center">
             <!-- Date range inputs -->
-            <input type="text" placeholder="ตั้งแต่วันที่" class="form-control" bsDatepicker
+            <input type="text" placeholder="ตั้งแต่วันที่" class="form-control" bsDatepicker [(ngModel)]="startDate"
                 [bsConfig]="{ isAnimated: true }">
-            <input type="text" placeholder="ถึงวันที่" class="form-control me-2" bsDatepicker
+            <input type="text" placeholder="ถึงวันที่" class="form-control me-2" bsDatepicker [(ngModel)]="endDate"
                 [bsConfig]="{ isAnimated: true }">
             <!-- Submit button -->
-            <button class="btn btn-primary">Submit</button>
+            <button class="btn btn-primary" (click)="onSubmitDateRange()">Submit</button>
         </div>
         <div class="col-md-6 text-end">
             <button class="btn btn-primary" (click)="generatePDF()">
