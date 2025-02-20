@@ -187,7 +187,7 @@ export class ReportComponent implements OnInit {
     }
     return "";
   }
- 
+
 
   calculateOfflineDuration(offline: string, online: string): string {
     if (!offline || !online) return "";
@@ -203,8 +203,7 @@ export class ReportComponent implements OnInit {
   }
 
   onSubmitDateRange() {
-    // ดำเนินการตามที่คุณต้องการเมื่อกดปุ่ม Submit
-    console.log('Start Date:', this.startDate, 'End Date:', this.endDate);
-    // ตัวอย่าง: เรียกฟังก์ชัน get_report ด้วยเงื่อนไขวันที่ หรือ filter ข้อมูลใน reportItems
+    console.log('Start Date:', this.datePipe.transform(this.startDate, 'yyyy-MM-dd'));
+    console.log('End Date:', this.datePipe.transform(this.endDate, 'yyyy-MM-dd'));
   }
 }
