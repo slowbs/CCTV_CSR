@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CctvService, ICctvs, IFloor, IStatus } from '../../../shareds/cctv.service';
+import { AppURL } from '../../../app.url';
+import { AuthenticationURL } from '../../authentication.url';
 declare const $: any;
 
 @Component({
@@ -16,6 +18,8 @@ export class CctvComponent implements OnInit {
   public floorItems: IFloor[] = [];
   private cctvType: string | undefined; // ตัวแปรเก็บประเภทของครุภัณฑ์
   public isLoading: boolean = true; // กำลังโหลดข้อมูล
+  AppUrl = AppURL
+  AuthUrl = AuthenticationURL
 
   searchText: string = '';
   searchType: ICctvsSearchKey;

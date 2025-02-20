@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CctvService, ILogPing } from '../../../shareds/cctv.service';
+import { AppURL } from '../../../app.url';
+import { AuthenticationURL } from '../../authentication.url';
 declare const $: any;
 
 @Component({
@@ -13,6 +15,9 @@ export class LogPingComponent implements OnInit {
   public logpingItems: ILogPing[] = [];
   public model: ILogPing;
   public isLoading: boolean = true; // กำลังโหลดข้อมูล
+  AppUrl = AppURL
+  AuthUrl = AuthenticationURL
+  Title = 'รายงานข้อมูล';
 
   constructor(
     private cctvService: CctvService,
@@ -22,6 +27,13 @@ export class LogPingComponent implements OnInit {
   }
 
   ngOnInit() {
+    const titles: { [key: string]: string } = {
+      '1': 'กล้องโทรทัศน์วงจรปิด',
+      '2': 'เครื่องคอมพิวเตอร์แม่ข่าย',
+      '3': 'อุปกรณ์กระจายสัญญาณ',
+      '4': 'อุปกรณ์จัดเก็บข้อมูล'
+    };
+
 
     this.isLoading = true; //แสดง Loading
     // ดึงค่าพารามิเตอร์ id จาก route และใช้เรียกข้อมูล log ping
@@ -29,6 +41,7 @@ export class LogPingComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         this.get_LogPing(id);
+        this.Title = titles[id] || 'รายงานข้อมูล';
       }
     });
   }

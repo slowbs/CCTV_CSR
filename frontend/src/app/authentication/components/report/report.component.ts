@@ -8,6 +8,8 @@ import * as pdfFonts from '../../../../assets/font/vfs_fonts';
 import { BsLocaleService } from 'ngx-bootstrap/datepicker';
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { thLocale } from 'ngx-bootstrap/locale';
+import { AppURL } from '../../../app.url';
+import { AuthenticationURL } from '../../authentication.url';
 
 defineLocale('th', thLocale);
 
@@ -29,7 +31,9 @@ pdfMake.addFonts({
 })
 export class ReportComponent implements OnInit {
   public reportItems: IReport.Report[] = [];
-  reportTitle = 'รายงานข้อมูล';
+  AppUrl = AppURL
+  AuthUrl = AuthenticationURL
+  Title = 'รายงานข้อมูล';
   startDate: Date;
   endDate: Date;
 
@@ -46,16 +50,16 @@ export class ReportComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       const titles: { [key: string]: string } = {
-        '1': 'รายงานข้อมูลกล้องโทรทัศน์วงจรปิด',
-        '2': 'รายงานข้อมูลเครื่องคอมพิวเตอร์แม่ข่าย',
-        '3': 'รายงานข้อมูลอุปกรณ์กระจายสัญญาณ',
-        '4': 'รายงานข้อมูลอุปกรณ์จัดเก็บข้อมูล'
+        '1': 'กล้องโทรทัศน์วงจรปิด',
+        '2': 'เครื่องคอมพิวเตอร์แม่ข่าย',
+        '3': 'อุปกรณ์กระจายสัญญาณ',
+        '4': 'อุปกรณ์จัดเก็บข้อมูล'
       };
       if (id) {
         this.startDate = new Date();
         this.endDate = new Date();
         this.get_report(id, this.startDate, this.endDate);
-        this.reportTitle = titles[id] || 'รายงานข้อมูล';
+        this.Title = titles[id] || 'รายงานข้อมูล';
       }
     });
   }
@@ -80,7 +84,7 @@ export class ReportComponent implements OnInit {
         fontSize: 8
       },
       content: [
-        { text: this.reportTitle, style: 'header', alignment: 'center', margin: [0, 0, 0, 20] },
+        { text: 'รายงานข้อมูล' + this.Title, style: 'header', alignment: 'center', margin: [0, 0, 0, 20] },
         this.getTableContent()
       ],
       styles: {

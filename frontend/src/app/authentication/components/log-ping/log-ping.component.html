@@ -2,11 +2,11 @@
     <div class="app-title">
         <div>
             <h1><i class="bi bi-speedometer"></i> Log</h1>
-            <p>รายการข้อมูล Log ครุภัณฑ์กล้องโทรทัศน์วงจรปิด</p>
+            <p>รายการข้อมูล Log ครุภัณฑ์{{ Title }}</p>
         </div>
         <ul class="app-breadcrumb breadcrumb">
-            <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
-            <li class="breadcrumb-item"><a href="#">Blank Page</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]"><i class="bi bi-house-door fs-6"></i></a></li>
+            <li class="breadcrumb-item"><a [routerLink]="[]">Log</a></li>
         </ul>
     </div>
     <div *ngIf="isLoading" class="text-center mt-5">
@@ -73,7 +73,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="7">จำนวนรายการทั้งหมด {{ logpingItems.length }} รายการ</th>
+                                <th colspan="10">จำนวนรายการทั้งหมด {{ logpingItems.length }} รายการ</th>
                             </tr>
                         </tfoot>
                     </table>
