@@ -112,10 +112,16 @@ export class CctvService {
   }
 
   //ดึงข้อมูลมาแสดงรายงาน
-  get_report(id: any) {
+  // ใน CctvService
+  get_report(id: any, startDate?: string, endDate?: string) {
+    // เพิ่ม parameter startDate และ endDate เข้าไปใน request params
+    let params: any = { id: id };
+    if (startDate) { params.startDate = startDate; }
+    if (endDate) { params.endDate = endDate; }
+
     return this.httpClient.get<IReport.Report>(
       this.backendURL + 'report',
-      { params: { id: id } }
+      { params: params }
     );
   }
 

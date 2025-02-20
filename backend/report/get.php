@@ -2,6 +2,11 @@
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
     if (!empty($id)) {
+        // รับค่าช่วงวันที่จาก GET (รูปแบบ 'yyyy-mm-dd')
+        $startDate = isset($_GET['startDate']) && !empty($_GET['startDate']) ? $_GET['startDate'] : null;
+        $endDate = isset($_GET['endDate']) && !empty($_GET['endDate']) ? $_GET['endDate'] : null;
+
+        // Query ดึงข้อมูลทั้งหมดโดยไม่กรอง log ด้วยช่วงวันที่ใน SQL
         $sql = "SELECT 
                     cctv.id, 
                     cctv.durable_no, 
@@ -13,7 +18,7 @@ if (isset($_GET['id'])) {
                     cctv.ping,
                     offline_log.date_created AS offline,
                     online_log.date_created AS online,
-					offline_log.comment as comment
+                    offline_log.comment as comment
                 FROM cctv
                 LEFT JOIN status ON cctv.status = status.status_id
                 LEFT JOIN floor ON cctv.floor = floor.floor_id
@@ -23,50 +28,69 @@ if (isset($_GET['id'])) {
                 LEFT JOIN log_ping AS online_log 
                     ON cctv.id = online_log.cctv_id 
                     AND online_log.ping_checked = 0 
-                    AND online_log.date_created > offline_log.date_created  -- ต้องออนไลน์หลังจากออฟไลน์
+                    AND online_log.date_created > offline_log.date_created
                 WHERE cctv.type = $id
                 ORDER BY floor.order, cctv.durable_no, online_log.date_created DESC;";
 
         $query = mysqli_query($conn, $sql);
         $result = [];
         while ($row = mysqli_fetch_assoc($query)) {
-            $id = $row['id'];
-            if (!isset($result[$id])) {
-                $result[$id] = [
-                    'durable_no' => $row['durable_no'],
-                    'durable_name' => $row['durable_name'],
-                    'location' => $row['location'],
-                    'floor' => $row['floor'],
-                    'status' => $row['status'],
-                    'status_id' => $row['status_id'],
-                    'ping' => $row['ping'],
-                    'logs' => []
+            $rowId = $row['id'];
+            if (!isset($result[$rowId])) {
+                $result[$rowId] = [
+                    'durable_no'    => $row['durable_no'],
+                    'durable_name'  => $row['durable_name'],
+                    'location'      => $row['location'],
+                    'floor'         => $row['floor'],
+                    'status'        => $row['status'],
+                    'status_id'     => $row['status_id'],
+                    'ping'          => $row['ping'],
+                    'logs'          => []
                 ];
             }
-            $result[$id]['logs'][] = [
-                'offline' => $row['offline'],
-                'online' => $row['online'] ?? null,  // ถ้า online เป็น null ก็ให้เป็น null จริง ๆ
-                'comment' => $row['comment'] ?? null  // ถ้า comment เป็น null ก็ให้เป็น null จริง ๆ
-            ];
+
+            // ตรวจสอบเงื่อนไขวันที่สำหรับ log
+            $includeLog = true;
+            if ($startDate && $endDate) {
+                // กรอง log โดยตรวจสอบทั้ง offline และ online
+                $offlineDate = $row['offline'];
+                $onlineDate = $row['online'];
+                $includeLog = false;
+
+                if ($offlineDate) {
+                    $dateOffline = date('Y-m-d', strtotime($offlineDate));
+                    if ($dateOffline >= $startDate && $dateOffline <= $endDate) {
+                        $includeLog = true;
+                    }
+                }
+                if (!$includeLog && $onlineDate) {
+                    $dateOnline = date('Y-m-d', strtotime($onlineDate));
+                    if ($dateOnline >= $startDate && $dateOnline <= $endDate) {
+                        $includeLog = true;
+                    }
+                }
+            }
+
+            if ($includeLog) {
+                $result[$rowId]['logs'][] = [
+                    'offline' => $row['offline'],
+                    'online'  => isset($row['online']) ? $row['online'] : null,
+                    'comment' => isset($row['comment']) ? $row['comment'] : null
+                ];
+            }
         }
 
         echo json_encode([
             'message' => 'test ทดสอบ',
-            'result' => $result
+            'result'  => $result
         ], JSON_UNESCAPED_UNICODE);
     } else {
-        echo json_encode(
-            [
-                'message' => 'Parameter is NOT VALID'
-            ],
-            JSON_UNESCAPED_UNICODE
-        );
+        echo json_encode([
+            'message' => 'Parameter is NOT VALID'
+        ], JSON_UNESCAPED_UNICODE);
     }
 } else {
-    echo json_encode(
-        [
-            'message' => 'Parameter is Requested'
-        ],
-        JSON_UNESCAPED_UNICODE
-    );
+    echo json_encode([
+        'message' => 'Parameter is Requested'
+    ], JSON_UNESCAPED_UNICODE);
 }

@@ -30,8 +30,8 @@ pdfMake.addFonts({
 export class ReportComponent implements OnInit {
   public reportItems: IReport.Report[] = [];
   reportTitle = 'รายงานข้อมูล';
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
 
   constructor(
     private cctvService: CctvService,
@@ -52,7 +52,9 @@ export class ReportComponent implements OnInit {
         '4': 'รายงานข้อมูลอุปกรณ์จัดเก็บข้อมูล'
       };
       if (id) {
-        this.get_report(id);
+        this.startDate = new Date();
+        this.endDate = new Date();
+        this.get_report(id, this.startDate, this.endDate);
         this.reportTitle = titles[id] || 'รายงานข้อมูล';
       }
     });
@@ -165,8 +167,12 @@ export class ReportComponent implements OnInit {
     };
   }
 
-  get_report(id: string): void {
-    this.cctvService.get_report(id).subscribe(result => {
+  get_report(id: string, startDate: Date, endDate: Date): void {
+    // แปลงวันที่เป็น string ในรูปแบบที่ API ต้องการ (เช่น 'yyyy-MM-dd')
+    const start = this.datePipe.transform(this.startDate, 'yyyy-MM-dd') || undefined;
+    const end = this.datePipe.transform(this.endDate, 'yyyy-MM-dd') || undefined;
+
+    this.cctvService.get_report(id, start, end).subscribe(result => {
       this.reportItems = Object.values(result['result']);
       this.reportItems.forEach(item => {
         item.logs = item.logs.filter(log => log.offline);
@@ -202,8 +208,10 @@ export class ReportComponent implements OnInit {
     return `${days} วัน ${hours} ชั่วโมง ${minutes} นาที`;
   }
 
-  onSubmitDateRange() {
-    console.log('Start Date:', this.datePipe.transform(this.startDate, 'yyyy-MM-dd'));
-    console.log('End Date:', this.datePipe.transform(this.endDate, 'yyyy-MM-dd'));
+  onSubmitDateRange(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id && this.startDate && this.endDate) {
+      this.get_report(id, this.startDate, this.endDate);
+    }
   }
 }
