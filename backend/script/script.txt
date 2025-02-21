@@ -10,6 +10,9 @@ live-server
 ิbuild python file
 pyinstaller --onefile --icon=alert.ico gpt_ping_telegram.py
 
+deploy ngrok
+ngrok http 4200
+
 SELECT * FROM cctv
 left join floor on cctv.floor = floor.floor_id
  where 1

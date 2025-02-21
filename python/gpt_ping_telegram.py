@@ -53,7 +53,7 @@ def ping_and_check(data):
     param_timeout = '-w' if platform.system().lower() == 'windows' else '-W'
 
     result = subprocess.run(['ping', param_count, '1', param_timeout, '500', ip],
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
     success = result.returncode == 0
 
     if success and ping_value == '1':
@@ -169,6 +169,7 @@ def log_message(msg):
 # สร้างหน้าต่าง GUI
 root = tk.Tk()
 root.title("CCTV Monitor")
+root.iconbitmap('C:/xampp/htdocs/CCTV_CSR/python/alert.ico')
 
 frame = tk.Frame(root)
 frame.pack(fill=tk.BOTH, expand=True)
