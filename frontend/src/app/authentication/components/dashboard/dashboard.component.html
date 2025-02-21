@@ -27,7 +27,7 @@
                                'bg-warning': item.type === '3',
                                'bg-danger': item.type === '4'
                              }" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, item.type]">
-                            <div class="card-header" style="text-align: center;">{{ getTypeName(item.type) }}</div>
+                            <div class="card-header" style="text-align: center; font-weight: bold;">{{ getTypeName(item.type) }}</div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ item.online_count }} Online</h5>
                                 <p class="card-text">{{ item.offline_count }} Offline</p>
