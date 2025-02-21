@@ -183,4 +183,6 @@ stop_button.pack(side=tk.LEFT, padx=10, pady=10)
 text_area = ScrolledText(frame, width=80, height=20)
 text_area.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
+start_loop()
+
 root.mainloop()
