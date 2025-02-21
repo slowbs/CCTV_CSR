@@ -171,16 +171,45 @@ root = tk.Tk()
 root.title("Devices Monitor")
 root.iconbitmap('C:/xampp/htdocs/CCTV_CSR/python/alert.ico')
 
-frame = tk.Frame(root)
-frame.pack(fill=tk.BOTH, expand=True)
+# สร้าง top_frame สำหรับปุ่มควบคุม พร้อมปรับ background และ padding
+top_frame = tk.Frame(root, bg="#f0f0f0", padx=20, pady=20)
+top_frame.pack(fill=tk.X)
 
-start_button = tk.Button(frame, text="Start", command=start_loop)
+# กำหนด font สำหรับปุ่ม
+button_font = ("Helvetica", 16, "bold")
+
+# ปุ่ม Start (สีเขียว)
+start_button = tk.Button(
+    top_frame,
+    text="Start",
+    command=start_loop,
+    font=button_font,
+    bg="#4CAF50",
+    fg="white",
+    padx=20,
+    pady=10
+)
 start_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-stop_button = tk.Button(frame, text="Stop", command=stop_loop)
+# ปุ่ม Stop (สีแดง)
+stop_button = tk.Button(
+    top_frame,
+    text="Stop",
+    command=stop_loop,
+    font=button_font,
+    bg="#F44336",
+    fg="white",
+    padx=20,
+    pady=10
+)
 stop_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-text_area = ScrolledText(frame, width=80, height=20)
+# สร้าง frame สำหรับพื้นที่แสดง log พร้อม padding
+log_frame = tk.Frame(root, padx=20, pady=20)
+log_frame.pack(fill=tk.BOTH, expand=True)
+
+# สร้าง ScrolledText สำหรับแสดง log (ปรับขนาดและ font ให้เหมาะสม)
+text_area = ScrolledText(log_frame, width=100, height=20, font=("Courier", 12))
 text_area.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
 start_loop()
