@@ -168,7 +168,7 @@ def log_message(msg):
 
 # สร้างหน้าต่าง GUI
 root = tk.Tk()
-root.title("CCTV Monitor")
+root.title("Devices Monitor")
 root.iconbitmap('C:/xampp/htdocs/CCTV_CSR/python/alert.ico')
 
 frame = tk.Frame(root)

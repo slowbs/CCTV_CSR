@@ -1,6 +1,6 @@
 <aside class="app-sidebar">
     <div class="app-sidebar__user">
-        <img class="app-sidebar__user-avatar" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Image">
+        <img class="app-sidebar__user-avatar" src="../../../../assets/img/alert.png" alt="User Image">
         <div>
             <p class="app-sidebar__user-name">ระบบแจ้งเตือน</p>
             <p class="app-sidebar__user-designation">สถานะครุภัณฑ์สารสนเทศ</p>
@@ -21,16 +21,16 @@
             </a>
             <ul class="treeview-menu">
                 <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Create_Durable]"
-                        routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> เพิ่มรายการครุภัณฑ์</a></li>
+                        routerLinkActive="active"><i class="icon bi bi-circle-fill icon-dash"></i> เพิ่มรายการครุภัณฑ์</a></li>
                 <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 1]"
-                        routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> กล้องวงจรปิด</a></li>
+                        routerLinkActive="active"><i class="icon bi bi-circle-fill icon-dash"></i> กล้องวงจรปิด</a></li>
                 <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 2]"
-                        routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> เครื่องคอมพิวเตอร์แม่ข่าย</a>
+                        routerLinkActive="active"><i class="icon bi bi-circle-fill icon-dash"></i> เครื่องคอมพิวเตอร์แม่ข่าย</a>
                 </li>
                 <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 3]"
-                        routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> อุปกรณ์กระจายสัญญาณ</a></li>
+                        routerLinkActive="active"><i class="icon bi bi-circle-fill icon-dash"></i> อุปกรณ์กระจายสัญญาณ</a></li>
                 <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 4]"
-                        routerLinkActive="active"><i class="icon bi bi-circle-fill"></i> อุปกรณ์จัดเก็บข้อมูล</a></li>
+                        routerLinkActive="active"><i class="icon bi bi-circle-fill icon-dash"></i> อุปกรณ์จัดเก็บข้อมูล</a></li>
             </ul>
         </li>
 
@@ -59,7 +59,7 @@
         <!-- แยกเมนู Report ออกมา -->
         <li class="treeview" routerLinkActive="is-expanded">
             <a class="app-menu__item" href="#" data-toggle="treeview">
-                <i class="app-menu__icon bi bi-journal-text"></i>
+                <i class="app-menu__icon bi bi-book"></i>
                 <span class="app-menu__label">Report</span>
                 <i class="treeview-indicator bi bi-chevron-right"></i>
             </a>
@@ -80,7 +80,7 @@
 
         <li class="treeview" routerLinkActive="is-expanded">
             <a class="app-menu__item" href="#" data-toggle="treeview">
-                <i class="app-menu__icon bi bi-ui-checks"></i>
+                <i class="app-menu__icon bi bi-people"></i>
                 <span class="app-menu__label">จัดการผู้ใช้</span>
                 <i class="treeview-indicator bi bi-chevron-right"></i>
             </a>
