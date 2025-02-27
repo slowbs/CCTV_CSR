@@ -14,10 +14,10 @@
     <div class="row mb-3">
         <div class="col-md-6 d-flex align-items-center">
             <!-- Date range inputs -->
-            <input type="text" placeholder="ตั้งแต่วันที่" class="form-control" bsDatepicker [(ngModel)]="startDate"
-                [bsConfig]="{ isAnimated: true, dateInputFormat: 'DD/MM/YYYY' }">
-            <input type="text" placeholder="ถึงวันที่" class="form-control me-2" bsDatepicker [(ngModel)]="endDate"
-                [bsConfig]="{ isAnimated: true, dateInputFormat: 'DD/MM/YYYY' }">
+            <input type="text" placeholder="ตั้งแต่วันที่" class="form-control" bsDatepicker [(ngModel)]="tempStartDate"
+                [bsConfig]="bsConfig">
+            <input type="text" placeholder="ถึงวันที่" class="form-control me-2" bsDatepicker [(ngModel)]="tempEndDate"
+                [bsConfig]="bsConfig">
             <!-- Submit button -->
             <button class="btn btn-primary" (click)="onSubmitDateRange()">Submit</button>
         </div>
@@ -54,26 +54,23 @@
                             </thead>
                             <tbody>
                                 <ng-container *ngFor="let item of reportItems; let i = index">
-                                    <!-- แถวแรกของแต่ละ item -->
                                     <tr>
-                                        <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">{{ i + 1 }}
-                                        </td>
+                                        <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">{{ i + 1 }}</td>
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.durable_name }}</td>
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.durable_no }}</td>
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.location }}</td>
                                         <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">
                                             <span class="badge" [ngClass]="{
-                          'bg-success': item.status_id === '1',
-                          'bg-warning': item.status_id === '2',
-                          'bg-danger': item.status_id === '3',
-                          'bg-secondary': item.status_id === '4'
-                        }">
+                                              'bg-success': item.status_id === '1',
+                                              'bg-warning': item.status_id === '2',
+                                              'bg-danger': item.status_id === '3',
+                                              'bg-secondary': item.status_id === '4'
+                                            }">
                                                 {{ item.status }}
                                             </span>
                                         </td>
                                         <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">
-                                            <span class="badge"
-                                                [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
+                                            <span class="badge" [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
                                                 {{ item.ping === '0' ? 'Online' : 'Offline' }}
                                             </span>
                                         </td>
@@ -92,7 +89,6 @@
                                             <ng-template #noComment></ng-template>
                                         </td>
                                     </tr>
-                                    <!-- แถวเพิ่มเติมสำหรับ logs ที่เหลือ -->
                                     <tr *ngFor="let log of item.logs?.slice(1); let y = index">
                                         <td>
                                             ออฟไลน์: {{ formatDate(log.offline) }} <br>
