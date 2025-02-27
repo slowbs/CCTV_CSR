@@ -65,14 +65,14 @@ export class ReportComponent implements OnInit {
         '4': 'อุปกรณ์จัดเก็บข้อมูล'
       };
       if (id) {
-          //กำหนดค่าเริ่มต้นให้ tempStartDate และ tempEndDate 
+        //กำหนดค่าเริ่มต้นให้ tempStartDate และ tempEndDate 
         this.tempStartDate = new Date();
         this.tempEndDate = new Date();
 
-         //กำหนดค่าเริ่มต้นให้ startDate และ endDate
+        //กำหนดค่าเริ่มต้นให้ startDate และ endDate
         this.startDate = new Date();
         this.endDate = new Date();
-        
+
         this.get_report(id, this.startDate, this.endDate);
         this.Title = titles[id] || 'รายงานข้อมูล';
       }
@@ -99,7 +99,12 @@ export class ReportComponent implements OnInit {
         fontSize: 8
       },
       content: [
-        { text: 'รายงานข้อมูล' + this.Title, style: 'header', alignment: 'center', margin: [0, 0, 0, 20] },
+        { text: 'รายงานข้อมูล' + this.Title, style: 'header', alignment: 'center', margin: [0, 0, 0, 5] },
+        {
+          text: this.startDate && this.endDate ? `ข้อมูลวันที่ ${this.formatDateForDisplay(this.startDate)} - ${this.formatDateForDisplay(this.endDate)}` : '',
+          alignment: 'center',
+          margin: [0, 0, 0, 10] // เพิ่ม margin ล่างเพื่อเว้นระยะห่าง
+        },
         this.getTableContent()
       ],
       styles: {
@@ -219,7 +224,7 @@ export class ReportComponent implements OnInit {
     }
     //ใช้ datepipe ในการ format date
     let transformedDate = this.datePipe.transform(date, 'dd MMM yyyy', 'th-TH')
-     if (transformedDate) {
+    if (transformedDate) {
       const yearInBuddhistEra = date.getFullYear() + 543;
       return transformedDate.replace(date.getFullYear().toString(), yearInBuddhistEra.toString());
     }
@@ -242,9 +247,9 @@ export class ReportComponent implements OnInit {
   onSubmitDateRange(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id && this.tempStartDate && this.tempEndDate) {
-         // คัดลอกค่าจาก tempStartDate และ tempEndDate ไปยัง startDate และ endDate
-        this.startDate = this.tempStartDate;
-        this.endDate = this.tempEndDate;
+      // คัดลอกค่าจาก tempStartDate และ tempEndDate ไปยัง startDate และ endDate
+      this.startDate = this.tempStartDate;
+      this.endDate = this.tempEndDate;
       this.get_report(id, this.startDate, this.endDate);
     }
   }
