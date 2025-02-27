@@ -15,9 +15,9 @@
         <div class="col-md-6 d-flex align-items-center">
             <!-- Date range inputs -->
             <input type="text" placeholder="ตั้งแต่วันที่" class="form-control" bsDatepicker [(ngModel)]="startDate"
-                [bsConfig]="{ isAnimated: true }">
+                [bsConfig]="{ isAnimated: true, dateInputFormat: 'DD/MM/YYYY' }">
             <input type="text" placeholder="ถึงวันที่" class="form-control me-2" bsDatepicker [(ngModel)]="endDate"
-                [bsConfig]="{ isAnimated: true }">
+                [bsConfig]="{ isAnimated: true, dateInputFormat: 'DD/MM/YYYY' }">
             <!-- Submit button -->
             <button class="btn btn-primary" (click)="onSubmitDateRange()">Submit</button>
         </div>
@@ -35,6 +35,10 @@
                 <div class="tile-body">
                     <div id="report-content">
                         <h2 class="text-center">รายงานข้อมูล{{ Title }}</h2>
+                        <!-- เพิ่มข้อความแสดงช่วงวันที่ -->
+                        <p class="text-center" *ngIf="startDate && endDate">
+                            ข้อมูลวันที่ {{ formatDateForDisplay(startDate) }} - {{ formatDateForDisplay(endDate) }}
+                        </p>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>

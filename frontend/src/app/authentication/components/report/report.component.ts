@@ -5,7 +5,7 @@ import { CctvService, IReport } from '../../../shareds/cctv.service';
 // นำเข้า pdfMake และ pdfFonts จาก pdfmake package
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from '../../../../assets/font/vfs_fonts';
-import { BsLocaleService } from 'ngx-bootstrap/datepicker';
+import { BsLocaleService, BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { thLocale } from 'ngx-bootstrap/locale';
 import { AppURL } from '../../../app.url';
@@ -34,8 +34,9 @@ export class ReportComponent implements OnInit {
   AppUrl = AppURL
   AuthUrl = AuthenticationURL
   Title = 'รายงานข้อมูล';
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | null = null; // เปลี่ยนเป็น null
+  endDate: Date | null = null; // เปลี่ยนเป็น null
+  bsConfig: Partial<BsDatepickerConfig>; // เพิ่ม BsDatepickerConfig
 
   constructor(
     private cctvService: CctvService,
@@ -44,6 +45,12 @@ export class ReportComponent implements OnInit {
     private localeService: BsLocaleService
   ) {
     this.localeService.use('th');
+    //กำหนดค่าเริ่มต้นให้ datepicker
+    this.bsConfig = Object.assign({}, {
+      dateInputFormat: 'DD/MM/YYYY',
+      containerClass: 'theme-dark-blue',
+      isAnimated: true
+    });
   }
 
   ngOnInit(): void {
@@ -173,8 +180,8 @@ export class ReportComponent implements OnInit {
 
   get_report(id: string, startDate: Date, endDate: Date): void {
     // แปลงวันที่เป็น string ในรูปแบบที่ API ต้องการ (เช่น 'yyyy-MM-dd')
-    const start = this.datePipe.transform(this.startDate, 'yyyy-MM-dd') || undefined;
-    const end = this.datePipe.transform(this.endDate, 'yyyy-MM-dd') || undefined;
+    const start = this.datePipe.transform(startDate, 'yyyy-MM-dd') || undefined;
+    const end = this.datePipe.transform(endDate, 'yyyy-MM-dd') || undefined;
 
     this.cctvService.get_report(id, start, end).subscribe(result => {
       this.reportItems = Object.values(result['result']);
@@ -198,6 +205,18 @@ export class ReportComponent implements OnInit {
     return "";
   }
 
+  formatDateForDisplay(date: Date | null): string {
+    if (!date) {
+      return '';
+    }
+    //ใช้ datepipe ในการ format date
+    let transformedDate = this.datePipe.transform(date, 'dd MMM yyyy', 'th-TH')
+     if (transformedDate) {
+      const yearInBuddhistEra = date.getFullYear() + 543;
+      return transformedDate.replace(date.getFullYear().toString(), yearInBuddhistEra.toString());
+    }
+    return "";
+  }
 
   calculateOfflineDuration(offline: string, online: string): string {
     if (!offline || !online) return "";
