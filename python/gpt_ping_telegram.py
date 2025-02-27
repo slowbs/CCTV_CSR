@@ -166,52 +166,55 @@ def log_message(msg):
     text_area.insert(tk.END, msg + "\n")
     text_area.see(tk.END)
 
-# สร้างหน้าต่าง GUI
+# สร้างหน้าต่างหลัก
 root = tk.Tk()
 root.title("Devices Monitor")
 root.iconbitmap('C:/xampp/htdocs/CCTV_CSR/python/alert.ico')
+root.configure(bg="#f0f0f0") # กำหนดสีพื้นหลัง
 
-# สร้าง top_frame สำหรับปุ่มควบคุม พร้อมปรับ background และ padding
-top_frame = tk.Frame(root, bg="#f0f0f0", padx=20, pady=20)
-top_frame.pack(fill=tk.X)
+# กำหนด font หลัก
+main_font = ("Helvetica", 12)
+button_font = ("Helvetica", 14, "bold")
 
-# กำหนด font สำหรับปุ่ม
-button_font = ("Helvetica", 16, "bold")
+# Frame หลักสำหรับปุ่มและ log
+main_frame = tk.Frame(root, bg="#f0f0f0", padx=20, pady=20)
+main_frame.pack(fill=tk.BOTH, expand=True)
 
-# ปุ่ม Start (สีเขียว)
-start_button = tk.Button(
-    top_frame,
-    text="Start",
-    command=start_loop,
-    font=button_font,
-    bg="#4CAF50",
-    fg="white",
-    padx=20,
-    pady=10
-)
-start_button.pack(side=tk.LEFT, padx=10, pady=10)
+# Label ชื่อโปรแกรม
+program_label = tk.Label(main_frame, text="CCTV Status Monitor", font=("Helvetica", 16, "bold"), bg="#f0f0f0", fg="#333333")
+program_label.grid(row=0, column=0, columnspan=2, pady=(0, 20)) #วางไว้ row=0
 
-# ปุ่ม Stop (สีแดง)
-stop_button = tk.Button(
-    top_frame,
-    text="Stop",
-    command=stop_loop,
-    font=button_font,
-    bg="#F44336",
-    fg="white",
-    padx=20,
-    pady=10
-)
-stop_button.pack(side=tk.LEFT, padx=10, pady=10)
+# Frame สำหรับปุ่ม
+button_frame = tk.Frame(main_frame, bg="#f0f0f0")
+button_frame.grid(row=1, column=0, columnspan=2, pady=(0, 20), sticky="ew")  # วางด้านล่าง row=1
 
-# สร้าง frame สำหรับพื้นที่แสดง log พร้อม padding
-log_frame = tk.Frame(root, padx=20, pady=20)
-log_frame.pack(fill=tk.BOTH, expand=True)
+# ปุ่ม Start
+start_button = tk.Button(button_frame, text="Start", command=start_loop, font=button_font, bg="#4CAF50", fg="white", padx=20, pady=10, bd=0)
+start_button.grid(row=0, column=0, padx=10)
 
-# สร้าง ScrolledText สำหรับแสดง log (ปรับขนาดและ font ให้เหมาะสม)
-text_area = ScrolledText(log_frame, width=100, height=20, font=("Courier", 12))
+# ปุ่ม Stop
+stop_button = tk.Button(button_frame, text="Stop", command=stop_loop, font=button_font, bg="#F44336", fg="white", padx=20, pady=10, bd=0)
+stop_button.grid(row=0, column=1, padx=10)
+
+# Frame สำหรับพื้นที่แสดง log
+log_frame = tk.Frame(main_frame, bg="#ffffff", bd=1, relief=tk.SOLID) #เพิ่มกรอบ
+log_frame.grid(row=2, column=0, columnspan=2, sticky="nsew") #ขยายตามแนวตั้งและแนวนอน row=2
+
+#Label สำหรับ log
+log_label = tk.Label(log_frame, text="Log", font=("Helvetica", 12, "bold"), bg="#ffffff", fg="#333333")
+log_label.pack(pady=(10,0))
+
+# ScrolledText สำหรับแสดง log
+text_area = ScrolledText(log_frame, width=100, height=20, font=main_font, wrap=tk.WORD, bd=0)
 text_area.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-start_loop()
+# ทำให้ frame ขยายได้
+main_frame.grid_rowconfigure(2, weight=1) # เปลี่ยนจาก 1 เป็น 2
+main_frame.grid_columnconfigure(0, weight=1)
 
+# ให้ log_frame และ text_area สามารถขยายได้ตามหน้าต่าง
+log_frame.pack_propagate(False)
+log_frame.configure(width=600, height=400)
+
+start_loop()
 root.mainloop()
