@@ -8,7 +8,8 @@ ng serve --proxy-config proxy.conf.json --host 0.0.0.0
 live-server
 
 ิbuild python file
-pyinstaller --onefile --icon=alert.ico gpt_ping_telegram.py
+pyinstaller --onefile --noconsole --icon=alert.ico gpt_ping_telegram.py
+pyinstaller --clean --onefile --noconsole --name MyApp gpt_ping_telegram.py
 
 deploy ngrok
 ngrok http 4200
