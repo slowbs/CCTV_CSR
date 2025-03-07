@@ -60,3 +60,11 @@ $routes['/api/report']['GET'] = 'report/get.php';
 $routes['/api/report']['POST'] = 'report/post.php';
 $routes['/api/report']['PUT'] = 'report/put.php';
 $routes['/api/report']['DELETE'] = 'report/delete.php';
+
+//ข้อมูล Check-list Items
+$routes['/api/checklist-items']['GET'] = 'checklist_items/get.php';
+
+//ข้อมูล Check-list logs
+$routes['/api/checklist-logs']['GET'] = 'checklist_logs/get.php';
+$routes['/api/checklist-logs']['POST'] = 'checklist_logs/post.php';
+?>
