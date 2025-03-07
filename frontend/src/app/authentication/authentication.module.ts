@@ -11,6 +11,7 @@ import { LogPingComponent } from './components/log-ping/log-ping.component';
 import { DurableCreateComponent } from './components/durable-create/durable-create.component';
 import { NetworkComponent } from './components/network/network.component';
 import { ReportComponent } from './components/report/report.component';
+import { CheckListComponent } from './components/check-list/check-list.component';
 
 
 
@@ -24,7 +25,8 @@ import { ReportComponent } from './components/report/report.component';
     LogPingComponent,
     DurableCreateComponent,
     NetworkComponent,
-    ReportComponent
+    ReportComponent,
+    CheckListComponent
   ],
   imports: [
     CommonModule,

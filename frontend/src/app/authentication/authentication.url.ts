@@ -9,6 +9,7 @@ export const AuthenticationURL = {
     Storage: 'storage',
     Log_Ping: 'log_ping',
     Create_Durable: 'create_durable',
-    Report: 'report'
+    Report: 'report',
+    Check_List: 'check_list'
 
 }
