@@ -125,6 +125,21 @@ export class CctvService {
     );
   }
 
+  //ดึงข้อมูลรายการ checklist
+  getChecklistItems(): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.backendURL + 'checklist-items'); //ลบ .php ออก
+  }
+
+  //ดึงข้อมูล log checklist ตามเดือน
+  getChecklistLogs(month: string): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.backendURL + `checklist-logs?month=${month}`); // ลบ .php ออก
+  }
+
+  //บันทึก checklist
+  saveChecklistLogs(data: any): Observable<any> {
+    return this.httpClient.post(this.backendURL + 'checklist-logs', data); // ลบ .php ออก
+  }
+
 }
 
 // ส่วนของ User
