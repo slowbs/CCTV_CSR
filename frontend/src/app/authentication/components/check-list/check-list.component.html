@@ -9,6 +9,13 @@
             <li class="breadcrumb-item active">Check-list</li>
         </ul>
     </div>
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="selectedMonth">เดือนที่ตรวจสอบ:</label>
+            <input type="month" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth"
+                (change)="loadChecklistLog()">
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="tile">
@@ -25,73 +32,27 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="text-center">1</td>
-                                    <td>Back up Server A</td>
-                                    <td>ทุกวันจันทร์</td>
+                                <tr *ngFor="let item of checkListItems; let i = index">
+                                    <td class="text-center">{{ i + 1 }}</td>
+                                    <td>{{ item.task }}</td>
+                                    <td>{{ item.schedule }}</td>
                                     <td class="text-center">
-                                        <select class="form-control">
+                                        <select class="form-control" [(ngModel)]="item.status">
                                             <option value="ปกติ">ปกติ</option>
                                             <option value="พบปัญหา">พบปัญหา</option>
                                         </select>
                                     </td>
-                                    <td><textarea name="comment" class="form-control" rows="1"></textarea></td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center">2</td>
-                                    <td>Snapshot VM B</td>
-                                    <td>ทุกวัน</td>
-                                    <td class="text-center">
-                                        <select class="form-control">
-                                            <option value="ปกติ">ปกติ</option>
-                                            <option value="พบปัญหา">พบปัญหา</option>
-                                        </select>
-                                    </td>
-                                    <td><textarea name="comment" class="form-control" rows="1"></textarea></td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center">3</td>
-                                    <td>สำรองข้อมูล Database X</td>
-                                    <td>ทุกวัน</td>
-                                    <td class="text-center">
-                                        <select class="form-control">
-                                            <option value="ปกติ">ปกติ</option>
-                                            <option value="พบปัญหา">พบปัญหา</option>
-                                        </select>
-                                    </td>
-                                    <td><textarea name="comment" class="form-control" rows="1"></textarea></td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center">4</td>
-                                    <td>ทดสอบการ Restore Server A</td>
-                                    <td>ทุกต้นเดือน</td>
-                                    <td class="text-center">
-                                        <select class="form-control">
-                                            <option value="ปกติ">ปกติ</option>
-                                            <option value="พบปัญหา">พบปัญหา</option>
-                                        </select>
-                                    </td>
-                                    <td><textarea name="comment" class="form-control" rows="1"></textarea></td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center">5</td>
-                                    <td>ตรวจสอบ Snapshot บน Hypervisor</td>
-                                    <td>ทุกวันที่ 15</td>
-                                    <td class="text-center">
-                                        <select class="form-control">
-                                            <option value="ปกติ">ปกติ</option>
-                                            <option value="พบปัญหา">พบปัญหา</option>
-                                        </select>
-                                    </td>
-                                    <td><textarea name="comment" class="form-control" rows="1"></textarea></td>
+                                    <td><textarea name="comment" class="form-control" rows="1"
+                                            [(ngModel)]="item.comment"></textarea></td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="5">จำนวนรายการทั้งหมด 5 รายการ</th>
+                                    <th colspan="5">จำนวนรายการทั้งหมด {{checkListItems.length}} รายการ</th>
                                 </tr>
                             </tfoot>
                         </table>
+                        <button class="btn btn-primary mt-3" (click)="save()">บันทึก</button>
                     </div>
                 </div>
             </div>
