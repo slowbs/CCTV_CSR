@@ -142,7 +142,7 @@ def main_loop(log_callback):
                 status_changed_count += 1
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_callback(f"Responsive: {responsive_count}, Non-responsive: {non_responsive_count}, Changed: {status_changed_count} at {now}")
-        time.sleep(120)
+        time.sleep(60)
 
 # GUI ด้วย Tkinter
 import tkinter as tk
@@ -169,7 +169,7 @@ def log_message(msg):
 # สร้างหน้าต่างหลัก
 root = tk.Tk()
 root.title("Devices Monitor")
-root.iconbitmap('C:/xampp/htdocs/CCTV_CSR/python/alert.ico')
+root.iconbitmap('C:/xampp/htdocs/CCTV_CSR/python/monitor.ico')
 root.configure(bg="#f0f0f0") # กำหนดสีพื้นหลัง
 
 # กำหนด font หลัก
