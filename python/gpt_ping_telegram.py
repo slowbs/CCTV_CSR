@@ -8,6 +8,7 @@ import concurrent.futures
 import subprocess
 import platform
 import requests
+import os  # เพิ่ม import os
 
 # Global flag สำหรับควบคุม loop
 running = False
@@ -48,52 +49,65 @@ def ping_and_check(data):
     durable_name = data['durable_name']
     location = data['location']
     monitor = data['monitor']
-
+    
+    now = datetime.datetime.now()
+    # ตรวจสอบ IP และช่วงเวลา 22:00-22:10
+    if ip == '192.168.200.9' and 22 <= now.hour < 23:
+        if 0 <= now.minute <= 10:
+            log_callback(f"Skipping ping for {ip} at {now.strftime('%H:%M')} (Reboot time).")
+            return data, "Skipped (Reboot time)", True, False  # ข้ามการ ping และแจ้งว่าข้าม
+    
     param_count = '-n' if platform.system().lower() == 'windows' else '-c'
     param_timeout = '-w' if platform.system().lower() == 'windows' else '-W'
-
     result = subprocess.run(['ping', param_count, '1', param_timeout, '500', ip],
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            creationflags=subprocess.CREATE_NO_WINDOW)
     success = result.returncode == 0
-
-    if success and ping_value == '1':
-        count_ping += 1
-        status = "สถานะไม่สอดคล้อง (ตอบสนอง แต่คอลัมน์ ping = 1)"
-    elif not success and ping_value == '0':
-        count_ping += 1
-        status = "สถานะไม่สอดคล้อง (ไม่ตอบสนอง แต่คอลัมน์ ping = 0)"
-    else:
-        if count_ping > 0:
-            count_ping -= 1
-        status = "สถานะตรงกัน (ไม่มีการเปลี่ยนแปลงค่า count_ping)"
     
-    status_changed = update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_no, durable_name, location, monitor, floor_name)
+    status = "สถานะตรงกัน" if success == (ping_value == '0') else "สถานะไม่สอดคล้อง"
+    
+    status_changed = update_status(id_, success, ping_value, count_ping, ip, cctv_type,
+                               durable_no, durable_name, location, monitor, floor_name)
+    
     return data, status, success, status_changed
 
 def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_no, durable_name, location, monitor, floor_name):
     connection = get_db_connection()
     cursor = connection.cursor()
     status_changed = False
+    new_ping_value = '1' if not success else '0'
     try:
-        cursor.execute("UPDATE cctv SET count_ping = %s WHERE id = %s", (count_ping, id_))
-        if count_ping > 2:
-            new_ping_value = '1' if not success else '0'
-            if new_ping_value != ping_value:
-                cursor.execute("UPDATE cctv SET ping = %s, count_ping = 0 WHERE id = %s", (new_ping_value, id_))
-                message = (
-                    f"<b>{'กลับมาออนไลน์ ✅' if new_ping_value=='0' else 'ออฟไลน์ ❌'}</b>\n"
-                    f"หมายเลขครุภัณฑ์: <b>{durable_no}</b>\n"
-                    f"รายการ: {durable_name}\n"
-                    f"อาคาร: {floor_name}\n"
-                    f"สถานที่: {location}\n"
-                    f"Monitor: {monitor}\n"
-                    f"หมายเลข IP: {ip}\n"
-                    f"สถานะ: <b>{'ออนไลน์' if new_ping_value=='0' else 'ออฟไลน์'}</b>"
-                )
-                send_telegram_message(message)
-                log_ping_status(id_, new_ping_value, cctv_type)
-                status_changed = True
-        connection.commit()
+        now = datetime.datetime.now()
+        if ip == '192.168.200.9' and 22 <= now.hour < 23 and 0 <= now.minute <= 10:
+            if not success:
+              cursor.execute("UPDATE cctv SET count_ping = 0 WHERE id = %s", (id_))
+              connection.commit()
+              log_callback(f"Device {ip} might reboot")
+              return False
+            else:
+              cursor.execute("UPDATE cctv SET count_ping = 0 WHERE id = %s", (id_))
+              connection.commit()
+        else:
+             cursor.execute("UPDATE cctv SET count_ping = %s WHERE id = %s", (count_ping, id_))
+             connection.commit()
+
+        if new_ping_value != ping_value:
+            if count_ping > 2:
+              cursor.execute("UPDATE cctv SET ping = %s, count_ping = 0 WHERE id = %s", (new_ping_value, id_))
+              connection.commit()
+              message = (
+                  f"<b>{'กลับมาออนไลน์ ✅' if new_ping_value == '0' else 'ออฟไลน์ ❌'}</b>\n"
+                  f"หมายเลขครุภัณฑ์: <b>{durable_no}</b>\n"
+                  f"รายการ: {durable_name}\n"
+                  f"อาคาร: {floor_name}\n"
+                  f"สถานที่: {location}\n"
+                  f"Monitor: {monitor}\n"
+                  f"หมายเลข IP: {ip}\n"
+                  f"สถานะ: <b>{'ออนไลน์' if new_ping_value == '0' else 'ออฟไลน์'}</b>"
+              )
+              send_telegram_message(message)
+              log_ping_status(id_, new_ping_value, cctv_type)
+              status_changed = True
     finally:
         cursor.close()
         connection.close()
@@ -115,7 +129,7 @@ def get_cctv_data():
     cursor = connection.cursor(dictionary=True)
     try:
         cursor.execute("""SELECT cctv.id, cctv.durable_no, cctv.ip, cctv.ping, cctv.count_ping, cctv.type, 
-                          cctv.durable_name, cctv.location, cctv.monitor, floor.floor_name 
+                          cctv.durable_name, cctv.location, cctv.monitor, floor.floor_name
                           FROM cctv 
                           JOIN floor ON cctv.floor = floor.floor_id""")
         rows = cursor.fetchall()
@@ -170,7 +184,7 @@ def log_message(msg):
 root = tk.Tk()
 root.title("Devices Monitor")
 root.iconbitmap('C:/xampp/htdocs/CCTV_CSR/python/monitor.ico')
-root.configure(bg="#f0f0f0") # กำหนดสีพื้นหลัง
+root.configure(bg="#f0f0f0")  # กำหนดสีพื้นหลัง
 
 # กำหนด font หลัก
 main_font = ("Helvetica", 12)
@@ -181,35 +195,38 @@ main_frame = tk.Frame(root, bg="#f0f0f0", padx=20, pady=20)
 main_frame.pack(fill=tk.BOTH, expand=True)
 
 # Label ชื่อโปรแกรม
-program_label = tk.Label(main_frame, text="CCTV Status Monitor", font=("Helvetica", 16, "bold"), bg="#f0f0f0", fg="#333333")
-program_label.grid(row=0, column=0, columnspan=2, pady=(0, 20)) #วางไว้ row=0
+program_label = tk.Label(main_frame, text="Devices Status Monitor", font=("Helvetica", 16, "bold"),
+                         bg="#f0f0f0", fg="#333333")
+program_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))  # วางไว้ row=0
 
 # Frame สำหรับปุ่ม
 button_frame = tk.Frame(main_frame, bg="#f0f0f0")
 button_frame.grid(row=1, column=0, columnspan=2, pady=(0, 20), sticky="ew")  # วางด้านล่าง row=1
 
 # ปุ่ม Start
-start_button = tk.Button(button_frame, text="Start", command=start_loop, font=button_font, bg="#4CAF50", fg="white", padx=20, pady=10, bd=0)
+start_button = tk.Button(button_frame, text="Start", command=start_loop, font=button_font, bg="#4CAF50",
+                         fg="white", padx=20, pady=10, bd=0)
 start_button.grid(row=0, column=0, padx=10)
 
 # ปุ่ม Stop
-stop_button = tk.Button(button_frame, text="Stop", command=stop_loop, font=button_font, bg="#F44336", fg="white", padx=20, pady=10, bd=0)
+stop_button = tk.Button(button_frame, text="Stop", command=stop_loop, font=button_font, bg="#F44336",
+                        fg="white", padx=20, pady=10, bd=0)
 stop_button.grid(row=0, column=1, padx=10)
 
 # Frame สำหรับพื้นที่แสดง log
-log_frame = tk.Frame(main_frame, bg="#ffffff", bd=1, relief=tk.SOLID) #เพิ่มกรอบ
-log_frame.grid(row=2, column=0, columnspan=2, sticky="nsew") #ขยายตามแนวตั้งและแนวนอน row=2
+log_frame = tk.Frame(main_frame, bg="#ffffff", bd=1, relief=tk.SOLID)  # เพิ่มกรอบ
+log_frame.grid(row=2, column=0, columnspan=2, sticky="nsew")  # ขยายตามแนวตั้งและแนวนอน row=2
 
-#Label สำหรับ log
+# Label สำหรับ log
 log_label = tk.Label(log_frame, text="Log", font=("Helvetica", 12, "bold"), bg="#ffffff", fg="#333333")
-log_label.pack(pady=(10,0))
+log_label.pack(pady=(10, 0))
 
 # ScrolledText สำหรับแสดง log
 text_area = ScrolledText(log_frame, width=100, height=20, font=main_font, wrap=tk.WORD, bd=0)
 text_area.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
 # ทำให้ frame ขยายได้
-main_frame.grid_rowconfigure(2, weight=1) # เปลี่ยนจาก 1 เป็น 2
+main_frame.grid_rowconfigure(2, weight=1)  # เปลี่ยนจาก 1 เป็น 2
 main_frame.grid_columnconfigure(0, weight=1)
 
 # ให้ log_frame และ text_area สามารถขยายได้ตามหน้าต่าง
