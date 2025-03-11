@@ -38,7 +38,7 @@ def get_db_connection():
         database='cctv'
     )
 
-def ping_and_check(data):
+def ping_and_check(data, log_callback): # เพิ่ม log_callback เป็น argument
     ip = data['ip']
     id_ = data['id']
     ping_value = data['ping']
@@ -55,7 +55,7 @@ def ping_and_check(data):
     if ip == '192.168.200.9' and 22 <= now.hour < 23:
         if 0 <= now.minute <= 10:
             log_callback(f"Skipping ping for {ip} at {now.strftime('%H:%M')} (Reboot time).")
-            return data, "Skipped (Reboot time)", True, False  # ข้ามการ ping และแจ้งว่าข้าม
+            return data, "Skipped (Reboot time)", True, False 
     
     param_count = '-n' if platform.system().lower() == 'windows' else '-c'
     param_timeout = '-w' if platform.system().lower() == 'windows' else '-W'
@@ -67,11 +67,11 @@ def ping_and_check(data):
     status = "สถานะตรงกัน" if success == (ping_value == '0') else "สถานะไม่สอดคล้อง"
     
     status_changed = update_status(id_, success, ping_value, count_ping, ip, cctv_type,
-                               durable_no, durable_name, location, monitor, floor_name)
+                               durable_no, durable_name, location, monitor, floor_name, log_callback) # ส่ง log_callback ไปด้วย
     
     return data, status, success, status_changed
 
-def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_no, durable_name, location, monitor, floor_name):
+def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_no, durable_name, location, monitor, floor_name, log_callback): # เพิ่ม log_callback เป็น argument
     connection = get_db_connection()
     cursor = connection.cursor()
     status_changed = False
@@ -80,13 +80,13 @@ def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_n
         now = datetime.datetime.now()
         if ip == '192.168.200.9' and 22 <= now.hour < 23 and 0 <= now.minute <= 10:
             if not success:
-              cursor.execute("UPDATE cctv SET count_ping = 0 WHERE id = %s", (id_))
-              connection.commit()
-              log_callback(f"Device {ip} might reboot")
-              return False
+                cursor.execute("UPDATE cctv SET count_ping = 0 WHERE id = %s", (id_))
+                connection.commit()
+                log_callback(f"Device {ip} might reboot") # ใช้ log_callback ตรงนี้
+                return False
             else:
-              cursor.execute("UPDATE cctv SET count_ping = 0 WHERE id = %s", (id_))
-              connection.commit()
+                cursor.execute("UPDATE cctv SET count_ping = 0 WHERE id = %s", (id_))
+                connection.commit()
         else:
              cursor.execute("UPDATE cctv SET count_ping = %s WHERE id = %s", (count_ping, id_))
              connection.commit()
@@ -146,7 +146,7 @@ def main_loop(log_callback):
         non_responsive_count = 0
         status_changed_count = 0
         with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
-            results = list(executor.map(ping_and_check, data))
+            results = list(executor.map(ping_and_check, data, [log_message]*len(data))) 
         for data, status, success, status_changed in results:
             if success:
                 responsive_count += 1
