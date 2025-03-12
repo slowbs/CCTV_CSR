@@ -11,8 +11,8 @@
     </div>
     <div class="row mb-3">
         <div class="col-md-3">
-            <input type="month" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth"
-                (change)="loadChecklistLog()">
+            <input type="text" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth"
+                (ngModelChange)="loadChecklistLog()" bsDatepicker [bsConfig]="bsConfig" placeholder="เลือกเดือน">
         </div>
         <!--ปุ่ม Download PDF-->
         <div class="col-md-9 text-end">
@@ -27,8 +27,8 @@
             <div class="tile">
                 <div class="tile-body">
                     <!-- เพิ่มข้อความแสดงช่วงวันที่ -->
-                    <h2 class="text-center">รายงานการตรวจสอบระบบสารองข้อมูล</h2>
-                    <p class="text-center">ข้อมูลสำหรับเดือน : {{ formatDateForDisplay(selectedMonth) }}</p>
+                    <h2 class="text-center">รายงานการตรวจสอบระบบสำรองข้อมูล</h2>
+                    <p class="text-center">ข้อมูลสำหรับเดือน : {{ formatDateForDisplayForPdf(selectedMonth) }}</p>
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered table-hover">
                             <thead>
