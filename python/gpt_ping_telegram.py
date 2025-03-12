@@ -195,7 +195,7 @@ def main_loop(log_callback):
             log_callback(device_info)
 
         changed_devices.clear() # ล้าง list
-        time.sleep(120)
+        time.sleep(60)
 
 
 # GUI ด้วย Tkinter
