@@ -50,17 +50,20 @@ def ping_and_check(data, log_callback):  # เพิ่ม log_callback เป�
     location = data['location']
     monitor = data['monitor']
     now = datetime.datetime.now()
+    
 
     # ตรวจสอบ IP ว่าไม่ใช่ค่าว่าง
     if ip == '':
-        log_callback(f"Skipping ping for ID: {id_}, durable_no: {durable_no} - IP is Empty.")
-        return data, "Skipped (IP is Empty)", False, False  # Skip and report as not success and status not change
+        #log_callback(f"Skipping ping for ID: {id_}, durable_no: {durable_no} - IP is Empty.")  # ลบ log ตรงนี้ออก
+        
+        return data, "Skipped (IP is Empty)", False, False, True # Skip and report as not success and status not change
     
     # ตรวจสอบ IP และช่วงเวลา 22:00-22:10
     if ip == '192.168.200.9' and 22 <= now.hour < 23:
         if 0 <= now.minute <= 10:
-            log_callback(f"Skipping ping for {ip}, durable_no: {durable_no} at {now.strftime('%H:%M')} (Reboot time).")
-            return data, "Skipped (Reboot time)", True, False  # Skip for reboot time
+            #log_callback(f"Skipping ping for {ip}, durable_no: {durable_no} at {now.strftime('%H:%M')} (Reboot time).")  # ลบ log ตรงนี้ออก
+            
+            return data, "Skipped (Reboot time)", True, False, True # Skip for reboot time
     
     
     param_count = '-n' if platform.system().lower() == 'windows' else '-c'
@@ -79,7 +82,7 @@ def ping_and_check(data, log_callback):  # เพิ่ม log_callback เป�
     status_changed = update_status(id_, success, ping_value, count_ping, ip, cctv_type,
                                    durable_no, durable_name, location, monitor, floor_name, log_callback, status)  # ส่ง status ไปด้วย
 
-    return data, status, success, status_changed
+    return data, status, success, status_changed, False # ไม่ Skip 
 
 def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_no, durable_name, location, monitor, floor_name, log_callback, status):  # เพิ่ม status เป็น argument
     connection = get_db_connection()
@@ -94,7 +97,7 @@ def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_n
             if not success:
                 cursor.execute("UPDATE cctv SET count_ping = 0 WHERE id = %s", (id_))
                 connection.commit()
-                log_callback(f"Device {ip}, durable_no: {durable_no} might reboot")  # ใช้ log_callback ตรงนี้
+                #log_callback(f"Device {ip}, durable_no: {durable_no} might reboot")  # ลบ log ตรงนี้ออก
                 return False
             else:
                 cursor.execute("UPDATE cctv SET count_ping = 0 WHERE id = %s", (id_))
@@ -130,10 +133,10 @@ def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_n
                 log_ping_status(id_, new_ping_value, cctv_type)
                 status_changed = True
 
-        if success != (ping_value == '0') and count_ping <= 2 : #ยังไม่เปลี่ยนสถานะ
-            log_callback(f"Device: {ip}, durable_no: {durable_no} ping : {success} - count : {count_ping} - status : {status} - (Not changed status)") # ย้าย log มาที่นี่
-        elif success == (ping_value == '0'): #สถานะตรงกัน
-            log_callback(f"Device: {ip}, durable_no: {durable_no} ping : {success} - count : {count_ping} - status : {status} - (correct status)") # เรียกตัวแปร status
+        #if success != (ping_value == '0') and count_ping <= 2 : #ยังไม่เปลี่ยนสถานะ #ลบออก
+            #log_callback(f"Device: {ip}, durable_no: {durable_no} ping : {success} - count : {count_ping} - status : {status} - (Not changed status)") # ย้าย log มาที่นี่
+        #elif success == (ping_value == '0'): #สถานะตรงกัน #ลบออก
+            #log_callback(f"Device: {ip}, durable_no: {durable_no} ping : {success} - count : {count_ping} - status : {status} - (correct status)") # เรียกตัวแปร status
     finally:
         cursor.close()
         connection.close()
@@ -168,22 +171,26 @@ def main_loop(log_callback):
     global running
     while running:
         data = get_cctv_data()
-        responsive_count = 0
-        non_responsive_count = 0
+        total_devices = len(data) #นับจำนวนอุปกรณ์ทั้งหมด
+        online = 0
+        offline = 0
+        skip = 0
         status_changed_count = 0
         with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
-            results = list(executor.map(ping_and_check, data, [log_message] * len(data)))
-        for data, status, success, status_changed in results:
-            if success:
-                responsive_count += 1
-            else:
-                non_responsive_count += 1
+            results = list(executor.map(ping_and_check, data, [lambda msg: None] * len(data)))
+        for data, status, success, status_changed, skipped in results: #รับตัวแปร skipped
+            if skipped: #ถูก skip
+                skip += 1
+            elif success: #ไม่ถูก skip และ online
+                online += 1
+            else: #ไม่ถูก skip และ offline
+                offline += 1
+          
             if status_changed:
                 status_changed_count += 1
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_callback(
-            f"Responsive: {responsive_count}, Non-responsive: {non_responsive_count}, Changed: {status_changed_count} at {now}")
-        time.sleep(60)
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        log_callback(f"Total Devices : {total_devices}, Online : {online}, Offline : {offline}, Skip : {skip}, Changed : {status_changed_count} at {now}")
+        time.sleep(120)
 
 
 # GUI ด้วย Tkinter
@@ -207,6 +214,7 @@ def stop_loop():
 
 
 def log_message(msg):
+    
     text_area.insert(tk.END, msg + "\n")
     text_area.see(tk.END)
 
