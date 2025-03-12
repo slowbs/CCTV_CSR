@@ -204,6 +204,7 @@ export class ReportComponent implements OnInit {
           log.duration = this.calculateOfflineDuration(log.offline, log.online);
         });
       });
+      console.log(this.reportItems)
     });
   }
 

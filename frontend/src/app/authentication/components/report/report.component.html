@@ -45,6 +45,7 @@
                                     <th class="text-center" style="width: 6%">ลำดับที่</th>
                                     <th class="text-center" style="width: 15%">รายการ</th>
                                     <th class="text-center" style="width: 11%">เลขครุภัณฑ์</th>
+                                    <th class="text-center" style="width: 7%">ชั้น</th>
                                     <th class="text-center" style="width: 15%">สถานที่</th>
                                     <th class="text-center">สถานะ</th>
                                     <th class="text-center">Ping</th>
@@ -58,6 +59,7 @@
                                         <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">{{ i + 1 }}</td>
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.durable_name }}</td>
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.durable_no }}</td>
+                                        <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.floor }}</td>
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.location }}</td>
                                         <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">
                                             <span class="badge" [ngClass]="{
