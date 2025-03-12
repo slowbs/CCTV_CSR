@@ -3,6 +3,11 @@ import { CctvService } from '../../../shareds/cctv.service';
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from '../../../../assets/font/vfs_fonts';
 import { DatePipe } from '@angular/common';
+import { BsLocaleService, BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { defineLocale } from 'ngx-bootstrap/chronos';
+import { thLocale } from 'ngx-bootstrap/locale';
+
+defineLocale('th', thLocale);
 
 (<any>pdfMake).addVirtualFileSystem(pdfFonts);
 
@@ -19,13 +24,25 @@ pdfMake.addFonts({
   styleUrl: './check-list.component.css'
 })
 export class CheckListComponent implements OnInit {
-  selectedMonth: string = '';
+  selectedMonth: Date | null = null;
   checkListItems: any[] = [];
+  bsConfig: Partial<BsDatepickerConfig>; // เพิ่ม BsDatepickerConfig
 
-  constructor(private cctvService: CctvService, private datePipe: DatePipe) { }
+  constructor(private cctvService: CctvService, private datePipe: DatePipe, private localeService: BsLocaleService) {
+    this.localeService.use('th');
+    //กำหนดค่าเริ่มต้นให้ datepicker
+    this.bsConfig = Object.assign({}, {
+      dateInputFormat: 'DD/MM/YYYY',
+      // containerClass: 'theme-dark-blue',
+      isAnimated: true,
+      selectFromOtherMonth: true,
+    });
+  }
 
   ngOnInit(): void {
-    this.selectedMonth = this.getLastMonth();
+    //กำหนดค่าเริ่มต้นให้ selectedMonth
+    this.selectedMonth = new Date();
+
     this.loadChecklist();
   }
 
@@ -45,7 +62,13 @@ export class CheckListComponent implements OnInit {
   }
 
   loadChecklistLog() {
-    this.cctvService.getChecklistLogs(this.selectedMonth).subscribe((data) => {
+    // แปลงวันที่เป็น string ในรูปแบบที่ API ต้องการ (เช่น 'yyyy-MM')
+    let selectedMonthString: string = ""
+    if (this.selectedMonth) {
+      selectedMonthString = this.datePipe.transform(this.selectedMonth, 'yyyy-MM') || "";
+    }
+
+    this.cctvService.getChecklistLogs(selectedMonthString).subscribe((data) => {
       if (data.length > 0) {
         for (let i = 0; i < this.checkListItems.length; i++) {
           const item = this.checkListItems[i];
@@ -68,8 +91,14 @@ export class CheckListComponent implements OnInit {
   }
 
   save() {
+    // แปลงวันที่เป็น string ในรูปแบบที่ API ต้องการ (เช่น 'yyyy-MM')
+    let selectedMonthString: string = ""
+    if (this.selectedMonth) {
+      selectedMonthString = this.datePipe.transform(this.selectedMonth, 'yyyy-MM') || "";
+    }
+
     const data = {
-      month: this.selectedMonth,
+      month: selectedMonthString,
       checkList: this.checkListItems.map((item) => {
         return {
           checklist_item_id: item.id,
@@ -93,7 +122,7 @@ export class CheckListComponent implements OnInit {
       content: [
         { text: 'รายงานการตรวจสอบระบบสำรองข้อมูล', style: 'header', alignment: 'center', margin: [0, 0, 0, 5] },
         {
-          text: this.selectedMonth ? `ข้อมูลสำหรับเดือน: ${this.formatDateForDisplay(this.selectedMonth)}` : '',
+          text: `ข้อมูลสำหรับเดือน : ${this.formatDateForDisplay(this.selectedMonth)}`,
           alignment: 'center',
           margin: [0, 0, 0, 10]
         },
@@ -148,11 +177,12 @@ export class CheckListComponent implements OnInit {
     };
   }
 
-  formatDateForDisplay(input: string): string {
-    // input format yyyy-MM
-    const [year, month] = input.split('-').map(Number);
-    const date = new Date(year, month - 1, 1);
-    const transformedDate = this.datePipe.transform(date, 'MMMM yyyy', 'th-TH')
+  formatDateForDisplay(date: Date | null): string {
+    if (!date) {
+      return '';
+    }
+    //ใช้ datepipe ในการ format date
+    let transformedDate = this.datePipe.transform(date, 'MMMM yyyy', 'th-TH')
     if (transformedDate) {
       const yearInBuddhistEra = date.getFullYear() + 543;
       return transformedDate.replace(date.getFullYear().toString(), yearInBuddhistEra.toString());
