@@ -35,9 +35,16 @@
                         <div class="col-2 text-end">
                             <h5 class="lh_modal">ยี่ห้อ : </h5>
                         </div>
-                        <div class="col-10">
+                        <div class="col-4">
                             <input type="text" class="form-control form-control-lg" required [(ngModel)]="model.brand"
                                 name="brand" placeholder="ยี่ห้อ">
+                        </div>
+                        <div class="col-1 text-end">
+                            <h5 class="lh_modal">รุ่น : </h5>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" class="form-control form-control-lg" [(ngModel)]="model.model"
+                                name="model" placeholder="รุ่น">
                         </div>
                     </div>
                     <div class="row align-items-center mt-3">
@@ -72,8 +79,7 @@
                             <h5 class="lh_modal">ประเภทครุภัณฑ์ : </h5>
                         </div>
                         <div class="col-10">
-                            <select class="form-select form-select-lg" [(ngModel)]="model.type" name="type"
-                                required>
+                            <select class="form-select form-select-lg" [(ngModel)]="model.type" name="type" required>
                                 <option value="">กรุณาเลือกประเภทครุภัณฑ์</option>
                                 <option *ngFor="let item of typeItems" value="{{item.type_id}}">{{item.type_name}}
                                 </option>

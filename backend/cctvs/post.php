@@ -47,14 +47,15 @@ if (
     //     'message' => 'valid',
     //     'data' => $data->name
     // ]);
-    $query = "INSERT INTO cctv (durable_no, durable_name, brand, location, type, monitor, ip, floor, status) VALUES (?, ?, ?, ?, ?, ?, ? ,? ,?)";
+    $query = "INSERT INTO cctv (durable_no, durable_name, brand, model, location, type, monitor, ip, floor, status) VALUES (?, ?, ?, ?, ?, ?, ?, ? ,? ,?)";
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param(
         $stmt,
-        'ssssissii',
+        'sssssissii',
         $data->durable_no,
         $data->durable_name,
         $data->brand,
+        $data->model,
         $data->location,
         $data->type,
         $data->monitor,
