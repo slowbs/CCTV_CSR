@@ -11,15 +11,22 @@
     </div>
     <div class="row mb-3">
         <div class="col-md-3">
-            <label for="selectedMonth">เดือนที่ตรวจสอบ:</label>
             <input type="month" id="selectedMonth" class="form-control" [(ngModel)]="selectedMonth"
                 (change)="loadChecklistLog()">
         </div>
+        <!--ปุ่ม Download PDF-->
+        <div class="col-md-9 text-end">
+            <button class="btn btn-primary" (click)="generatePDF()">
+                <i class="bi bi-file-earmark-arrow-down"></i> Download PDF
+            </button>
+        </div>
     </div>
+    <!-- เพิ่มข้อความแสดงช่วงวันที่ -->
     <div class="row">
         <div class="col-md-12">
             <div class="tile">
                 <div class="tile-body">
+                    <h2 class="text-center">รายงานการตรวจสอบระบบสารองข้อมูล</h2>
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered table-hover">
                             <thead>
@@ -42,13 +49,15 @@
                                             <option value="พบปัญหา">พบปัญหา</option>
                                         </select>
                                     </td>
-                                    <td><textarea name="comment" class="form-control" rows="1"
-                                            [(ngModel)]="item.comment"></textarea></td>
+                                    <td>
+                                        <textarea name="comment" class="form-control" rows="1"
+                                            [(ngModel)]="item.comment"></textarea>
+                                    </td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="5">จำนวนรายการทั้งหมด {{checkListItems.length}} รายการ</th>
+                                    <th colspan="5">จำนวนรายการทั้งหมด {{ checkListItems.length }} รายการ</th>
                                 </tr>
                             </tfoot>
                         </table>
