@@ -18,8 +18,8 @@ export class DurableCreateComponent {
     durable_no: '',
     type: '',
     floor: '',
-    status: ''
-
+    status: '',
+    ip: '' // กำหนดค่าเริ่มต้นเป็น ''
   }
   public statusItems: IStatus[] = [];
   public floorItems: IFloor[] = [];
@@ -61,6 +61,9 @@ export class DurableCreateComponent {
 
   onSubmit() {
     // console.log(this.model)
+    if (!this.model.ip) {
+      this.model.ip = "";
+    }
     this.CctvSerivce.post_items(this.model)
       .subscribe({
         next: (result) => {

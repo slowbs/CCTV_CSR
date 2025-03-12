@@ -42,6 +42,11 @@ if (
         ]));
     }
 
+    // หาก ip เป็นค่าว่าง ให้กำหนดเป็น ''
+    if (!isset($data->ip)) {
+        $data->ip = '';
+    }
+
     //กรณีที่เงือนไขครบถ้วน
     // echo json_encode([
     //     'message' => 'valid',
