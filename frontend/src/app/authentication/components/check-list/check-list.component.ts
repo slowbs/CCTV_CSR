@@ -93,7 +93,7 @@ export class CheckListComponent implements OnInit {
       content: [
         { text: 'รายงานการตรวจสอบระบบสำรองข้อมูล', style: 'header', alignment: 'center', margin: [0, 0, 0, 5] },
         {
-          text: this.selectedMonth ? `ข้อมูลสำหรับเดือน: ${this.formatDateForDisplay(this.selectedMonth)}` : '',
+          text: `ข้อมูลสำหรับเดือน : ${this.formatDateForDisplay(this.selectedMonth)}`,
           alignment: 'center',
           margin: [0, 0, 0, 10]
         },
@@ -150,6 +150,7 @@ export class CheckListComponent implements OnInit {
 
   formatDateForDisplay(input: string): string {
     // input format yyyy-MM
+    if (!input) return ""
     const [year, month] = input.split('-').map(Number);
     const date = new Date(year, month - 1, 1);
     const transformedDate = this.datePipe.transform(date, 'MMMM yyyy', 'th-TH')
