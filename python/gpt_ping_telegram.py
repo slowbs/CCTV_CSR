@@ -38,7 +38,7 @@ def get_db_connection():
         database='cctv'
     )
 
-def ping_and_check(data, log_callback): # เพิ่ม log_callback เป็น argument
+def ping_and_check(data, log_callback):  # เพิ่ม log_callback เป็น argument
     ip = data['ip']
     id_ = data['id']
     ping_value = data['ping']
@@ -49,65 +49,91 @@ def ping_and_check(data, log_callback): # เพิ่ม log_callback เป็
     durable_name = data['durable_name']
     location = data['location']
     monitor = data['monitor']
-    
     now = datetime.datetime.now()
+
+    # ตรวจสอบ IP ว่าไม่ใช่ค่าว่าง
+    if ip == '':
+        log_callback(f"Skipping ping for ID: {id_}, durable_no: {durable_no} - IP is Empty.")
+        return data, "Skipped (IP is Empty)", False, False  # Skip and report as not success and status not change
+    
     # ตรวจสอบ IP และช่วงเวลา 22:00-22:10
     if ip == '192.168.200.9' and 22 <= now.hour < 23:
         if 0 <= now.minute <= 10:
-            log_callback(f"Skipping ping for {ip} at {now.strftime('%H:%M')} (Reboot time).")
-            return data, "Skipped (Reboot time)", True, False 
+            log_callback(f"Skipping ping for {ip}, durable_no: {durable_no} at {now.strftime('%H:%M')} (Reboot time).")
+            return data, "Skipped (Reboot time)", True, False  # Skip for reboot time
+    
     
     param_count = '-n' if platform.system().lower() == 'windows' else '-c'
     param_timeout = '-w' if platform.system().lower() == 'windows' else '-W'
+
+    # เช็คว่าต้องใช้ creationflags หรือไม่
+    creationflags = subprocess.CREATE_NO_WINDOW if platform.system().lower() == 'windows' else 0
+
     result = subprocess.run(['ping', param_count, '1', param_timeout, '500', ip],
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                            creationflags=subprocess.CREATE_NO_WINDOW)
+                            creationflags=creationflags)
     success = result.returncode == 0
-    
+
     status = "สถานะตรงกัน" if success == (ping_value == '0') else "สถานะไม่สอดคล้อง"
-    
+
     status_changed = update_status(id_, success, ping_value, count_ping, ip, cctv_type,
-                               durable_no, durable_name, location, monitor, floor_name, log_callback) # ส่ง log_callback ไปด้วย
-    
+                                   durable_no, durable_name, location, monitor, floor_name, log_callback, status)  # ส่ง status ไปด้วย
+
     return data, status, success, status_changed
 
-def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_no, durable_name, location, monitor, floor_name, log_callback): # เพิ่ม log_callback เป็น argument
+def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_no, durable_name, location, monitor, floor_name, log_callback, status):  # เพิ่ม status เป็น argument
     connection = get_db_connection()
     cursor = connection.cursor()
     status_changed = False
-    new_ping_value = '1' if not success else '0'
+    new_ping_value = '1' if not success else '0' # กำหนดค่า new_ping_value ตามความสำเร็จของการ ping
+    
     try:
         now = datetime.datetime.now()
+        # ตรวจสอบ IP และช่วงเวลา 22:00-22:10
         if ip == '192.168.200.9' and 22 <= now.hour < 23 and 0 <= now.minute <= 10:
             if not success:
                 cursor.execute("UPDATE cctv SET count_ping = 0 WHERE id = %s", (id_))
                 connection.commit()
-                log_callback(f"Device {ip} might reboot") # ใช้ log_callback ตรงนี้
+                log_callback(f"Device {ip}, durable_no: {durable_no} might reboot")  # ใช้ log_callback ตรงนี้
                 return False
             else:
                 cursor.execute("UPDATE cctv SET count_ping = 0 WHERE id = %s", (id_))
                 connection.commit()
-        else:
-             cursor.execute("UPDATE cctv SET count_ping = %s WHERE id = %s", (count_ping, id_))
-             connection.commit()
 
-        if new_ping_value != ping_value:
-            if count_ping > 2:
-              cursor.execute("UPDATE cctv SET ping = %s, count_ping = 0 WHERE id = %s", (new_ping_value, id_))
-              connection.commit()
-              message = (
-                  f"<b>{'กลับมาออนไลน์ ✅' if new_ping_value == '0' else 'ออฟไลน์ ❌'}</b>\n"
-                  f"หมายเลขครุภัณฑ์: <b>{durable_no}</b>\n"
-                  f"รายการ: {durable_name}\n"
-                  f"อาคาร: {floor_name}\n"
-                  f"สถานที่: {location}\n"
-                  f"Monitor: {monitor}\n"
-                  f"หมายเลข IP: {ip}\n"
-                  f"สถานะ: <b>{'ออนไลน์' if new_ping_value == '0' else 'ออฟไลน์'}</b>"
-              )
-              send_telegram_message(message)
-              log_ping_status(id_, new_ping_value, cctv_type)
-              status_changed = True
+        # อัปเดต count_ping ตาม logic ของ gpt_ping_telegram.pyw
+        if success and ping_value == '1':
+            count_ping += 1
+        elif not success and ping_value == '0':
+            count_ping += 1
+        else:
+            if count_ping > 0:
+                count_ping -= 1
+        
+        cursor.execute("UPDATE cctv SET count_ping = %s WHERE id = %s", (count_ping, id_)) #อัปเดต count_ping
+        connection.commit()
+        
+        if count_ping > 2: #ย้าย logic มาตรงนี้
+            if new_ping_value != ping_value: #ตรวจสอบการเปลี่ยนสถานะ
+                cursor.execute("UPDATE cctv SET ping = %s, count_ping = 0 WHERE id = %s", (new_ping_value, id_))
+                connection.commit()
+                message = (
+                    f"<b>{'กลับมาออนไลน์ ✅' if new_ping_value == '0' else 'ออฟไลน์ ❌'}</b>\n"
+                    f"หมายเลขครุภัณฑ์: <b>{durable_no}</b>\n"
+                    f"รายการ: {durable_name}\n"
+                    f"อาคาร: {floor_name}\n"
+                    f"สถานที่: {location}\n"
+                    f"Monitor: {monitor}\n"
+                    f"หมายเลข IP: {ip}\n"
+                    f"สถานะ: <b>{'ออนไลน์' if new_ping_value == '0' else 'ออฟไลน์'}</b>"
+                )
+                send_telegram_message(message)
+                log_ping_status(id_, new_ping_value, cctv_type)
+                status_changed = True
+
+        if success != (ping_value == '0') and count_ping <= 2 : #ยังไม่เปลี่ยนสถานะ
+            log_callback(f"Device: {ip}, durable_no: {durable_no} ping : {success} - count : {count_ping} - status : {status} - (Not changed status)") # ย้าย log มาที่นี่
+        elif success == (ping_value == '0'): #สถานะตรงกัน
+            log_callback(f"Device: {ip}, durable_no: {durable_no} ping : {success} - count : {count_ping} - status : {status} - (correct status)") # เรียกตัวแปร status
     finally:
         cursor.close()
         connection.close()
@@ -146,7 +172,7 @@ def main_loop(log_callback):
         non_responsive_count = 0
         status_changed_count = 0
         with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
-            results = list(executor.map(ping_and_check, data, [log_message]*len(data))) 
+            results = list(executor.map(ping_and_check, data, [log_message] * len(data)))
         for data, status, success, status_changed in results:
             if success:
                 responsive_count += 1
@@ -155,8 +181,10 @@ def main_loop(log_callback):
             if status_changed:
                 status_changed_count += 1
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_callback(f"Responsive: {responsive_count}, Non-responsive: {non_responsive_count}, Changed: {status_changed_count} at {now}")
+        log_callback(
+            f"Responsive: {responsive_count}, Non-responsive: {non_responsive_count}, Changed: {status_changed_count} at {now}")
         time.sleep(60)
+
 
 # GUI ด้วย Tkinter
 import tkinter as tk
@@ -171,14 +199,17 @@ def start_loop():
         loop_thread.start()
         log_message("Started monitoring.")
 
+
 def stop_loop():
     global running
     running = False
     log_message("Stopped monitoring.")
 
+
 def log_message(msg):
     text_area.insert(tk.END, msg + "\n")
     text_area.see(tk.END)
+
 
 # สร้างหน้าต่างหลัก
 root = tk.Tk()
