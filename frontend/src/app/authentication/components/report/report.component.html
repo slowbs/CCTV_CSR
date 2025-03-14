@@ -48,7 +48,7 @@
                                     <th class="text-center" style="width: 11%">เลขครุภัณฑ์</th>
                                     <th class="text-center" style="width: 7%">ชั้น</th>
                                     <th class="text-center" style="width: 15%">สถานที่</th>
-                                    <th class="text-center" style="width: 10%">Monitor</th>
+                                    <th class="text-center" style="width: 7%">Monitor</th>
                                     <th class="text-center">สถานะ</th>
                                     <th class="text-center">Ping</th>
                                     <th class="text-center" style="width: 30%">หมายเหตุ</th>
@@ -82,7 +82,7 @@
                                         </td>
                                         <td>
                                             <ng-container *ngIf="(item.logs ?? []).length; else noComment">
-                                                {{ item.logs[0].comment }} <br>
+                                                {{ item.logs[0].comment || '' }} <br>
                                                 ออฟไลน์: {{ formatDate(item.logs[0].offline) }} <br>
                                                 ออนไลน์: {{ formatDate(item.logs[0].online) }} <br>
                                                 ระยะเวลา: {{ item.logs[0].duration }}
@@ -92,7 +92,7 @@
                                     </tr>
                                     <tr *ngFor="let log of item.logs?.slice(1); let y = index">
                                         <td>
-                                            {{ log.comment }} <br>
+                                            {{ log.comment || '' }} <br>
                                             ออฟไลน์: {{ formatDate(log.offline) }} <br>
                                             ออนไลน์: {{ formatDate(log.online) }} <br>
                                             ระยะเวลา: {{ log.duration }}

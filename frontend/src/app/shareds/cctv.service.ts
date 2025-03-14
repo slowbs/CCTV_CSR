@@ -243,6 +243,7 @@ export namespace IReport {
     location: string
     monitor?: string
     floor: string
+    floor_order?: string
     status: string
     status_id: string
     ping: string
