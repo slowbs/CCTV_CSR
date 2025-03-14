@@ -5,7 +5,8 @@
             <p>สรุปรายงานสถานะครุภัณฑ์{{ Title }}</p>
         </div>
         <ul class="app-breadcrumb breadcrumb">
-            <li class="breadcrumb-item"><a [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]"><i class="bi bi-house-door fs-6"></i></a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]"><i
+                        class="bi bi-house-door fs-6"></i></a></li>
             <li class="breadcrumb-item"><a [routerLink]="[]">Report</a></li>
         </ul>
     </div>
@@ -47,20 +48,22 @@
                                     <th class="text-center" style="width: 11%">เลขครุภัณฑ์</th>
                                     <th class="text-center" style="width: 7%">ชั้น</th>
                                     <th class="text-center" style="width: 15%">สถานที่</th>
+                                    <th class="text-center" style="width: 10%">Monitor</th>
                                     <th class="text-center">สถานะ</th>
                                     <th class="text-center">Ping</th>
-                                    <th class="text-center" style="width: 18%">วัน/เวลา</th>
-                                    <th class="text-center" style="width: 12%">หมายเหตุ</th>
+                                    <th class="text-center" style="width: 30%">หมายเหตุ</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <ng-container *ngFor="let item of reportItems; let i = index">
                                     <tr>
-                                        <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">{{ i + 1 }}</td>
+                                        <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">{{ i + 1 }}
+                                        </td>
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.durable_name }}</td>
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.durable_no }}</td>
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.floor }}</td>
                                         <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.location }}</td>
+                                        <td [attr.rowspan]="(item.logs?.length || 1)">{{ item.monitor }}</td>
                                         <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">
                                             <span class="badge" [ngClass]="{
                                               'bg-success': item.status_id === '1',
@@ -72,33 +75,27 @@
                                             </span>
                                         </td>
                                         <td class="text-center" [attr.rowspan]="(item.logs?.length || 1)">
-                                            <span class="badge" [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
+                                            <span class="badge"
+                                                [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
                                                 {{ item.ping === '0' ? 'Online' : 'Offline' }}
                                             </span>
                                         </td>
                                         <td>
-                                            <ng-container *ngIf="(item.logs ?? []).length; else noLogs">
+                                            <ng-container *ngIf="(item.logs ?? []).length; else noComment">
+                                                {{ item.logs[0].comment }} <br>
                                                 ออฟไลน์: {{ formatDate(item.logs[0].offline) }} <br>
                                                 ออนไลน์: {{ formatDate(item.logs[0].online) }} <br>
                                                 ระยะเวลา: {{ item.logs[0].duration }}
-                                            </ng-container>
-                                            <ng-template #noLogs></ng-template>
-                                        </td>
-                                        <td>
-                                            <ng-container *ngIf="(item.logs ?? []).length; else noComment">
-                                                {{ item.logs[0].comment }}
                                             </ng-container>
                                             <ng-template #noComment></ng-template>
                                         </td>
                                     </tr>
                                     <tr *ngFor="let log of item.logs?.slice(1); let y = index">
                                         <td>
+                                            {{ log.comment }} <br>
                                             ออฟไลน์: {{ formatDate(log.offline) }} <br>
                                             ออนไลน์: {{ formatDate(log.online) }} <br>
                                             ระยะเวลา: {{ log.duration }}
-                                        </td>
-                                        <td>
-                                            {{ log.comment }}
                                         </td>
                                     </tr>
                                 </ng-container>

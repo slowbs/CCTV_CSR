@@ -241,6 +241,7 @@ export namespace IReport {
     durable_no: string
     durable_name: string
     location: string
+    monitor?: string
     floor: string
     status: string
     status_id: string
