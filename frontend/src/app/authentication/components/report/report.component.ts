@@ -114,7 +114,7 @@ export class ReportComponent implements OnInit {
   getTableContent() {
     const body: any[][] = [];
     body.push([
-      { text: 'ลำดับที่', style: 'tableHeader', alignment: 'center' },
+      { text: 'ที่', style: 'tableHeader', alignment: 'center' },
       { text: 'รายการ', style: 'tableHeader', alignment: 'center' },
       { text: 'เลขครุภัณฑ์', style: 'tableHeader', alignment: 'center' },
       { text: 'ชั้น', style: 'tableHeader', alignment: 'center' },
@@ -165,7 +165,7 @@ export class ReportComponent implements OnInit {
     return {
       table: {
         headerRows: 1,
-        widths: ['auto', 60, 'auto', 'auto', 70, 'auto', 40, 'auto', '*'],
+        widths: ['auto', 60, 60, 'auto', 70, 50, 40, 'auto', '*'],
         body: body
       }
     };

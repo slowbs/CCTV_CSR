@@ -121,7 +121,7 @@ export class CheckListComponent implements OnInit {
         fontSize: 8
       },
       content: [
-        { text: 'รายงานการตรวจสอบระบบสำรองข้อมูล', style: 'header', alignment: 'center', margin: [0, 0, 0, 5] },
+        { text: 'รายงานการตรวจสอบระบบสำรองข้อมูล (Back Up)', style: 'header', alignment: 'center', margin: [0, 0, 0, 5] },
         {
           text: `ข้อมูลสำหรับเดือน : ${this.formatDateForDisplayForPdf(this.selectedMonth)}`, // แก้ไขตรงนี้
           alignment: 'center',
@@ -151,7 +151,7 @@ export class CheckListComponent implements OnInit {
 
     // สร้าง header row
     body.push([
-      { text: 'ลำดับที่', style: 'tableHeader', alignment: 'center' },
+      { text: 'ที่', style: 'tableHeader', alignment: 'center' },
       { text: 'รายการตรวจสอบ', style: 'tableHeader', alignment: 'center' },
       { text: 'กำหนดเวลา', style: 'tableHeader', alignment: 'center' },
       { text: 'สถานะ', style: 'tableHeader', alignment: 'center' },
@@ -172,7 +172,7 @@ export class CheckListComponent implements OnInit {
     return {
       table: {
         headerRows: 1,
-        widths: ['auto', '*', 'auto', 'auto', '*'],
+        widths: ['auto', 150, 150, 'auto', '*'],
         body: body
       }
     };
