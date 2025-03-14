@@ -27,7 +27,8 @@
                                'bg-warning': item.type === '3',
                                'bg-danger': item.type === '4'
                              }" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, item.type]">
-                            <div class="card-header" style="text-align: center; font-weight: bold;">{{ getTypeName(item.type) }}</div>
+                            <div class="card-header" style="text-align: center; font-weight: bold;">{{
+                                getTypeName(item.type) }}</div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ item.online_count }} Online</h5>
                                 <p class="card-text">{{ item.offline_count }} Offline</p>
@@ -56,7 +57,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let change of recentStatusChanges">
+                            <!-- เพิ่ม [routerLink] ตรงนี้ -->
+                            <tr *ngFor="let change of recentStatusChanges"
+                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping,change.type]"
+                                style="cursor: pointer;">
                                 <td>{{ change.durable_no }}</td>
                                 <td>{{ change.durable_name }}</td>
                                 <td>{{ getTypeName(change.type) }}</td>
@@ -74,7 +78,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="7">จำนวนรายการทั้งหมด {{ recentStatusChanges.length }} รายการ</th>
+                                <th colspan="8">จำนวนรายการทั้งหมด {{ recentStatusChanges.length }} รายการ</th>
                             </tr>
                         </tfoot>
                     </table>
