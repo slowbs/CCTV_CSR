@@ -119,7 +119,7 @@ export class ReportComponent implements OnInit {
       { text: 'เลขครุภัณฑ์', style: 'tableHeader', alignment: 'center' },
       { text: 'ชั้น', style: 'tableHeader', alignment: 'center' },
       { text: 'สถานที่', style: 'tableHeader', alignment: 'center' },
-      { text: 'Monitor', style: 'tableHeader', alignment: 'center' },
+      { text: 'รายละเอียด', style: 'tableHeader', alignment: 'center' },
       { text: 'สถานะ', style: 'tableHeader', alignment: 'center' },
       { text: 'Ping', style: 'tableHeader', alignment: 'center' },
       { text: 'หมายเหตุ', style: 'tableHeader', alignment: 'center' }
