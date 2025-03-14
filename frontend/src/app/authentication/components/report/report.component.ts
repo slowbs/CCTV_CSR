@@ -59,10 +59,16 @@ export class ReportComponent implements OnInit {
         '4': 'อุปกรณ์จัดเก็บข้อมูล'
       };
       if (id) {
-        this.tempStartDate = new Date();
-        this.tempEndDate = new Date();
-        this.startDate = new Date();
-        this.endDate = new Date();
+        const today = new Date();
+        // กำหนด tempStartDate เป็นวันที่ 1 ของเดือนก่อนหน้า
+        this.tempStartDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        // กำหนด tempEndDate เป็นวันสุดท้ายของเดือนก่อนหน้า
+        this.tempEndDate = new Date(today.getFullYear(), today.getMonth(), 0);
+
+        //กำหนดค่าเริ่มต้นให้ startDate และ endDate
+        this.startDate = this.tempStartDate;
+        this.endDate = this.tempEndDate;
+
         this.get_report(id, this.startDate, this.endDate);
         this.Title = titles[id] || 'รายงานข้อมูล';
       }
