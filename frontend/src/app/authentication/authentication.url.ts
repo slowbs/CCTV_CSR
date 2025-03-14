@@ -3,7 +3,6 @@ export const AuthenticationURL = {
     Index: 'index',
     User: 'user',
     Cctv: 'cctv',
-    Network: 'network',
     Device: 'device',
     Storage: 'storage',
     Log_Ping: 'log_ping',

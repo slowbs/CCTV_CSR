@@ -76,11 +76,6 @@ export class CctvService {
     return this.httpClient.get<IType[]>(this.backendURL + 'types');
   }
 
-  // ดึงข้อมูลครุภัณฑ์ที่ไม่ใช่กล้องมาแสดง
-  get_network() {
-    return this.httpClient.get<ICctvs[]>(this.backendURL + 'networks');
-  }
-
   // แสดงข้อมูล Log
   get_logping(id: any) {
     return this.httpClient.get<ILogPing[]>(this.backendURL + 'log_ping', { params: { id: id } });
