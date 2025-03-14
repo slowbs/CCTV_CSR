@@ -5,7 +5,8 @@
             <p>รายการข้อมูลครุภัณฑ์{{ Title }}</p>
         </div>
         <ul class="app-breadcrumb breadcrumb">
-            <li class="breadcrumb-item"><a [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]"><i class="bi bi-house-door fs-6"></i></a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]"><i
+                        class="bi bi-house-door fs-6"></i></a></li>
             <li class="breadcrumb-item"><a [routerLink]="[]">Devices</a></li>
         </ul>
     </div>
@@ -80,7 +81,7 @@
                                     </span>
                                 </td>
 
-                                <td>{{ item.ip }}</td>
+                                <td><a href="http://{{ item.ip }}">{{ item.ip }}</a></td>
                                 <td class="text-center">
                                     <span class="badge" [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
                                         {{ item.ping === '0' ? 'Online' : 'Offline' }}
