@@ -125,7 +125,10 @@ export class CheckListComponent implements OnInit {
         {
           text: `ข้อมูลสำหรับเดือน : ${this.formatDateForDisplayForPdf(this.selectedMonth)}`, // แก้ไขตรงนี้
           alignment: 'center',
-          margin: [0, 0, 0, 10]
+          margin: [0, 0, 0, 10],
+          style: {
+            fontSize: 10
+          }
         },
         this.getTableContent()
       ],

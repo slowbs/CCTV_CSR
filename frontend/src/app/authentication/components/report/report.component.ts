@@ -53,10 +53,10 @@ export class ReportComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       const titles: { [key: string]: string } = {
-        '1': 'กล้องโทรทัศน์วงจรปิด',
-        '2': 'เครื่องคอมพิวเตอร์แม่ข่าย',
-        '3': 'อุปกรณ์กระจายสัญญาณ',
-        '4': 'อุปกรณ์จัดเก็บข้อมูล'
+        '1': 'กล้องโทรทัศน์วงจรปิด (CCTV)',
+        '2': 'เครื่องคอมพิวเตอร์แม่ข่าย (Server)',
+        '3': 'อุปกรณ์กระจายสัญญาณ (Nework)',
+        '4': 'อุปกรณ์จัดเก็บข้อมูล (NAS)'
       };
       if (id) {
         const today = new Date();
@@ -96,7 +96,10 @@ export class ReportComponent implements OnInit {
         {
           text: this.startDate && this.endDate ? `ข้อมูลวันที่ ${this.formatDateForDisplay(this.startDate)} - ${this.formatDateForDisplay(this.endDate)}` : '',
           alignment: 'center',
-          margin: [0, 0, 0, 10]
+          margin: [0, 0, 0, 10],
+          style: {
+            fontSize: 10
+          }
         },
         this.getTableContent()
       ],
@@ -171,7 +174,7 @@ export class ReportComponent implements OnInit {
     return {
       table: {
         headerRows: 1,
-        widths: ['auto', 60, 60, 'auto', 70, 50, 40, 'auto', '*'],
+        widths: ['auto', 60, 60, 35, 70, 50, 40, 'auto', '*'],
         body: body
       }
     };
