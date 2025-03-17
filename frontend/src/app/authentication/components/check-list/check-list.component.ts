@@ -136,8 +136,8 @@ export class CheckListComponent implements OnInit {
         },
         tableHeader: {
           bold: true,
-          fillColor: '#2980b9',
-          color: 'white'
+          // fillColor: '#2980b9',
+          // color: 'white'
         }
       }
     };
