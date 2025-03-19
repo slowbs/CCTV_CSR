@@ -4,12 +4,13 @@ import threading
 import time
 import datetime
 import concurrent.futures
-import db_utils  # Import db_utils
-import telegram_utils  # Import telegram_utils
-import ping_utils  # Import ping_utils
+import db_utils
+import telegram_utils
+import ping_utils
 
 # Global flag for loop control
 running = False
+loop_thread = None
 
 def check_reboot_time(ip, now):
     """Check if the current time is within the reboot window for a specific IP."""
@@ -99,36 +100,40 @@ def ping_and_check(data, log_callback):
 def main_loop(log_callback):
     global running
     while running:
-        data = db_utils.get_cctv_data()
-        total_devices = len(data)
-        online = 0
-        offline = 0
-        skip = 0
-        status_changed_count = 0
-        changed_devices = []
+        try:
+            data = db_utils.get_cctv_data()
+            total_devices = len(data)
+            online = 0
+            offline = 0
+            skip = 0
+            status_changed_count = 0
+            changed_devices = []
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
-            results = list(executor.map(ping_and_check, data, [log_callback] * len(data)))
+            with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
+                results = list(executor.map(ping_and_check, data, [log_callback] * len(data)))
 
-        for data, status, success, status_changed, skipped, durable_no, ip, new_ping_value, old_ping_value in results:
-            if skipped:
-                skip += 1
-            elif success:
-                online += 1
-            else:
-                offline += 1
+            for data, status, success, status_changed, skipped, durable_no, ip, new_ping_value, old_ping_value in results:
+                if skipped:
+                    skip += 1
+                elif success:
+                    online += 1
+                else:
+                    offline += 1
 
-            if status_changed:
-                status_changed_count += 1
-                changed_devices.append(f"- Changed: durable_no: {durable_no}, ip: {ip}, status: {'Offline' if old_ping_value == '1' else 'Online'} -> {'Online' if new_ping_value == '0' else 'Offline'}")
+                if status_changed:
+                    status_changed_count += 1
+                    changed_devices.append(f"- Changed: durable_no: {durable_no}, ip: {ip}, status: {'Offline' if old_ping_value == '1' else 'Online'} -> {'Online' if new_ping_value == '0' else 'Offline'}")
 
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        log_callback(f"Total Devices : {total_devices}, Online : {online}, Offline : {offline}, Skip : {skip}, Changed : {status_changed_count} at {now}")
-        for device_info in changed_devices:
-            log_callback(device_info)
+            now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+            log_callback(f"Total Devices : {total_devices}, Online : {online}, Offline : {offline}, Skip : {skip}, Changed : {status_changed_count} at {now}")
+            for device_info in changed_devices:
+                log_callback(device_info)
 
-        changed_devices.clear()
-        time.sleep(60)
+            changed_devices.clear()
+            time.sleep(60)
+        except Exception as e:
+            log_callback(f"An error occurred in main_loop: {e}")
+            time.sleep(10)  # Wait for a while before retrying
 
 # GUI
 def start_loop():
