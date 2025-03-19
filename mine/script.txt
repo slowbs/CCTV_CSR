@@ -7,6 +7,8 @@ ng serve --proxy-config proxy.conf.json --host 0.0.0.0
 <!-- รัน live-server ของ php -->
 live-server
 
+ng build --base-href /cctv_csr_live/
+
 ิbuild python file
 pyinstaller --onefile --noconsole --icon=alert.ico gpt_ping_telegram.py
 pyinstaller --clean --onefile --noconsole --name MyApp gpt_ping_telegram.py
