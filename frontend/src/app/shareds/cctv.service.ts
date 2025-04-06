@@ -2,22 +2,29 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CctvService {
 
-  // private backendURL = 'http://localhost/cctv_csr/backend/index.php/api/';
-  private backendURL = 'http://192.168.201.40/cctv_csr/backend/index.php/api/';
-  // private backendURL = '/backend/index.php/api/';
+  private backendURL: string;
 
   public updateModel: ICctvs = Object.assign({})
   public updateModelUser: IUsers = Object.assign({})
   public updateModelLogping: ILogPing = Object.assign({})
 
-  constructor(private httpClient: HttpClient) { }
-
+  constructor(private httpClient: HttpClient) {
+    // กำหนด backendURL ตามเงื่อนไข
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      this.backendURL = environment.API_LOCALHOST;
+    } else if (window.location.hostname.startsWith('192.168')) {
+      this.backendURL = environment.API_LOCALIP;
+    } else {
+      this.backendURL = environment.API_NGROK;
+    }
+  }
 
   // Service ฝั่งข้อมูลผู้ใช้งาน
   // เพิ่มข้อมูลผู้ใช้งาน
