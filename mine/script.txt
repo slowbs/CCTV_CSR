@@ -7,6 +7,8 @@ ng serve --proxy-config proxy.conf.json --host 0.0.0.0
 <!-- รัน live-server ของ php -->
 live-server
 
+วิธี build web
+แก้ cctv.services.ts api backend เอา proxy ออก
 ng build --base-href /cctv_csr_live/
 
 ิbuild python file

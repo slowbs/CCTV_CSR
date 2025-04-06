@@ -9,7 +9,8 @@ import { Observable } from 'rxjs/internal/Observable';
 export class CctvService {
 
   // private backendURL = 'http://localhost/cctv_csr/backend/index.php/api/';
-  private backendURL = '/backend/index.php/api/';
+  private backendURL = 'http://192.168.201.40/cctv_csr/backend/index.php/api/';
+  // private backendURL = '/backend/index.php/api/';
 
   public updateModel: ICctvs = Object.assign({})
   public updateModelUser: IUsers = Object.assign({})
