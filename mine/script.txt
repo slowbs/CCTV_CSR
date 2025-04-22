@@ -15,9 +15,19 @@ ng build --base-href /cctv_csr_live/
 pyinstaller --onefile --noconsole --icon=alert.ico gpt_ping_telegram.py
 pyinstaller --clean --onefile --noconsole --name MyApp gpt_ping_telegram.py
 pyinstaller --clean --onefile --noconsole --icon=monitor.ico --name devices_monitor gpt_ping_telegram.py
+pyinstaller --clean --onefile --noconsole --icon=monitor.ico --name devices_monitor --add-data "C:\Users\ADMIN\AppData\Local\Programs\Python\Python312\Lib\site-packages\certifi;certifi" gpt_ping_telegram.py
+
+
+path certifi
+python -c "import certifi; print(certifi.where())"
+C:\Users\ADMIN\AppData\Local\Programs\Python\Python312\Lib\site-packages\certifi
 
 deploy ngrok
 ngrok http 4200
+
+api telegram
+https://api.telegram.org/bot<token?/sendMessage?chat_id=xxx&text=yy
+https://api.telegram.org/bot8145300216:AAFw_7rN05QxfgD_o60qWs4dbzSk5poaj-A/sendMessage?chat_id=6334503369&text=แจ้งเตือน : ขณะนี้อุณหภูมิ $temp องศา
 
 SELECT * FROM cctv
 left join floor on cctv.floor = floor.floor_id
