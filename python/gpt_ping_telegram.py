@@ -62,7 +62,7 @@ def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_n
             status_changed = True
             return status_changed, durable_no, ip, new_ping_value, old_ping_value
 
-    return status_changed, durable_no, ip, "", old_ping_value
+    return status_changed, durable_no, ip, new_ping_value, old_ping_value
 
 
 def ping_and_check(data, log_callback):

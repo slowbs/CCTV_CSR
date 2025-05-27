@@ -7,21 +7,30 @@ def ping_device(ip, timeout_seconds=2):
     if not ip:
         return False
 
-    param_count = '-n' if platform.system().lower() == 'windows' else '-c'
-    param_timeout = '-w' if platform.system().lower() == 'windows' else '-W'
-    creationflags = subprocess.CREATE_NO_WINDOW if platform.system().lower() == 'windows' else 0
+    system = platform.system().lower()
+    if system == 'windows':
+        param_count = '-n'
+        param_timeout_flag = '-w'
+        param_timeout_value = str(int(timeout_seconds * 1000)) # Milliseconds
+    else: # Linux, macOS, etc.
+        param_count = '-c'
+        param_timeout_flag = '-W' # Seconds for -W on Linux ping
+        param_timeout_value = str(timeout_seconds) # Seconds
+
+    creationflags = subprocess.CREATE_NO_WINDOW if system == 'windows' else 0
+    command = ['ping', param_count, '1', param_timeout_flag, param_timeout_value, ip]
 
     try:
-        result = subprocess.run(['ping', param_count, '1', param_timeout, str(int(timeout_seconds * 1000)), ip],
+        result = subprocess.run(command,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 creationflags=creationflags, timeout=timeout_seconds)
         return result.returncode == 0
     except subprocess.TimeoutExpired:
-        print(f"Ping to {ip} timed out.")
+        print(f"Ping to {ip} timed out after {timeout_seconds}s (subprocess timeout).")
         return False
     except (subprocess.CalledProcessError, OSError) as e:
-        print(f"Error pinging {ip}: {e}")
+        print(f"OS error pinging {ip} with command '{' '.join(command)}': {e}")
         return False
     except Exception as e:
-        print(f"An unexpected error occurred while pinging {ip}: {e}")
+        print(f"An unexpected error occurred while pinging {ip} with command '{' '.join(command)}': {e}")
         return False
