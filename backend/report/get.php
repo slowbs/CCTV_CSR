@@ -38,7 +38,7 @@ if (isset($_GET['id'])) {
                           AND ol.date_created > offline_log.date_created
                     )
                 WHERE cctv.type = $id
-                ORDER BY floor.order, cctv.durable_no, offline_log.date_created DESC;";
+                ORDER BY floor.order, cctv.durable_no, offline_log.date_created ASC;";
 
         $query = mysqli_query($conn, $sql);
         $result = [];
