@@ -86,7 +86,7 @@ def ping_and_check(data, log_callback):
     success = ping_utils.ping_device(ip, log_callback=log_callback) # Pass log_callback
 
     # Log the raw ping result for this IP
-    log_callback(f"IP: {ip} - Ping attempt result: {'Success (Online)' if success else 'Failed (Offline)'}")
+    # log_callback(f"IP: {ip} - Ping attempt result: {'Success (Online)' if success else 'Failed (Offline)'}") # Commented out to hide per-IP log
 
     status = "สถานะตรงกัน" if success == (ping_value == '0') else "สถานะไม่สอดคล้อง"
 
