@@ -165,3 +165,18 @@ WHERE cctv.type = 2
 GROUP BY cctv.id
 ORDER BY floor.order, cctv.durable_no;
 
+
+
+
+# ใน ping_utils.py, ภายในฟังก์ชัน ping_device, ใน try block
+# ...
+# result = subprocess.run(...)
+
+# --- START DIAGNOSTIC LOGGING (ตัวอย่าง) ---
+# if ip == "IP_ที่มีปัญหา_1" or ip == "IP_ที่มีปัญหา_2": # ระบุ IP ที่ต้องการตรวจสอบ
+#     print(f"DEBUG PING for {ip}: CMD={' '.join(command)}, RC={result.returncode}, "
+#           f"STDOUT='{result.stdout.decode(errors='ignore').strip()}', "
+#           f"STDERR='{result.stderr.decode(errors='ignore').strip()}'")
+# --- END DIAGNOSTIC LOGGING ---
+
+return result.returncode == 0
