@@ -2,9 +2,14 @@ import subprocess
 import platform
 import time
 
-def ping_device(ip, timeout_seconds=2):
+def ping_device(ip, timeout_seconds=2, log_callback=None):
     """Pings the device at the given IP address and returns True if successful, False otherwise."""
+    # If no log_callback is provided, default to print for console debugging
+    if log_callback is None:
+        log_callback = print
+
     if not ip:
+        log_callback(f"DEBUG PING: IP address is empty for ping_device. Skipping ping.")
         return False
 
     system = platform.system().lower()
@@ -20,17 +25,45 @@ def ping_device(ip, timeout_seconds=2):
     creationflags = subprocess.CREATE_NO_WINDOW if system == 'windows' else 0
     command = ['ping', param_count, '1', param_timeout_flag, param_timeout_value, ip]
 
+    log_callback(f"DEBUG PING CMD: IP {ip}: {' '.join(command)}")
+
     try:
+        # subprocess's own timeout, should be slightly greater than ping's internal timeout
+        process_timeout = timeout_seconds + 1
+
         result = subprocess.run(command,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                creationflags=creationflags, timeout=timeout_seconds)
-        return result.returncode == 0
+                                creationflags=creationflags, timeout=process_timeout,
+                                text=True, # Decode stdout/stderr as text
+                                check=False) # Do not raise CalledProcessError on non-zero exit
+
+        log_callback(f"DEBUG PING RESULT: IP={ip}, RC={result.returncode}")
+        if result.stdout and result.stdout.strip():
+            log_callback(f"DEBUG PING STDOUT for {ip}:\n{result.stdout.strip()}")
+        else:
+            log_callback(f"DEBUG PING STDOUT for {ip}: [EMPTY]")
+        if result.stderr and result.stderr.strip():
+            log_callback(f"DEBUG PING STDERR for {ip}:\n{result.stderr.strip()}")
+        else:
+            log_callback(f"DEBUG PING STDERR for {ip}: [EMPTY]")
+
+        # Default success is based on return code
+        is_success = (result.returncode == 0)
+
+        # For Windows, be more stringent: check if the reply is actually from the target IP
+        # and not a "Destination host unreachable" from a gateway.
+        if system == 'windows' and is_success:
+            if f"Reply from {ip}:" not in result.stdout:
+                is_success = False # Mark as failed if the reply isn't directly from the target IP
+                log_callback(f"DEBUG PING INFO: IP {ip} got RC=0, but STDOUT indicates not a direct reply. Overriding to Failed.")
+
+        return is_success
     except subprocess.TimeoutExpired:
-        print(f"Ping to {ip} timed out after {timeout_seconds}s (subprocess timeout).")
+        log_callback(f"DEBUG PING TIMEOUT: Subprocess timed out after {process_timeout}s for IP {ip}. Ping cmd: {' '.join(command)}")
         return False
     except (subprocess.CalledProcessError, OSError) as e:
-        print(f"OS error pinging {ip} with command '{' '.join(command)}': {e}")
+        log_callback(f"DEBUG PING OS_ERROR: IP {ip}, Cmd: '{' '.join(command)}', Error: {e}")
         return False
     except Exception as e:
-        print(f"An unexpected error occurred while pinging {ip} with command '{' '.join(command)}': {e}")
+        log_callback(f"DEBUG PING UNEXPECTED_ERROR: IP {ip}, Cmd: '{' '.join(command)}', Error: {e}")
         return False

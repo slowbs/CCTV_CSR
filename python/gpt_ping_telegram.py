@@ -83,7 +83,11 @@ def ping_and_check(data, log_callback):
         return data, "Skipped (Reboot time)", False, False, True, durable_no, ip, ping_value, ping_value
         
     #ping device
-    success = ping_utils.ping_device(ip)
+    success = ping_utils.ping_device(ip, log_callback=log_callback) # Pass log_callback
+
+    # Log the raw ping result for this IP
+    log_callback(f"IP: {ip} - Ping attempt result: {'Success (Online)' if success else 'Failed (Offline)'}")
+
     status = "สถานะตรงกัน" if success == (ping_value == '0') else "สถานะไม่สอดคล้อง"
 
     status_changed, changed_durable_no, changed_ip , changed_new_ping_value , old_ping_value = update_status(id_, success, ping_value, count_ping, ip, cctv_type,
