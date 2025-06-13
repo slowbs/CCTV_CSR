@@ -30,9 +30,15 @@ if (isset($_GET['id'])) {
                 LEFT JOIN log_ping AS online_log 
                     ON cctv.id = online_log.cctv_id 
                     AND online_log.ping_checked = 0 
-                    AND online_log.date_created > offline_log.date_created
+                    AND online_log.date_created = (
+                        SELECT MIN(ol.date_created)
+                        FROM log_ping ol
+                        WHERE ol.cctv_id = offline_log.cctv_id
+                          AND ol.ping_checked = 0
+                          AND ol.date_created > offline_log.date_created
+                    )
                 WHERE cctv.type = $id
-                ORDER BY floor.order, cctv.durable_no, online_log.date_created DESC;";
+                ORDER BY floor.order, cctv.durable_no, offline_log.date_created DESC;";
 
         $query = mysqli_query($conn, $sql);
         $result = [];
