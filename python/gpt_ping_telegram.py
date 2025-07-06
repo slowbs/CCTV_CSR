@@ -48,7 +48,7 @@ def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_n
                 f"สถานะ: <b>{'ออนไลน์' if new_ping_value_based_on_current_ping == '0' else 'ออฟไลน์'}</b>"
             )
             telegram_utils.send_telegram_message(message)
-            db_utils.log_ping_status(id_, new_ping_value_based_on_current_ping, cctv_type, "Status changed by monitor.")
+            db_utils.log_ping_status(id_, new_ping_value_based_on_current_ping, cctv_type)
             status_changed = True
             return status_changed, durable_no, ip, new_ping_value_based_on_current_ping, old_ping_value_from_db
 
@@ -76,9 +76,7 @@ def ping_and_check(data, log_callback):
     now = datetime.datetime.now()
     if check_reboot_time(ip, now):
         db_utils.update_device_count_ping(id_, 0) # รีเซ็ต count_ping
-        # บันทึก Log ว่าข้ามการตรวจสอบเนื่องจากอยู่ในช่วง Reboot
-        # ping_value คือสถานะจาก DB ก่อนการตรวจสอบนี้
-        db_utils.log_ping_status(id_, ping_value, cctv_type, "Device in reboot window, ping skipped.")
+        # ไม่ต้องบันทึก log ในช่วงเวลา reboot
         # คืนค่า success=False (อุปกรณ์อาจไม่ตอบสนองจริง) แต่ status_changed=False และ skipped=True
         return data, "Skipped (Reboot time)", False, False, True, durable_no, ip, ping_value, ping_value
         

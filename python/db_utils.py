@@ -45,12 +45,12 @@ def update_device_count_ping(id_, count_ping):
         cursor.close()
         connection.close()
 
-def log_ping_status(cctv_id, ping_checked, cctv_type, comment = ""):
+def log_ping_status(cctv_id, ping_checked, cctv_type):
     connection = get_db_connection()
     cursor = connection.cursor()
     try:
         cursor.execute("INSERT INTO log_ping (cctv_id, ping_checked, type, comment, date_created) VALUES (%s, %s, %s, %s, %s)",
-                       (cctv_id, ping_checked, cctv_type, comment, datetime.datetime.now()))
+                       (cctv_id, ping_checked, cctv_type, "", datetime.datetime.now()))
         connection.commit()
     finally:
         cursor.close()
