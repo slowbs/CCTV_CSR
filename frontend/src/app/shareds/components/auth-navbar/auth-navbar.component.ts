@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../../authentication/authentication.url';
 import { CctvService, ISession } from '../../cctv.service';
 import { Router } from '@angular/router';
+import { switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-auth-navbar',
   templateUrl: './auth-navbar.component.html',
   styleUrl: './auth-navbar.component.css'
 })
-export class AuthNavbarComponent {
+export class AuthNavbarComponent implements OnInit {
 
   AppUrl = AppURL
   AuthUrl = AuthenticationURL
@@ -19,56 +20,40 @@ export class AuthNavbarComponent {
   constructor(
     private cctvService: CctvService,
     private router: Router,
-  ) {
+  ) { }
+
+  ngOnInit() {
     this.get_profile();
   }
 
-  ngOnInit() {
-  }
-
   get_profile() {
-    return this.cctvService.get_profile()
-      .subscribe({
-        next: (result) => {
-          // console.log(result)
-          this.profileItem = result.session;
-          this.get_notify();
-          // console.log(this.profileItem)
-        },
-        error: (excep) => {
-          console.log(excep)
-          // alert(excep.error.message)
-          this.router.navigate(['/', this.AppUrl.Login])
-        }
-      })
+    this.cctvService.get_profile().pipe(
+      tap(profileResult => {
+        // ใช้ tap เพื่อกำหนดค่า profile โดยไม่กระทบ stream หลัก
+        this.profileItem = profileResult.session;
+      }),
+      // หลังจากได้ profile แล้ว ให้ "สลับ" ไปทำงานที่ stream ของ get_notify
+      switchMap(() => this.cctvService.get_notify())
+    ).subscribe({
+      next: (notifyResult) => {
+        // ผลลัพธ์ที่ได้ใน next นี้ คือผลลัพธ์จาก get_notify()
+        this.notifyItems = notifyResult["result"][0];
+        console.log('Final Notify Result:', this.notifyItems);
+      },
+      error: (err) => {
+        // error handler นี้จะดักจับ error จากทั้ง get_profile และ get_notify
+        console.error('An error occurred in the data loading chain:', err);
+        this.router.navigate(['/', this.AppUrl.Login]);
+      }
+    });
   }
 
   // ออกจากระบบ
   onLogout() {
-    // console.log('Logout')
-    return this.cctvService.post_logout()
+    this.cctvService.post_logout()
       .subscribe({
-        next: (result) => {
-          console.log(result)
-          this.router.navigate(['/', this.AppUrl.Login])
-        },
-        error: (excep) => {
-          console.log(excep)
-        }
-      })
-  }
-
-  // ดึงค่าตัวเลขจำนวนแจ้งเตือน
-  get_notify() {
-    this.cctvService.get_notify()
-      .subscribe({
-        next: (result) => {
-          this.notifyItems = result;
-          console.log('Notify items:', this.notifyItems); // แสดงผลข้อมูลที่ได้จาก API
-        },
-        error: (excep) => {
-          console.error('Error getting notifications:', excep);
-        }
+        next: () => this.router.navigate(['/', this.AppUrl.Login]),
+        error: (excep) => console.error('Logout failed:', excep)
       });
   }
 }
