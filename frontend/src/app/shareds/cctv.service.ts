@@ -99,6 +99,11 @@ export class CctvService {
     return this.httpClient.get<ICountPing[]>(this.backendURL + 'dashboard');
   }
 
+  // แจ้งเตือน
+  get_notify() {
+    return this.httpClient.get<any>(this.backendURL + 'notify');
+  }
+
   // เพิ่มฟังก์ชันดึงข้อมูลการเปลี่ยนแปลงสถานะล่าสุดมาแสดงในหน้า dashboard
   getRecentStatusChanges() {
     return this.httpClient.get<ILogPing[]>(this.backendURL + 'dashboard'); // สมมุติว่า endpoint นี้คือ API ที่ดึงข้อมูลสถานะล่าสุด

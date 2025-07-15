@@ -61,4 +61,7 @@ $routes['/api/checklist-items']['GET'] = 'checklist_items/get.php';
 //ข้อมูล Check-list logs
 $routes['/api/checklist-logs']['GET'] = 'checklist_logs/get.php';
 $routes['/api/checklist-logs']['POST'] = 'checklist_logs/post.php';
+
+//ข้อมูล Notify
+$routes['/api/notify']['GET'] = 'notify/get.php';
 ?>
