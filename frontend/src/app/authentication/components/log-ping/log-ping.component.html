@@ -73,12 +73,34 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="10">จำนวนรายการทั้งหมด {{ logpingItems.length }} รายการ</th>
+                                <th colspan="10">จำนวนรายการทั้งหมด {{ totalItems }} รายการ</th>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
-                <pagination previousText="ก่อนหน้า" nextText="ถัดไป" [totalItems]="30"></pagination>
+                <!-- Custom templates for pagination -->
+                <ng-template #firstTemplate><b>&laquo;</b></ng-template>
+                <ng-template #lastTemplate><b>&raquo;</b></ng-template>
+                <ng-template #prevTemplate><b>ก่อนหน้า</b></ng-template>
+                <ng-template #nextTemplate><b>ถัดไป</b></ng-template>
+                <ng-template #pageTemplate let-page><b>{{page.text}}</b></ng-template>
+
+                <!-- Pagination section -->
+                <div class="d-flex justify-content-center mt-3" *ngIf="!isLoading && totalItems > itemsPerPage">
+                    <pagination
+                        [totalItems]="totalItems"
+                        [itemsPerPage]="itemsPerPage"
+                        [(ngModel)]="currentPage"
+                        (pageChanged)="pageChanged($event)"
+                        [maxSize]="maxSize"
+                        [boundaryLinks]="true"
+                        [customFirstTemplate]="firstTemplate"
+                        [customLastTemplate]="lastTemplate"
+                        [customPreviousTemplate]="prevTemplate"
+                        [customNextTemplate]="nextTemplate"
+                        [customPageTemplate]="pageTemplate">
+                    </pagination>
+                </div>
             </div>
         </div>
     </div>
