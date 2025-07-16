@@ -1,14 +1,21 @@
 <?php
 
-$sql = "SELECT COUNT(*) as count FROM log_ping WHERE ping_checked = '1' AND (comment IS NULL OR comment = '')";
-$query = mysqli_query($conn, $sql);
-$result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+$sql = "SELECT 
+            c.durable_no, c.durable_name, c.type, lp.date_created, lp.cctv_id
+        FROM 
+            log_ping lp
+        INNER JOIN 
+            cctv c ON lp.cctv_id = c.id
+        WHERE 
+            lp.ping_checked = '1' AND (lp.comment IS NULL OR lp.comment = '')";
 
-echo json_encode([
-                    'message' => 'test ทดสอบ',
-                    'result' => $result
-                    ], JSON_UNESCAPED_UNICODE);
+$result = $conn->query($sql);
 
-// echo json_encode(
-//                     $result
-// , JSON_UNESCAPED_UNICODE);
+$notifications = [];
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $notifications[] = $row;
+    }
+}
+
+echo json_encode(['result' => $notifications], JSON_UNESCAPED_UNICODE);

@@ -37,7 +37,7 @@ export class AuthNavbarComponent implements OnInit {
     ).subscribe({
       next: (notifyResult) => {
         // ผลลัพธ์ที่ได้ใน next นี้ คือผลลัพธ์จาก get_notify()
-        this.notifyItems = notifyResult["result"][0];
+        this.notifyItems = notifyResult.result;
         console.log('Final Notify Result:', this.notifyItems);
       },
       error: (err) => {
