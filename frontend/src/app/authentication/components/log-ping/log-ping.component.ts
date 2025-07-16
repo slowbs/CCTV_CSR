@@ -96,6 +96,7 @@ export class LogPingComponent implements OnInit {
           console.log(result);
           $('#editCommentModal').modal('hide');
           // โหลดข้อมูลใหม่หลังจากแก้ไข
+          this.cctvService.notifyNavbarToRefresh(); //Update Notify
           if (this.currentTypeId) this.get_LogPing(this.currentTypeId);
         },
         error: (excep) => {

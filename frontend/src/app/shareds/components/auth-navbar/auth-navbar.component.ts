@@ -1,21 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../../authentication/authentication.url';
 import { CctvService, ISession } from '../../cctv.service';
 import { Router } from '@angular/router';
 import { switchMap, tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs'; // Import Subscription
 
 @Component({
   selector: 'app-auth-navbar',
   templateUrl: './auth-navbar.component.html',
   styleUrl: './auth-navbar.component.css'
 })
-export class AuthNavbarComponent implements OnInit {
+export class AuthNavbarComponent implements OnInit, OnDestroy {
 
   AppUrl = AppURL
   AuthUrl = AuthenticationURL
   public profileItem: ISession.Session | null = null;
-  public notifyItems: any;
+  public notifyItems: any[] = [];
+  private refreshSubscription: Subscription;
 
   constructor(
     private cctvService: CctvService,
@@ -24,6 +26,16 @@ export class AuthNavbarComponent implements OnInit {
 
   ngOnInit() {
     this.get_profile();
+
+    // Subscribe ไปยัง refreshNavbar$ Observable
+    this.refreshSubscription = this.cctvService.refreshNavbar$.subscribe(() => {
+      this.get_profile(); // เรียก get_profile() อีกครั้ง
+    });
+  }
+
+  ngOnDestroy(): void {
+    // ยกเลิก subscription เมื่อ component ถูกทำลายเพื่อป้องกัน memory leak
+    this.refreshSubscription?.unsubscribe();
   }
 
   get_profile() {

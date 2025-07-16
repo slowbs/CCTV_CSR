@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs';
+import { map, Subject } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { environment } from '../../environments/environment';
 
@@ -14,6 +14,9 @@ export class CctvService {
   public updateModel: ICctvs = Object.assign({})
   public updateModelUser: IUsers = Object.assign({})
   public updateModelLogping: ILogPing = Object.assign({})
+
+  private refreshNavbarSubject = new Subject<void>();
+  refreshNavbar$ = this.refreshNavbarSubject.asObservable();
 
   constructor(private httpClient: HttpClient) {
     // กำหนด backendURL ตามเงื่อนไข
@@ -146,6 +149,11 @@ export class CctvService {
   //บันทึก checklist
   saveChecklistLogs(data: any): Observable<any> {
     return this.httpClient.post(this.backendURL + 'checklist-logs', data); // ลบ .php ออก
+  }
+
+  // ฟังก์ชันสำหรับส่งสัญญาณให้ Navbar Refresh
+  notifyNavbarToRefresh() {
+    this.refreshNavbarSubject.next();
   }
 
 }
