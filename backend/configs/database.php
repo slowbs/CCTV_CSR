@@ -7,7 +7,8 @@ $db = 'cctv';
 
 try{
     $conn = mysqli_connect($host, $user, $password, $db);
-
+    mysqli_set_charset($conn, "utf8mb4");
+    
     if(!$conn){
         // echo "Connection failed: ".mysqli_connect_error();
         http_response_code(500);
