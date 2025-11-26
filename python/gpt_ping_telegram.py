@@ -7,6 +7,30 @@ import concurrent.futures
 import db_utils
 import telegram_utils
 import ping_utils
+import logging
+from logging.handlers import RotatingFileHandler
+import os
+
+import sys
+
+# Setup Logging
+if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the PyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app 
+    # path into variable _MEIPASS'.
+    application_path = os.path.dirname(sys.executable)
+else:
+    application_path = os.path.dirname(os.path.abspath(__file__))
+
+log_file_path = os.path.join(application_path, 'monitor.log')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        RotatingFileHandler(log_file_path, maxBytes=5*1024*1024, backupCount=3, encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
 
 # Global flag for loop control
 running = False
@@ -129,7 +153,9 @@ def main_loop(log_callback):
             changed_devices.clear()
             time.sleep(60)
         except Exception as e:
-            log_callback(f"An error occurred in main_loop: {e}")
+            error_msg = f"An error occurred in main_loop: {e}"
+            log_callback(error_msg)
+            logging.exception("Exception in main_loop:") # Log full traceback to file
             time.sleep(10)  # Wait for a while before retrying
 
 # GUI
@@ -148,13 +174,20 @@ def stop_loop():
     log_message("Stopped monitoring.")
 
 def log_message(msg):
+    # Update GUI
     text_area.insert(tk.END, msg + "\n")
     text_area.see(tk.END)
+    # Write to File Log
+    logging.info(msg)
 
 # Create main window
 root = tk.Tk()
 root.title("Devices Monitor")
-root.iconbitmap('C:/xampp/htdocs/CCTV_CSR/python/monitor.ico')
+try:
+    root.iconbitmap('C:/xampp/htdocs/CCTV_CSR/python/monitor.ico')
+except Exception as e:
+    logging.warning(f"Could not load icon: {e}")
+
 root.configure(bg="#f0f0f0")
 
 # Define main font
@@ -201,5 +234,6 @@ main_frame.grid_columnconfigure(0, weight=1)
 log_frame.pack_propagate(False)
 log_frame.configure(width=600, height=400)
 
-start_loop()
-root.mainloop()
+if __name__ == "__main__":
+    start_loop()
+    root.mainloop()
