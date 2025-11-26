@@ -8,18 +8,20 @@ import { LogPingComponent } from "./components/log-ping/log-ping.component";
 import { DurableCreateComponent } from "./components/durable-create/durable-create.component";
 import { ReportComponent } from "./components/report/report.component";
 import { CheckListComponent } from "./components/check-list/check-list.component";
+import { AuthGuard } from "../guards/auth.guard";
 
 const RouteLists: Routes = [
     { path: '', redirectTo: AuthenticationURL.Index, pathMatch: 'full' },
-    { path: AuthenticationURL.Dashboard, component: DashboardComponent },
-    { path: AuthenticationURL.Index, component: IndexComponent },
-    { path: AuthenticationURL.User, component: UsersComponent },
-    { path: `${AuthenticationURL.Cctv}/:type`, component: CctvComponent },
-    { path: `${AuthenticationURL.Log_Ping}/:id`, component: LogPingComponent },
-    { path: `${AuthenticationURL.Report}/:id`, component: ReportComponent },
-    { path: AuthenticationURL.Create_Durable, component: DurableCreateComponent },
-    { path: AuthenticationURL.Check_List, component: CheckListComponent }
+    { path: AuthenticationURL.Dashboard, component: DashboardComponent, canActivate: [AuthGuard] },
+    { path: AuthenticationURL.Index, component: IndexComponent, canActivate: [AuthGuard] },
+    { path: AuthenticationURL.User, component: UsersComponent, canActivate: [AuthGuard] },
+    { path: `${AuthenticationURL.Cctv}/:type`, component: CctvComponent, canActivate: [AuthGuard] },
+    { path: `${AuthenticationURL.Log_Ping}/:id`, component: LogPingComponent, canActivate: [AuthGuard] },
+    { path: `${AuthenticationURL.Report}/:id`, component: ReportComponent, canActivate: [AuthGuard] },
+    { path: AuthenticationURL.Create_Durable, component: DurableCreateComponent, canActivate: [AuthGuard] },
+    { path: AuthenticationURL.Check_List, component: CheckListComponent, canActivate: [AuthGuard] }
 
 ];
 
 export const AuthenticationRouting = RouterModule.forChild(RouteLists);
+
