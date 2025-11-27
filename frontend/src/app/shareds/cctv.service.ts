@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Subject } from 'rxjs';
+import { map, Subject, of, tap } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { environment } from '../../environments/environment';
 
@@ -10,6 +10,7 @@ import { environment } from '../../environments/environment';
 export class CctvService {
 
   private backendURL: string;
+  private userProfileCache: ISession.Response | null = null; // Cache for user profile
 
   public updateModel: ICctvs = Object.assign({})
   public updateModelUser: IUsers = Object.assign({})
@@ -38,17 +39,28 @@ export class CctvService {
   // Login
   // ส่งข้อมูลไป Login
   post_login(value: ILogin) {
+    this.userProfileCache = null; // Clear cache on login attempt
     return this.httpClient.post(this.backendURL + 'login', value);
   }
 
   // Logout
   post_logout() {
+    this.userProfileCache = null; // Clear cache on logout
     return this.httpClient.post(this.backendURL + 'logout', null)
   }
 
   //ดึงข้อมูลมาแสดง Profile
   get_profile() {
-    return this.httpClient.get<ISession.Response>(this.backendURL + 'login');
+    if (this.userProfileCache) {
+      return of(this.userProfileCache);
+    }
+    return this.httpClient.get<ISession.Response>(this.backendURL + 'login').pipe(
+      tap(response => {
+        if (response && response.session) {
+          this.userProfileCache = response;
+        }
+      })
+    );
   }
 
   // Service ฝั่ง กล้อง CCTV
