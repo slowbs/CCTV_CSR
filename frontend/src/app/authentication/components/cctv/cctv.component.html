@@ -113,80 +113,107 @@
     </div>
     <!-- Edit Modal HTML -->
     <div id="editCctvModal" class="modal fade">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form (submit)="onSubmit()">
-                    <div class="modal-header">
-                        <h4 class="modal-title">แก้ไขรายการครุภัณฑ์</h4>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>แก้ไขรายการครุภัณฑ์</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            <h5 class="lh_modal">เลขครุภัณฑ์</h5>
-                            <input type="text" class="form-control" required placeholder="เลขครุภัณฑ์"
-                                [(ngModel)]="model.durable_no" name="durable_no">
-                        </div>
-                        <div class="form-group">
-                            <h5 class="lh_modal">รายการ</h5>
-                            <input type="text" class="form-control" required placeholder="รายการ"
-                                [(ngModel)]="model.durable_name" name="durable_name">
-                        </div>
-                        <div class="form-group">
-                            <h5 class="lh_modal">ยี่ห้อ</h5>
-                            <input type="text" class="form-control" required placeholder="ยี่ห้อ"
-                                [(ngModel)]="model.brand" name="brand">
-                        </div>
-                        <div class="form-group">
-                            <h5 class="lh_modal">รุ่น</h5>
-                            <input type="text" class="form-control" required placeholder="รุ่น"
-                                [(ngModel)]="model.model" name="model">
-                        </div>
-                        <div class="form-group">
-                            <h5 class="lh_modal">ชั้น</h5>
-                            <select class="form-select" [(ngModel)]="model.floor_id" name="floor">
-                                <option value="">กรุณาเลือกชั้น</option>
-                                <option *ngFor="let item of floorItems" [value]="item.floor_id">{{ item.floor_name }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <h5 class="lh_modal">สถานที่</h5>
-                            <input type="text" class="form-control" required placeholder="สถานที่"
-                                [(ngModel)]="model.location" name="location">
-                        </div>
-                        <div class="form-group">
-                            <h5 class="lh_modal">Monitor</h5>
-                            <input type="text" class="form-control" required placeholder="Monitor"
-                                [(ngModel)]="model.monitor" name="monitor">
-                        </div>
-                        <div class="form-group">
-                            <h5 class="lh_modal">สถานะ</h5>
-                            <select class="form-select" [(ngModel)]="model.status_id" name="status">
-                                <option value="">กรุณาเลือกสถานะ</option>
-                                <option *ngFor="let item of statusItems" [value]="item.status_id">{{ item.status_name }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <h5 class="lh_modal">IP</h5>
-                            <input type="text" class="form-control" required placeholder="IP" [(ngModel)]="model.ip"
-                                name="ip">
-                        </div>
-                        <div class="form-group mt-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="maSwitch"
-                                    [ngModel]="model.maintenance_mode == 1"
-                                    (ngModelChange)="model.maintenance_mode = $event ? 1 : 0" name="maintenance_mode"
-                                    style="cursor: pointer;">
-                                <label class="form-check-label" for="maSwitch">Maintenance Mode (โหมดซ่อมบำรุง)</label>
+                        <div class="row">
+                            <!-- Column 1: Basic Info -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3 border-bottom pb-2">ข้อมูลทั่วไป</h6>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">เลขครุภัณฑ์</label>
+                                    <input type="text" class="form-control" required placeholder="ระบุเลขครุภัณฑ์"
+                                        [(ngModel)]="model.durable_no" name="durable_no">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">รายการ</label>
+                                    <input type="text" class="form-control" required placeholder="ระบุชื่อรายการ"
+                                        [(ngModel)]="model.durable_name" name="durable_name">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">ยี่ห้อ</label>
+                                    <input type="text" class="form-control" required placeholder="ระบุยี่ห้อ"
+                                        [(ngModel)]="model.brand" name="brand">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">รุ่น</label>
+                                    <input type="text" class="form-control" required placeholder="ระบุรุ่น"
+                                        [(ngModel)]="model.model" name="model">
+                                </div>
+                            </div>
+
+                            <!-- Column 2: Location & Status -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3 border-bottom pb-2">สถานที่และสถานะ</h6>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">ชั้น</label>
+                                    <select class="form-select" [(ngModel)]="model.floor_id" name="floor">
+                                        <option value="">กรุณาเลือกชั้น</option>
+                                        <option *ngFor="let item of floorItems" [value]="item.floor_id">{{
+                                            item.floor_name }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">สถานที่</label>
+                                    <input type="text" class="form-control" required placeholder="ระบุสถานที่ติดตั้ง"
+                                        [(ngModel)]="model.location" name="location">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Monitor</label>
+                                    <input type="text" class="form-control" required placeholder="ระบุ Monitor"
+                                        [(ngModel)]="model.monitor" name="monitor">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">สถานะ</label>
+                                        <select class="form-select" [(ngModel)]="model.status_id" name="status">
+                                            <option value="">เลือกสถานะ</option>
+                                            <option *ngFor="let item of statusItems" [value]="item.status_id">{{
+                                                item.status_name }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">IP Address</label>
+                                        <input type="text" class="form-control font-monospace" required
+                                            placeholder="xxx.xxx.xxx.xxx" [(ngModel)]="model.ip" name="ip">
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Maintenance Mode Section -->
+                        <div class="mt-4 p-3 rounded border"
+                            [ngClass]="model.maintenance_mode == 1 ? 'bg-warning-subtle border-warning' : 'bg-light border-light'">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h6 class="mb-1 fw-bold"
+                                        [ngClass]="model.maintenance_mode == 1 ? 'text-warning-emphasis' : 'text-dark'">
+                                        <i class="bi bi-tools me-2"></i>Maintenance Mode
+                                    </h6>
+                                    <small class="text-muted">เปิดโหมดนี้เพื่อระงับการแจ้งเตือนและบันทึก Log
+                                        ชั่วคราว</small>
+                                </div>
+                                <div class="form-check form-switch form-switch-lg">
+                                    <input class="form-check-input" type="checkbox" id="maSwitch"
+                                        [ngModel]="model.maintenance_mode == 1"
+                                        (ngModelChange)="model.maintenance_mode = $event ? 1 : 0"
+                                        name="maintenance_mode" style="cursor: pointer; transform: scale(1.3);">
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-info modal_button" value="Save">
-                        <input type="button" class="btn btn-danger modal_button" data-bs-dismiss="modal" value="Cancel">
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary px-4">บันทึกข้อมูล</button>
                     </div>
                 </form>
             </div>
