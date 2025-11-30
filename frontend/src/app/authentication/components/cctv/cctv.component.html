@@ -71,14 +71,19 @@
                                 <td>{{ item.location }}</td>
                                 <td>{{ item.monitor }}</td>
                                 <td class="text-center">
-                                    <span class="badge" [ngClass]="{
-                                              'bg-success': item.status_id === '1',
-                                              'bg-warning': item.status_id === '2',
-                                              'bg-danger': item.status_id === '3',
-                                              'bg-secondary': item.status_id === '4'
-                                          }">
-                                        {{ item.status }}
-                                    </span>
+                                    <ng-container *ngIf="item.maintenance_mode == 1; else normalStatus">
+                                        <span class="badge bg-secondary"><i class="bi bi-tools"></i> Maintenance</span>
+                                    </ng-container>
+                                    <ng-template #normalStatus>
+                                        <span class="badge" [ngClass]="{
+                                                  'bg-success': item.status_id === '1',
+                                                  'bg-warning': item.status_id === '2',
+                                                  'bg-danger': item.status_id === '3',
+                                                  'bg-secondary': item.status_id === '4'
+                                              }">
+                                            {{ item.status }}
+                                        </span>
+                                    </ng-template>
                                 </td>
 
                                 <td><a href="http://{{ item.ip }}" target="_blank">{{ item.ip }}</a></td>
@@ -98,7 +103,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="10">จำนวนรายการทั้งหมด {{ cctvItems.length }} รายการ</th>
+                                <th colspan="11">จำนวนรายการทั้งหมด {{ cctvItems.length }} รายการ</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -168,6 +173,15 @@
                             <h5 class="lh_modal">IP</h5>
                             <input type="text" class="form-control" required placeholder="IP" [(ngModel)]="model.ip"
                                 name="ip">
+                        </div>
+                        <div class="form-group mt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="maSwitch"
+                                    [ngModel]="model.maintenance_mode == 1"
+                                    (ngModelChange)="model.maintenance_mode = $event ? 1 : 0" name="maintenance_mode"
+                                    style="cursor: pointer;">
+                                <label class="form-check-label" for="maSwitch">Maintenance Mode (โหมดซ่อมบำรุง)</label>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">

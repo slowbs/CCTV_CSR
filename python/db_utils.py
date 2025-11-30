@@ -15,7 +15,7 @@ def get_cctv_data():
     try:
         cursor.execute("""
             SELECT cctv.id, cctv.durable_no, cctv.ip, cctv.ping, cctv.count_ping, cctv.type, 
-                   cctv.durable_name, cctv.location, cctv.monitor, floor.floor_name
+                   cctv.durable_name, cctv.location, cctv.monitor, floor.floor_name, cctv.maintenance_mode
             FROM cctv 
             JOIN floor ON cctv.floor = floor.floor_id
         """)
@@ -51,6 +51,16 @@ def log_ping_status(cctv_id, ping_checked, cctv_type):
     try:
         cursor.execute("INSERT INTO log_ping (cctv_id, ping_checked, type, comment, date_created) VALUES (%s, %s, %s, %s, %s)",
                        (cctv_id, ping_checked, cctv_type, "", datetime.datetime.now()))
+        connection.commit()
+    finally:
+        cursor.close()
+        connection.close()
+
+def set_maintenance_mode(id_, mode):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("UPDATE cctv SET maintenance_mode = %s WHERE id = %s", (mode, id_))
         connection.commit()
     finally:
         cursor.close()

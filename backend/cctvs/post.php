@@ -48,15 +48,14 @@ if (
     }
 
     //กรณีที่เงือนไขครบถ้วน
-    // echo json_encode([
-    //     'message' => 'valid',
     //     'data' => $data->name
     // ]);
-    $query = "INSERT INTO cctv (durable_no, durable_name, brand, model, location, type, monitor, ip, floor, status) VALUES (?, ?, ?, ?, ?, ?, ?, ? ,? ,?)";
+    $query = "INSERT INTO cctv (durable_no, durable_name, brand, model, location, type, monitor, ip, floor, status, maintenance_mode) VALUES (?, ?, ?, ?, ?, ?, ?, ? ,? ,?, ?)";
     $stmt = mysqli_prepare($conn, $query);
+    $maintenance_mode = isset($data->maintenance_mode) ? $data->maintenance_mode : 0;
     mysqli_stmt_bind_param(
         $stmt,
-        'sssssissii',
+        'sssssissiii',
         $data->durable_no,
         $data->durable_name,
         $data->brand,
@@ -66,7 +65,8 @@ if (
         $data->monitor,
         $data->ip,
         $data->floor,
-        $data->status
+        $data->status,
+        $maintenance_mode
     );
     mysqli_stmt_execute($stmt);
     $error_message = mysqli_error($conn);

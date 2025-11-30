@@ -222,6 +222,7 @@ export interface ICctvs {
   ping?: string;
   date_updated?: string;
   completed?: boolean;
+  maintenance_mode?: string | number;
 }
 
 export interface IStatus {

@@ -36,9 +36,7 @@ logging.basicConfig(
 running = False
 loop_thread = None
 
-def check_reboot_time(ip, now):
-    """Check if the current time is within the reboot window for a specific IP."""
-    return ip == '192.168.200.9' and 22 <= now.hour < 23 and 0 <= now.minute <= 10
+
 
 def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_no, durable_name, location, monitor, floor_name, log_callback):
     """Updates the device's status in the database and sends a Telegram message if the status changes."""
@@ -96,14 +94,37 @@ def ping_and_check(data, log_callback):
     if not ip:
         return data, "Skipped (IP is Empty)", False, False, True, durable_no, ip, "", ping_value
 
-    # Skip ping if in reboot time
+    # Skip ping if in Maintenance Mode
+    maintenance_mode = data.get('maintenance_mode', 0)
+    if maintenance_mode == 1:
+        return data, "Skipped (Maintenance Mode)", False, False, True, durable_no, ip, ping_value, ping_value
+
+    # Auto-Maintenance for Reboot (IP: 192.168.200.9)
     now = datetime.datetime.now()
-    if check_reboot_time(ip, now):
-        db_utils.update_device_count_ping(id_, 0) # รีเซ็ต count_ping
-        # ไม่ต้องบันทึก log ในช่วงเวลา reboot
-        # คืนค่า success=False (อุปกรณ์อาจไม่ตอบสนองจริง) แต่ status_changed=False และ skipped=True
-        return data, "Skipped (Reboot time)", False, False, True, durable_no, ip, ping_value, ping_value
+    if ip == '192.168.200.9':
+        # Enter Reboot Window (22:00 - 22:10)
+        if 22 <= now.hour < 23 and 0 <= now.minute <= 10:
+            maintenance_mode = data.get('maintenance_mode', 0)
+            if maintenance_mode == 0:
+                db_utils.set_maintenance_mode(id_, 1)
+                log_callback(f"Auto-enabled Maintenance Mode for {ip} (Reboot Window)")
+                maintenance_mode = 1 # Update local variable
+            
+            return data, "Skipped (Auto-Maintenance)", False, False, True, durable_no, ip, ping_value, ping_value
         
+        # Exit Reboot Window (22:11) - Force OFF
+        elif 22 <= now.hour < 23 and now.minute == 11:
+            maintenance_mode = data.get('maintenance_mode', 0)
+            if maintenance_mode == 1:
+                db_utils.set_maintenance_mode(id_, 0)
+                log_callback(f"Auto-disabled Maintenance Mode for {ip} (Reboot Window Ended)")
+                maintenance_mode = 0 # Update local variable
+
+    # Skip ping if in Maintenance Mode (Manual or Auto)
+    maintenance_mode = data.get('maintenance_mode', 0)
+    if maintenance_mode == 1:
+        return data, "Skipped (Maintenance Mode)", False, False, True, durable_no, ip, ping_value, ping_value
+
     #ping device
     success = ping_utils.ping_device(ip, log_callback=log_callback) # Pass log_callback
 
