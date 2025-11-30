@@ -1,0 +1,91 @@
+<div class="monitor-display-mode">
+    <div class="monitor-grid">
+        <div class="rack-cabinet" *ngFor="let rack of floorRacks" [ngClass]="{
+                'rack-42u': rack.floor_name.includes('3') || rack.floor_name.includes('Server'),
+                'rack-12u': rack.floor_name.includes('G') || rack.floor_name.includes('Ground'),
+                'rack-8u': !rack.floor_name.includes('3') && !rack.floor_name.includes('Server') && !rack.floor_name.includes('G') && !rack.floor_name.includes('Ground')
+            }">
+            <div class="rack-header">
+                <h3>{{ rack.floor_name }}</h3>
+                <span class="badge bg-dark">{{ rack.slots.length }} Devices</span>
+            </div>
+            <div class="rack-body">
+                <div class="rack-rail">
+                    <div class="rack-slot" *ngFor="let slot of rack.slots">
+                        <div class="slot-content">
+                            <div class="slot-info">
+                                <span class="device-name text-truncate"
+                                    title="{{ slot.durable_no }} : {{ slot.monitor }}">
+                                    {{ slot.durable_name }}
+                                </span>
+                            </div>
+                            <div class="slot-status">
+                                <div class="status-dot-group">
+                                    <div *ngFor="let item of slot.items" class="status-dot"
+                                        [ngClass]="{'online': item.ping === '0', 'offline': item.ping !== '0', 'maintenance': item.maintenance_mode == 1}"
+                                        (click)="openDetailModal(item)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="detailModalLabel">Device Details</h5>
+                <button type="button" class="close text-light" (click)="closeDetailModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" *ngIf="selectedItem">
+                <div class="row mb-2">
+                    <div class="col-4 text-secondary">Name:</div>
+                    <div class="col-8 font-weight-bold">{{ selectedItem.durable_name }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-secondary">Durable No:</div>
+                    <div class="col-8">{{ selectedItem.durable_no }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-secondary">IP Address:</div>
+                    <div class="col-8">{{ selectedItem.ip }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-secondary">Location:</div>
+                    <div class="col-8">{{ selectedItem.location }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-secondary">Floor:</div>
+                    <div class="col-8">{{ selectedItem.floor }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-secondary">Monitor</div>
+                    <div class="col-8">{{ selectedItem.monitor }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 text-secondary">Status:</div>
+                    <div class="col-8">
+                        <span
+                            [ngClass]="{'text-success': selectedItem.ping === '0', 'text-danger': selectedItem.ping !== '0'}">
+                            {{ getPingStatus(selectedItem.ping) }}
+                        </span>
+                        <span *ngIf="selectedItem.maintenance_mode == 1"
+                            class="badge badge-warning ml-2">Maintenance</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

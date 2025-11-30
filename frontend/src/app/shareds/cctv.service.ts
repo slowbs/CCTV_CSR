@@ -214,6 +214,7 @@ export interface ICctvs {
   monitor?: string;
   floor?: string;
   floor_id?: string;
+  floor_order?: string;
   status?: string;
   status_id?: string;
   type: string;

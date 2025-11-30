@@ -8,6 +8,6 @@ export const AuthenticationURL = {
     Log_Ping: 'log_ping',
     Create_Durable: 'create_durable',
     Report: 'report',
-    Check_List: 'check_list'
-
+    Check_List: 'check_list',
+    Monitor: 'monitor'
 }

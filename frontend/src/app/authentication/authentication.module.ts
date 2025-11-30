@@ -10,6 +10,7 @@ import { LogPingComponent } from './components/log-ping/log-ping.component';
 import { DurableCreateComponent } from './components/durable-create/durable-create.component';
 import { ReportComponent } from './components/report/report.component';
 import { CheckListComponent } from './components/check-list/check-list.component';
+import { MonitorComponent } from './components/monitor/monitor.component';
 
 
 
@@ -22,7 +23,8 @@ import { CheckListComponent } from './components/check-list/check-list.component
     LogPingComponent,
     DurableCreateComponent,
     ReportComponent,
-    CheckListComponent
+    CheckListComponent,
+    MonitorComponent
   ],
   imports: [
     CommonModule,
