@@ -14,6 +14,8 @@ import { MonitorComponent } from './components/monitor/monitor.component';
 
 
 
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+
 @NgModule({
   declarations: [
     DashboardComponent,
@@ -29,7 +31,8 @@ import { MonitorComponent } from './components/monitor/monitor.component';
   imports: [
     CommonModule,
     AuthenticationRouting,
-    SharedsModule
+    SharedsModule,
+    TooltipModule.forRoot()
   ]
 })
 export class AuthenticationModule { }
