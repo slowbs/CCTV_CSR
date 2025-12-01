@@ -112,8 +112,9 @@ def ping_and_check(data, log_callback):
             
             return data, "Skipped (Auto-Maintenance)", False, False, True, durable_no, ip, ping_value, ping_value
         
-        # Exit Reboot Window (22:11) - Force OFF
-        elif 22 <= now.hour < 23 and now.minute == 11:
+        # Exit Reboot Window (22:11 - 22:30) - Force OFF
+        # Extended window to ensure we catch the disable event even if the script is busy or restarted
+        elif 22 <= now.hour < 23 and 11 <= now.minute <= 30:
             maintenance_mode = data.get('maintenance_mode', 0)
             if maintenance_mode == 1:
                 db_utils.set_maintenance_mode(id_, 0)
