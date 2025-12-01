@@ -262,6 +262,7 @@ export interface ICountPing {
   type: string;
   online_count: string;
   offline_count: string;
+  maintenance_count: string;
 }
 
 

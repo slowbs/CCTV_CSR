@@ -1,9 +1,11 @@
 <?php
 
 // คำสั่ง SQL สำหรับนับจำนวนครุภัณฑ์ตามประเภทและสถานะจากคอลัมน์ ping
+// คำสั่ง SQL สำหรับนับจำนวนครุภัณฑ์ตามประเภทและสถานะจากคอลัมน์ ping
 $sqlCount = "SELECT cctv.type, 
-                     SUM(CASE WHEN cctv.ping = 0 THEN 1 ELSE 0 END) AS online_count,
-                     SUM(CASE WHEN cctv.ping = 1 THEN 1 ELSE 0 END) AS offline_count
+                     SUM(CASE WHEN cctv.ping = 0 AND (cctv.maintenance_mode IS NULL OR cctv.maintenance_mode = 0) THEN 1 ELSE 0 END) AS online_count,
+                     SUM(CASE WHEN cctv.ping = 1 AND (cctv.maintenance_mode IS NULL OR cctv.maintenance_mode = 0) THEN 1 ELSE 0 END) AS offline_count,
+                     SUM(CASE WHEN cctv.maintenance_mode = 1 THEN 1 ELSE 0 END) AS maintenance_count
               FROM cctv
               GROUP BY cctv.type";
 
@@ -16,7 +18,8 @@ if ($resultCount) {
         $countData[] = [
             'type' => $row['type'],
             'online_count' => (int)$row['online_count'],
-            'offline_count' => (int)$row['offline_count']
+            'offline_count' => (int)$row['offline_count'],
+            'maintenance_count' => (int)$row['maintenance_count']
         ];
     }
 } else {

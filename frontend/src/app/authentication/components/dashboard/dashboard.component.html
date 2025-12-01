@@ -31,7 +31,10 @@
                                 getTypeName(item.type) }}</div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ item.online_count }} Online</h5>
-                                <p class="card-text">{{ item.offline_count }} Offline</p>
+                                <p class="card-text d-flex justify-content-between">
+                                    <span>{{ item.offline_count }} Offline</span>
+                                    <span>{{ item.maintenance_count }} MA</span>
+                                </p>
                             </div>
                         </div>
                     </div>
