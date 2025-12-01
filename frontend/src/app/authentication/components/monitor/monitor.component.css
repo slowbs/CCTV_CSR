@@ -100,6 +100,201 @@
     transition: background-color 0.2s;
 }
 
+/* Standalone Display Mode Container */
+.monitor-display-mode {
+    background-color: #121212;
+    /* Very dark background */
+    min-height: 100vh;
+    width: 100%;
+    /* Changed from 100vw to avoid horizontal scroll */
+    padding: 15px;
+    box-sizing: border-box;
+    /* overflow-y: auto;  Removed to let body scroll */
+    font-family: 'Kanit', sans-serif;
+}
+
+/* Masonry Grid Layout */
+.monitor-grid {
+    column-count: auto;
+    column-width: 300px;
+    /* Minimum width for a column */
+    column-gap: 15px;
+}
+
+/* Rack Cabinet Card */
+.rack-cabinet {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    /* Spacing between items in a column */
+    break-inside: avoid;
+    /* Prevent breaking across columns */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    overflow: visible;
+    /* Ensure tooltip isn't clipped by card */
+}
+
+/* Header */
+.rack-header {
+    background-color: #252525;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px 4px 0 0;
+}
+
+.rack-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Body */
+.rack-body {
+    padding: 8px;
+    background-color: #181818;
+    flex-grow: 1;
+    overflow: visible;
+    /* Allow tooltips to show outside */
+}
+
+/* Rack Heights */
+.rack-42u .rack-body {
+    min-height: 600px;
+    /* Use min-height to allow growth */
+}
+
+.rack-12u .rack-body {
+    min-height: 200px;
+}
+
+.rack-8u .rack-body {
+    min-height: 120px;
+}
+
+/* Rail & Slots */
+.rack-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    /* Tighter gap */
+    border-left: 1px dashed #333;
+    border-right: 1px dashed #333;
+    padding: 0 4px;
+    height: 100%;
+}
+
+.rack-slot {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 2px;
+    height: 28px;
+    /* Compact 1U height */
+    display: flex;
+    align-items: center;
+    width: 100%;
+    /* Changed from 100vw to avoid horizontal scroll */
+    padding: 15px;
+    box-sizing: border-box;
+    /* overflow-y: auto;  Removed to let body scroll */
+    font-family: 'Kanit', sans-serif;
+}
+
+/* Masonry Grid Layout */
+.monitor-grid {
+    column-count: auto;
+    column-width: 300px;
+    /* Minimum width for a column */
+    column-gap: 15px;
+}
+
+/* Rack Cabinet Card */
+.rack-cabinet {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    /* Spacing between items in a column */
+    break-inside: avoid;
+    /* Prevent breaking across columns */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    overflow: visible;
+    /* Ensure tooltip isn't clipped by card */
+}
+
+/* Header */
+.rack-header {
+    background-color: #252525;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px 4px 0 0;
+}
+
+.rack-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Body */
+.rack-body {
+    padding: 8px;
+    background-color: #181818;
+    flex-grow: 1;
+    overflow: visible;
+    /* Allow tooltips to show outside */
+}
+
+/* Rack Heights */
+.rack-42u .rack-body {
+    min-height: 600px;
+    /* Use min-height to allow growth */
+}
+
+.rack-12u .rack-body {
+    min-height: 200px;
+}
+
+.rack-8u .rack-body {
+    min-height: 120px;
+}
+
+/* Rail & Slots */
+.rack-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    /* Tighter gap */
+    border-left: 1px dashed #333;
+    border-right: 1px dashed #333;
+    padding: 0 4px;
+    height: 100%;
+}
+
+.rack-slot {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 2px;
+    height: 28px;
+    /* Compact 1U height */
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    transition: background-color 0.2s;
+}
+
 .rack-slot:hover {
     background-color: #353535;
     border-color: #555;
@@ -140,29 +335,31 @@
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
     background-color: #555;
     cursor: pointer;
-    /* Changed to pointer for click action */
     position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    /* Dark border for sharp edge */
 }
 
 .status-dot.online {
     background-color: #2ecc71;
-    box-shadow: 0 0 3px #2ecc71;
+    box-shadow: none;
+    /* Flat style */
 }
 
 .status-dot.offline {
     background-color: #e74c3c;
-    box-shadow: 0 0 4px #e74c3c;
+    box-shadow: none;
     animation: blink 1s infinite;
 }
 
 .status-dot.maintenance {
     background-color: #f1c40f;
-    box-shadow: 0 0 3px #f1c40f;
+    box-shadow: none;
 }
 
 @keyframes blink {

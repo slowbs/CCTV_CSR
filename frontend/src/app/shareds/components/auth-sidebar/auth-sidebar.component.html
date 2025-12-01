@@ -16,13 +16,6 @@
                                                 <span class="app-menu__label">หน้าหลัก</span>
                                         </a>
                                 </li>
-                                <li>
-                                        <a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Monitor]"
-                                                routerLinkActive="active" target="_blank">
-                                                <i class="app-menu__icon bi bi-display"></i>
-                                                <span class="app-menu__label">Rack Monitor</span>
-                                        </a>
-                                </li>
                                 <li class="treeview" routerLinkActive="is-expanded">
                                         <a class="app-menu__item" href="#" data-toggle="treeview">
                                                 <i class="app-menu__icon bi bi-laptop"></i>
@@ -150,7 +143,13 @@
                                                 </li>
                                         </ul>
                                 </li>
-
+                                <li>
+                                        <a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Monitor]"
+                                                routerLinkActive="active" target="_blank">
+                                                <i class="app-menu__icon bi bi-display"></i>
+                                                <span class="app-menu__label">Display Mode</span>
+                                        </a>
+                                </li>
                                 <li class="treeview" routerLinkActive="is-expanded">
                                         <a class="app-menu__item" href="#" data-toggle="treeview">
                                                 <i class="app-menu__icon bi bi-people"></i>
