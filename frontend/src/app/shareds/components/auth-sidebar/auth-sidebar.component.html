@@ -1,169 +1,152 @@
 <aside class="app-sidebar">
         <div class="app-sidebar__user">
-                <aside class="app-sidebar">
-                        <div class="app-sidebar__user">
-                                <img class="app-sidebar__user-avatar" src="./assets/img/alert.png" alt="User Image">
-                                <div>
-                                        <p class="app-sidebar__user-name">ระบบแจ้งเตือน</p>
-                                        <p class="app-sidebar__user-designation">สถานะครุภัณฑ์สารสนเทศ</p>
-                                </div>
-                        </div>
-                        <ul class="app-menu">
-                                <li>
-                                        <a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]"
-                                                routerLinkActive="active">
-                                                <i class="app-menu__icon bi bi-speedometer"></i>
-                                                <span class="app-menu__label">หน้าหลัก</span>
-                                        </a>
+                <img class="app-sidebar__user-avatar" src="./assets/img/alert.png" alt="User Image">
+                <div>
+                        <p class="app-sidebar__user-name">ระบบแจ้งเตือน</p>
+                        <p class="app-sidebar__user-designation">สถานะครุภัณฑ์สารสนเทศ</p>
+                </div>
+        </div>
+        <ul class="app-menu">
+                <li>
+                        <a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]"
+                                routerLinkActive="active">
+                                <i class="app-menu__icon bi bi-speedometer"></i>
+                                <span class="app-menu__label">หน้าหลัก</span>
+                        </a>
+                </li>
+                <li class="treeview" routerLinkActive="is-expanded">
+                        <a class="app-menu__item" href="#" data-toggle="treeview">
+                                <i class="app-menu__icon bi bi-laptop"></i>
+                                <span class="app-menu__label">รายการครุภัณฑ์</span>
+                                <i class="treeview-indicator bi bi-chevron-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Create_Durable]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                เพิ่มรายการครุภัณฑ์</a></li>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 1]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                กล้องวงจรปิด</a></li>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 2]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                เครื่องคอมพิวเตอร์แม่ข่าย</a>
                                 </li>
-                                <li class="treeview" routerLinkActive="is-expanded">
-                                        <a class="app-menu__item" href="#" data-toggle="treeview">
-                                                <i class="app-menu__icon bi bi-laptop"></i>
-                                                <span class="app-menu__label">รายการครุภัณฑ์</span>
-                                                <i class="treeview-indicator bi bi-chevron-right"></i>
-                                        </a>
-                                        <ul class="treeview-menu">
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Create_Durable]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                เพิ่มรายการครุภัณฑ์</a></li>
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 1]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                กล้องวงจรปิด</a></li>
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 2]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                เครื่องคอมพิวเตอร์แม่ข่าย</a>
-                                                </li>
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 3]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                อุปกรณ์กระจายสัญญาณ</a></li>
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 4]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                อุปกรณ์จัดเก็บข้อมูล</a></li>
-                                        </ul>
-                                </li>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 3]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                อุปกรณ์กระจายสัญญาณ</a></li>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Cctv, 4]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                อุปกรณ์จัดเก็บข้อมูล</a></li>
+                        </ul>
+                </li>
 
-                                <!-- แยกเมนู Log ออกมา -->
-                                <li class="treeview" routerLinkActive="is-expanded">
-                                        <a class="app-menu__item" href="#" data-toggle="treeview">
-                                                <i class="app-menu__icon bi bi-journal-text"></i>
-                                                <span class="app-menu__label">Log</span>
-                                                <i class="treeview-indicator bi bi-chevron-right"></i>
-                                        </a>
-                                        <ul class="treeview-menu">
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping, 1]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                Log
-                                                                กล้องวงจรปิด</a>
-                                                </li>
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping, 2]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                Log
-                                                                เครื่องคอมพิวเตอร์แม่ข่าย</a></li>
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping, 3]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                Log
-                                                                อุปกรณ์กระจายสัญญาณ</a>
-                                                </li>
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping, 4]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                Log
-                                                                อุปกรณ์จัดเก็บข้อมูล</a>
-                                                </li>
-                                        </ul>
+                <!-- แยกเมนู Log ออกมา -->
+                <li class="treeview" routerLinkActive="is-expanded">
+                        <a class="app-menu__item" href="#" data-toggle="treeview">
+                                <i class="app-menu__icon bi bi-journal-text"></i>
+                                <span class="app-menu__label">Log</span>
+                                <i class="treeview-indicator bi bi-chevron-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping, 1]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                Log
+                                                กล้องวงจรปิด</a>
                                 </li>
-
-                                <!-- แยกเมนู Check_list ออกมา -->
-                                <li class="treeview" routerLinkActive="is-expanded">
-                                        <a class="app-menu__item" href="#" data-toggle="treeview">
-                                                <i class="app-menu__icon bi bi-journal-text"></i>
-                                                <span class="app-menu__label">Check-List</span>
-                                                <i class="treeview-indicator bi bi-chevron-right"></i>
-                                        </a>
-                                        <ul class="treeview-menu">
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Check_List]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                Back up</a>
-                                                </li>
-                                        </ul>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping, 2]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                Log
+                                                เครื่องคอมพิวเตอร์แม่ข่าย</a></li>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping, 3]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                Log
+                                                อุปกรณ์กระจายสัญญาณ</a>
                                 </li>
-
-                                <!-- แยกเมนู Report ออกมา -->
-                                <li class="treeview" routerLinkActive="is-expanded">
-                                        <a class="app-menu__item" href="#" data-toggle="treeview">
-                                                <i class="app-menu__icon bi bi-book"></i>
-                                                <span class="app-menu__label">Report</span>
-                                                <i class="treeview-indicator bi bi-chevron-right"></i>
-                                        </a>
-                                        <ul class="treeview-menu">
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Report, 1]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                Report
-                                                                กล้องวงจรปิด</a></li>
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Report, 2]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                Report
-                                                                เครื่องคอมพิวเตอร์แม่ข่าย</a></li>
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Report, 3]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                Report
-                                                                อุปกรณ์กระจายสัญญาณ</a>
-                                                </li>
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.Report, 4]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                Report
-                                                                อุปกรณ์จัดเก็บข้อมูล</a>
-                                                </li>
-                                        </ul>
-                                </li>
-                                <li>
-                                        <a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Monitor]"
-                                                routerLinkActive="active" target="_blank">
-                                                <i class="app-menu__icon bi bi-display"></i>
-                                                <span class="app-menu__label">Display Mode</span>
-                                        </a>
-                                </li>
-                                <li class="treeview" routerLinkActive="is-expanded">
-                                        <a class="app-menu__item" href="#" data-toggle="treeview">
-                                                <i class="app-menu__icon bi bi-people"></i>
-                                                <span class="app-menu__label">จัดการผู้ใช้</span>
-                                                <i class="treeview-indicator bi bi-chevron-right"></i>
-                                        </a>
-                                        <ul class="treeview-menu">
-                                                <li><a class="treeview-item"
-                                                                [routerLink]="['/', AppUrl.Authen, AuthUrl.User]"
-                                                                routerLinkActive="active"><i
-                                                                        class="icon bi bi-circle-fill icon-dash"></i>
-                                                                รายการผู้ใช้</a>
-                                                </li>
-                                        </ul>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping, 4]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                Log
+                                                อุปกรณ์จัดเก็บข้อมูล</a>
                                 </li>
                         </ul>
-                </aside>
+                </li>
+
+                <!-- แยกเมนู Check_list ออกมา -->
+                <li class="treeview" routerLinkActive="is-expanded">
+                        <a class="app-menu__item" href="#" data-toggle="treeview">
+                                <i class="app-menu__icon bi bi-journal-text"></i>
+                                <span class="app-menu__label">Check-List</span>
+                                <i class="treeview-indicator bi bi-chevron-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Check_List]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                Back up</a>
+                                </li>
+                        </ul>
+                </li>
+
+                <!-- แยกเมนู Report ออกมา -->
+                <li class="treeview" routerLinkActive="is-expanded">
+                        <a class="app-menu__item" href="#" data-toggle="treeview">
+                                <i class="app-menu__icon bi bi-book"></i>
+                                <span class="app-menu__label">Report</span>
+                                <i class="treeview-indicator bi bi-chevron-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Report, 1]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                Report
+                                                กล้องวงจรปิด</a></li>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Report, 2]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                Report
+                                                เครื่องคอมพิวเตอร์แม่ข่าย</a></li>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Report, 3]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                Report
+                                                อุปกรณ์กระจายสัญญาณ</a>
+                                </li>
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Report, 4]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                Report
+                                                อุปกรณ์จัดเก็บข้อมูล</a>
+                                </li>
+                        </ul>
+                </li>
+                <li>
+                        <a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Monitor]"
+                                routerLinkActive="active" target="_blank">
+                                <i class="app-menu__icon bi bi-display"></i>
+                                <span class="app-menu__label">Display Mode</span>
+                        </a>
+                </li>
+                <li class="treeview" routerLinkActive="is-expanded">
+                        <a class="app-menu__item" href="#" data-toggle="treeview">
+                                <i class="app-menu__icon bi bi-people"></i>
+                                <span class="app-menu__label">จัดการผู้ใช้</span>
+                                <i class="treeview-indicator bi bi-chevron-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                                <li><a class="treeview-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.User]"
+                                                routerLinkActive="active"><i
+                                                        class="icon bi bi-circle-fill icon-dash"></i>
+                                                รายการผู้ใช้</a>
+                                </li>
+                        </ul>
+                </li>
+        </ul>
+</aside>

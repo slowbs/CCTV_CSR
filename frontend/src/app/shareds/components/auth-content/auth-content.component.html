@@ -1,7 +1,7 @@
-<app-auth-navbar *ngIf="!isFullScreen"></app-auth-navbar>
-<app-auth-sidebar *ngIf="!isFullScreen"></app-auth-sidebar>
+<app-auth-navbar></app-auth-navbar>
+<app-auth-sidebar></app-auth-sidebar>
 
 <!-- main Content -->
-<main class="app-content" [ngClass]="{'full-screen': isFullScreen}">
+<main class="app-content">
     <ng-content></ng-content>
 </main>

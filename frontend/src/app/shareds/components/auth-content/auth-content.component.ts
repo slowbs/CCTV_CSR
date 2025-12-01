@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 declare const App: any;
 
 @Component({
@@ -7,8 +7,6 @@ declare const App: any;
   styleUrl: './auth-content.component.css'
 })
 export class AuthContentComponent implements OnInit {
-
-  @Input() isFullScreen: boolean = false;
 
   ngOnInit(): void {
     App.initialLoadPage();
