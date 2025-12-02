@@ -15,6 +15,10 @@ interface FloorRack {
   floor_name: string;
   floor_order: number;
   slots: RackSlot[];
+  hasOffline: boolean;
+  hasMaintenance: boolean;
+  offlineCount: number;
+  maintenanceCount: number;
 }
 
 declare var $: any;
@@ -81,7 +85,11 @@ export class MonitorComponent implements OnInit {
           floor_id: item.floor,
           floor_name: item.floor,
           floor_order: item.floor_order ? parseInt(item.floor_order) : 999,
-          slots: []
+          slots: [],
+          hasOffline: false,
+          hasMaintenance: false,
+          offlineCount: 0,
+          maintenanceCount: 0
         };
       }
 
@@ -101,6 +109,28 @@ export class MonitorComponent implements OnInit {
           items: [item]
         });
       }
+    });
+
+    // Calculate status for each rack
+    Object.values(floors).forEach(rack => {
+      let offlineCount = 0;
+      let maintenanceCount = 0;
+
+      rack.slots.forEach(slot => {
+        slot.items.forEach(item => {
+          if (item.ping !== '0') {
+            offlineCount++;
+          }
+          if (item.maintenance_mode == 1) {
+            maintenanceCount++;
+          }
+        });
+      });
+
+      rack.offlineCount = offlineCount;
+      rack.maintenanceCount = maintenanceCount;
+      rack.hasOffline = offlineCount > 0;
+      rack.hasMaintenance = maintenanceCount > 0;
     });
 
     // Sort by floor_order

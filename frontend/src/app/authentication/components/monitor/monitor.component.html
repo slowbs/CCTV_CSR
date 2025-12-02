@@ -3,11 +3,19 @@
         <div class="rack-cabinet" *ngFor="let rack of floorRacks" [ngClass]="{
                 'rack-42u': rack.floor_name.includes('3') || rack.floor_name.includes('Server'),
                 'rack-12u': rack.floor_name.includes('G') || rack.floor_name.includes('Ground'),
-                'rack-8u': !rack.floor_name.includes('3') && !rack.floor_name.includes('Server') && !rack.floor_name.includes('G') && !rack.floor_name.includes('Ground')
+                'rack-8u': !rack.floor_name.includes('3') && !rack.floor_name.includes('Server') && !rack.floor_name.includes('G') && !rack.floor_name.includes('Ground'),
+                'has-offline': rack.hasOffline,
+                'has-maintenance': rack.hasMaintenance && !rack.hasOffline
             }">
             <div class="rack-header">
                 <h3>{{ rack.floor_name }}</h3>
-                <span class="badge bg-dark">{{ rack.slots.length }} Devices</span>
+                <div class="header-status">
+                    <span *ngIf="rack.hasOffline" class="badge badge-danger mr-1">Offline: {{ rack.offlineCount
+                        }}</span>
+                    <span *ngIf="rack.hasMaintenance" class="badge badge-warning mr-1">MA: {{ rack.maintenanceCount
+                        }}</span>
+                    <span class="badge bg-dark">{{ rack.slots.length }} Devices</span>
+                </div>
             </div>
             <div class="rack-body">
                 <div class="rack-rail">
