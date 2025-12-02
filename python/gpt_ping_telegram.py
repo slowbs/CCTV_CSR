@@ -109,6 +109,7 @@ def ping_and_check(data, log_callback):
                 db_utils.set_maintenance_mode(id_, 1)
                 log_callback(f"Auto-enabled Maintenance Mode for {ip} (Reboot Window)")
                 maintenance_mode = 1 # Update local variable
+                data['maintenance_mode'] = 1 # Update data dictionary
             
             return data, "Skipped (Auto-Maintenance)", False, False, True, durable_no, ip, ping_value, ping_value
         
@@ -120,6 +121,7 @@ def ping_and_check(data, log_callback):
                 db_utils.set_maintenance_mode(id_, 0)
                 log_callback(f"Auto-disabled Maintenance Mode for {ip} (Reboot Window Ended)")
                 maintenance_mode = 0 # Update local variable
+                data['maintenance_mode'] = 0 # Update data dictionary
 
     # Skip ping if in Maintenance Mode (Manual or Auto)
     maintenance_mode = data.get('maintenance_mode', 0)
