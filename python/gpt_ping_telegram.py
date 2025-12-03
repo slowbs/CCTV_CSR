@@ -90,40 +90,31 @@ def ping_and_check(data, log_callback):
     location = data['location']
     monitor = data['monitor']
 
+    # Auto-Maintenance for Reboot (IP: 192.168.200.9) - MUST BE CHECKED FIRST
+    now = datetime.datetime.now()
+    if ip == '192.168.200.9':
+        # Enter Reboot Window (22:00 - 22:10)
+        if 22 <= now.hour < 23 and 0 <= now.minute <= 10:
+            if data.get('maintenance_mode', 0) == 0:
+                db_utils.set_maintenance_mode(id_, 1)
+                log_callback(f"Auto-enabled Maintenance Mode for {ip} (Reboot Window)")
+                data['maintenance_mode'] = 1 # Update data for this run
+            # Always skip during this window
+            return data, "Skipped (Auto-Maintenance)", False, False, True, durable_no, ip, ping_value, ping_value
+        
+        # Exit Reboot Window (22:11 - 22:30) - Force OFF
+        elif 22 <= now.hour < 23 and 11 <= now.minute <= 30:
+            if data.get('maintenance_mode', 0) == 1:
+                db_utils.set_maintenance_mode(id_, 0)
+                log_callback(f"Auto-disabled Maintenance Mode for {ip} (Reboot Window Ended)")
+                data['maintenance_mode'] = 0 # Update data for this run
+                # After disabling, continue to the normal ping process below
+
     # Skip ping if IP is empty
     if not ip:
         return data, "Skipped (IP is Empty)", False, False, True, durable_no, ip, "", ping_value
 
     # Skip ping if in Maintenance Mode
-    maintenance_mode = data.get('maintenance_mode', 0)
-    if maintenance_mode == 1:
-        return data, "Skipped (Maintenance Mode)", False, False, True, durable_no, ip, ping_value, ping_value
-
-    # Auto-Maintenance for Reboot (IP: 192.168.200.9)
-    now = datetime.datetime.now()
-    if ip == '192.168.200.9':
-        # Enter Reboot Window (22:00 - 22:10)
-        if 22 <= now.hour < 23 and 0 <= now.minute <= 10:
-            maintenance_mode = data.get('maintenance_mode', 0)
-            if maintenance_mode == 0:
-                db_utils.set_maintenance_mode(id_, 1)
-                log_callback(f"Auto-enabled Maintenance Mode for {ip} (Reboot Window)")
-                maintenance_mode = 1 # Update local variable
-                data['maintenance_mode'] = 1 # Update data dictionary
-            
-            return data, "Skipped (Auto-Maintenance)", False, False, True, durable_no, ip, ping_value, ping_value
-        
-        # Exit Reboot Window (22:11 - 22:30) - Force OFF
-        # Extended window to ensure we catch the disable event even if the script is busy or restarted
-        elif 22 <= now.hour < 23 and 11 <= now.minute <= 30:
-            maintenance_mode = data.get('maintenance_mode', 0)
-            if maintenance_mode == 1:
-                db_utils.set_maintenance_mode(id_, 0)
-                log_callback(f"Auto-disabled Maintenance Mode for {ip} (Reboot Window Ended)")
-                maintenance_mode = 0 # Update local variable
-                data['maintenance_mode'] = 0 # Update data dictionary
-
-    # Skip ping if in Maintenance Mode (Manual or Auto)
     maintenance_mode = data.get('maintenance_mode', 0)
     if maintenance_mode == 1:
         return data, "Skipped (Maintenance Mode)", False, False, True, durable_no, ip, ping_value, ping_value
