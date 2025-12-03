@@ -1,15 +1,20 @@
 .diff-removed {
-    background-color: #ffeef0;
-    color: #b31d28;
-    padding: 2px 4px;
+    background-color: #dc3545;
+    color: #ffffff;
+    padding: 2px 6px;
     border-radius: 4px;
-    text-decoration: line-through;
+    font-weight: 500;
 }
 
 .diff-added {
-    background-color: #e6ffed;
-    color: #22863a;
-    padding: 2px 4px;
+    background-color: #198754;
+    color: #ffffff;
+    padding: 2px 6px;
     border-radius: 4px;
-    font-weight: bold;
+    font-weight: 500;
+}
+
+.table td {
+    font-size: 0.85rem;
+    vertical-align: middle;
 }

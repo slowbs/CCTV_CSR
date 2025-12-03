@@ -120,12 +120,12 @@ export class CctvService {
   }
 
   // ดึงข้อมูล Audit Logs
-  get_audit_logs(id?: number) {
-    let params: any = {};
+  get_audit_logs(id?: number, page: number = 1, limit: number = 10): Observable<IAuditLogResponse> {
+    let params: any = { page, limit };
     if (id) {
       params.id = id;
     }
-    return this.httpClient.get<any>(this.backendURL + 'audit_logs', { params: params });
+    return this.httpClient.get<IAuditLogResponse>(this.backendURL + 'audit_logs', { params: params });
   }
 
   // เพิ่มฟังก์ชันดึงข้อมูลการเปลี่ยนแปลงสถานะล่าสุดมาแสดงในหน้า dashboard
@@ -251,6 +251,31 @@ export interface IFloor {
   floor_status?: string;
 }
 
+export interface IAuditLogResponse {
+  result: IAuditLog[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface IAuditLog {
+  id: number;
+  cctv_id: number;
+  old_ip: string;
+  new_ip: string;
+  old_location: string;
+  new_location: string;
+  old_monitor: string;
+  new_monitor: string;
+  old_status: string;
+  new_status: string;
+  old_floor: string;
+  new_floor: string;
+  updated_at: string;
+  durable_name?: string;
+  durable_no?: string;
+}
+
 export interface ILogPing {
   log_id: string
   cctv_id: string
@@ -273,25 +298,6 @@ export interface ICountPing {
   offline_count: string;
   maintenance_count: string;
 }
-
-export interface IAuditLog {
-  id: number;
-  cctv_id: number;
-  old_ip: string;
-  new_ip: string;
-  old_location: string;
-  new_location: string;
-  old_monitor: string;
-  new_monitor: string;
-  old_status: string;
-  new_status: string;
-  old_floor: string;
-  new_floor: string;
-  updated_at: string;
-  durable_name?: string;
-  durable_no?: string;
-}
-
 
 export namespace IReport {
 
