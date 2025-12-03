@@ -128,6 +128,13 @@
                         </ul>
                 </li>
                 <li>
+                        <a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.History]"
+                                routerLinkActive="active">
+                                <i class="app-menu__icon bi bi-clock-history"></i>
+                                <span class="app-menu__label">Device History</span>
+                        </a>
+                </li>
+                <li>
                         <a class="app-menu__item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Monitor]"
                                 routerLinkActive="active" target="_blank">
                                 <i class="app-menu__icon bi bi-display"></i>

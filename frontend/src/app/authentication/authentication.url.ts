@@ -9,5 +9,6 @@ export const AuthenticationURL = {
     Create_Durable: 'create_durable',
     Report: 'report',
     Check_List: 'check_list',
-    Monitor: 'monitor'
+    Monitor: 'monitor',
+    History: 'history'
 }

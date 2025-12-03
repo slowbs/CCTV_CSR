@@ -1,0 +1,120 @@
+<app-auth-content>
+    <div class="app-title">
+        <div>
+            <h1><i class="bi bi-clock-history"></i> Device History</h1>
+            <p>ประวัติการเปลี่ยนแปลงข้อมูลอุปกรณ์</p>
+        </div>
+        <ul class="app-breadcrumb breadcrumb">
+            <li class="breadcrumb-item"><a [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]"><i
+                        class="bi bi-house-door fs-6"></i></a></li>
+            <li class="breadcrumb-item active">Device History</li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tile">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h3 class="tile-title">
+                            History Log
+                            <span *ngIf="cctvId" class="text-muted h5 ml-2">(ID: {{ cctvId }})</span>
+                        </h3>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" [(ngModel)]="searchText" (input)="onSearch()"
+                                placeholder="ค้นหา (ชื่อ, เลขครุภัณฑ์, IP, สถานที่)">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button"><i class="bi bi-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="isLoading" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
+                <div *ngIf="!isLoading && filteredLogs.length === 0" class="text-center py-5 text-muted">
+                    No history found.
+                </div>
+
+                <div *ngIf="!isLoading && filteredLogs.length > 0" class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%" class="text-center">ID</th>
+                                <th *ngIf="!cctvId" style="width: 20%">Device</th>
+                                <th class="text-center">Floor</th>
+                                <th class="text-center">Location</th>
+                                <th class="text-center">Monitor</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">IP Address</th>
+                                <th style="width: 15%" class="text-center">Date/Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let log of filteredLogs">
+                                <td class="text-center">{{ log.id }}</td>
+                                <td *ngIf="!cctvId">
+                                    <div class="fw-bold">{{ log.durable_name }}</div>
+                                    <small class="text-muted">{{ log.durable_no }}</small>
+                                </td>
+                                <td>
+                                    <div *ngIf="log.old_floor !== log.new_floor">
+                                        <span class="diff-removed">{{ log.old_floor }}</span>
+                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                        <span class="diff-added">{{ log.new_floor }}</span>
+                                    </div>
+                                    <div *ngIf="log.old_floor === log.new_floor" class="text-muted">{{ log.new_floor }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div *ngIf="log.old_location !== log.new_location">
+                                        <span class="diff-removed">{{ log.old_location }}</span>
+                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                        <span class="diff-added">{{ log.new_location }}</span>
+                                    </div>
+                                    <div *ngIf="log.old_location === log.new_location" class="text-muted">{{
+                                        log.new_location }}</div>
+                                </td>
+                                <td>
+                                    <div *ngIf="log.old_monitor !== log.new_monitor">
+                                        <span class="diff-removed">{{ log.old_monitor }}</span>
+                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                        <span class="diff-added">{{ log.new_monitor }}</span>
+                                    </div>
+                                    <div *ngIf="log.old_monitor === log.new_monitor" class="text-muted">{{
+                                        log.new_monitor
+                                        }}</div>
+                                </td>
+                                <td class="text-center">
+                                    <div *ngIf="log.old_status !== log.new_status">
+                                        <span class="diff-removed">{{ log.old_status }}</span>
+                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                        <span class="diff-added">{{ log.new_status }}</span>
+                                    </div>
+                                    <div *ngIf="log.old_status === log.new_status" class="text-muted">{{ log.new_status
+                                        }}
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div *ngIf="log.old_ip !== log.new_ip">
+                                        <span class="diff-removed">{{ log.old_ip }}</span>
+                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                        <span class="diff-added">{{ log.new_ip }}</span>
+                                    </div>
+                                    <div *ngIf="log.old_ip === log.new_ip" class="text-muted">{{ log.new_ip }}</div>
+                                </td>
+                                <td class="text-center">{{ log.updated_at }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-auth-content>

@@ -15,6 +15,7 @@ import { MonitorComponent } from './components/monitor/monitor.component';
 
 
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { HistoryComponent } from './components/history/history.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
     DurableCreateComponent,
     ReportComponent,
     CheckListComponent,
-    MonitorComponent
+    MonitorComponent,
+    HistoryComponent
   ],
   imports: [
     CommonModule,

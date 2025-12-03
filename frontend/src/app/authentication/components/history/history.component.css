@@ -1,0 +1,15 @@
+.diff-removed {
+    background-color: #ffeef0;
+    color: #b31d28;
+    padding: 2px 4px;
+    border-radius: 4px;
+    text-decoration: line-through;
+}
+
+.diff-added {
+    background-color: #e6ffed;
+    color: #22863a;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: bold;
+}

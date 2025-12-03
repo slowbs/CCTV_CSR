@@ -50,7 +50,34 @@ if (isset($_GET['id'])) {
         //     ]));
         // }
 
-        // $query = "INSERT INTO cctv (durable_no, durable_name, location, brand, floor, status) VALUES (?, ?, ?, ?, ?, ?)";
+        // Fetch old data for audit logging
+        $old_data_query = "SELECT ip, location, monitor, status, floor FROM cctv WHERE id = ?";
+        $stmt_old = mysqli_prepare($conn, $old_data_query);
+        mysqli_stmt_bind_param($stmt_old, 'i', $_GET['id']);
+        mysqli_stmt_execute($stmt_old);
+        $result_old = mysqli_stmt_get_result($stmt_old);
+        $old_row = mysqli_fetch_assoc($result_old);
+
+        // Prepare audit log data
+        $old_ip = $old_row['ip'];
+        $new_ip = $data->ip;
+        $old_location = $old_row['location'];
+        $new_location = $data->location;
+        $old_monitor = $old_row['monitor'];
+        $new_monitor = $data->monitor;
+        $old_status = $old_row['status']; // Assuming status is stored as ID in cctv table, need to check if it matches input
+        $new_status = $data->status_id;
+        $old_floor = $old_row['floor']; // Assuming floor is stored as ID
+        $new_floor = $data->floor_id;
+
+        // Check for changes
+        if ($old_ip != $new_ip || $old_location != $new_location || $old_monitor != $new_monitor || $old_status != $new_status || $old_floor != $new_floor) {
+            $audit_query = "INSERT INTO cctv_audit_logs (cctv_id, old_ip, new_ip, old_location, new_location, old_monitor, new_monitor, old_status, new_status, old_floor, new_floor, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+            $stmt_audit = mysqli_prepare($conn, $audit_query);
+            mysqli_stmt_bind_param($stmt_audit, 'issssssssss', $_GET['id'], $old_ip, $new_ip, $old_location, $new_location, $old_monitor, $new_monitor, $old_status, $new_status, $old_floor, $new_floor);
+            mysqli_stmt_execute($stmt_audit);
+        }
+
         $query = "UPDATE cctv SET durable_no = ?, durable_name = ?, location = ?, monitor = ?, brand = ?, model = ?, floor = ?, status = ?, 
         ip = ?, maintenance_mode = ?, date_updated = NOW() 
         where id = ?";

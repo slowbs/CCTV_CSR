@@ -9,6 +9,7 @@ import { DurableCreateComponent } from "./components/durable-create/durable-crea
 import { ReportComponent } from "./components/report/report.component";
 import { CheckListComponent } from "./components/check-list/check-list.component";
 import { MonitorComponent } from './components/monitor/monitor.component';
+import { HistoryComponent } from './components/history/history.component';
 import { AuthGuard } from "../guards/auth.guard";
 
 const RouteLists: Routes = [
@@ -21,7 +22,8 @@ const RouteLists: Routes = [
     { path: `${AuthenticationURL.Report}/:id`, component: ReportComponent, canActivate: [AuthGuard] },
     { path: AuthenticationURL.Create_Durable, component: DurableCreateComponent, canActivate: [AuthGuard] },
     { path: AuthenticationURL.Check_List, component: CheckListComponent, canActivate: [AuthGuard] },
-    { path: AuthenticationURL.Monitor, component: MonitorComponent, canActivate: [AuthGuard] }
+    { path: AuthenticationURL.Monitor, component: MonitorComponent, canActivate: [AuthGuard] },
+    { path: AuthenticationURL.History, component: HistoryComponent, canActivate: [AuthGuard] }
 ];
 
 export const AuthenticationRouting = RouterModule.forChild(RouteLists);
