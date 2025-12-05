@@ -3,6 +3,7 @@
 $routes['/api/cctvs']['GET'] = 'cctvs/get.php';
 $routes['/api/cctvs']['POST'] = 'cctvs/post.php';
 $routes['/api/cctvs']['PUT'] = 'cctvs/put.php';
+
 $routes['/api/cctvs']['DELETE'] = 'cctvs/delete.php';
 
 //ข้อมูลสถานะกล้อง

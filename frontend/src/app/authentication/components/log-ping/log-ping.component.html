@@ -5,7 +5,8 @@
             <p>รายการข้อมูล Log ครุภัณฑ์{{ Title }}</p>
         </div>
         <ul class="app-breadcrumb breadcrumb">
-            <li class="breadcrumb-item"><a [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]"><i class="bi bi-house-door fs-6"></i></a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]"><i
+                        class="bi bi-house-door fs-6"></i></a></li>
             <li class="breadcrumb-item"><a [routerLink]="[]">Log</a></li>
         </ul>
     </div>
@@ -47,13 +48,23 @@
                                     <td class="offline">Offline</td>
                                 </ng-template> -->
                                 <td class="text-center">
-                                    <span class="badge"
-                                        [ngClass]="item.ping_checked === '0' ? 'bg-success' : 'bg-danger'">
-                                        {{ item.ping_checked === '0' ? 'Online' : 'Offline' }}
+                                    <span class="badge" [ngClass]="{
+                                            'bg-success': item.ping_checked === '0',
+                                            'bg-danger': item.ping_checked === '1',
+                                            'bg-secondary': item.ping_checked === '2',
+                                            'bg-info': item.ping_checked === '3'
+                                        }">
+                                        {{
+                                        item.ping_checked === '0' ? 'Online' :
+                                        (item.ping_checked === '1' ? 'Offline' :
+                                        (item.ping_checked === '2' ? 'Start MA' :
+                                        (item.ping_checked === '3' ? 'End MA' : 'Unknown')))
+                                        }}
                                     </span>
                                 </td>
                                 <td>{{ item.date_created }}</td>
-                                <ng-container *ngIf="item.ping_checked === '1' ; else noComment">
+                                <!-- Allow editing for Offline(1), Start MA(2) only -->
+                                <ng-container *ngIf="['1', '2'].includes(item.ping_checked) ; else noComment">
                                     <td class="text-center">
                                         <a [routerLink]=" []" data-bs-toggle="modal" data-bs-target="#editCommentModal"
                                             (click)="onEditModal(item)">
@@ -87,17 +98,10 @@
 
                 <!-- Pagination section -->
                 <div class="d-flex justify-content-center mt-3" *ngIf="!isLoading && totalItems > itemsPerPage">
-                    <pagination
-                        [totalItems]="totalItems"
-                        [itemsPerPage]="itemsPerPage"
-                        [(ngModel)]="currentPage"
-                        (pageChanged)="pageChanged($event)"
-                        [maxSize]="maxSize"
-                        [boundaryLinks]="true"
-                        [customFirstTemplate]="firstTemplate"
-                        [customLastTemplate]="lastTemplate"
-                        [customPreviousTemplate]="prevTemplate"
-                        [customNextTemplate]="nextTemplate"
+                    <pagination [totalItems]="totalItems" [itemsPerPage]="itemsPerPage" [(ngModel)]="currentPage"
+                        (pageChanged)="pageChanged($event)" [maxSize]="maxSize" [boundaryLinks]="true"
+                        [customFirstTemplate]="firstTemplate" [customLastTemplate]="lastTemplate"
+                        [customPreviousTemplate]="prevTemplate" [customNextTemplate]="nextTemplate"
                         [customPageTemplate]="pageTemplate">
                     </pagination>
                 </div>

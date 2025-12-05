@@ -118,23 +118,7 @@ export class CctvComponent implements OnInit {
     });
   }
 
-  onToggleMaintenance(item: ICctvs) {
-    // Toggle status (0 <-> 1)
-    item.maintenance_mode = item.maintenance_mode == 1 ? 0 : 1;
 
-    // Call service to update
-    this.CctvSerivce.put_cctv(item.id, item).subscribe({
-      next: (result) => {
-        console.log('Maintenance mode updated:', result);
-      },
-      error: (err) => {
-        console.error('Error updating maintenance mode:', err);
-        // Revert on error
-        item.maintenance_mode = item.maintenance_mode == 1 ? 0 : 1;
-        alert('Failed to update maintenance mode');
-      }
-    });
-  }
 }
 
 // ส่วนสำหรับการค้นหา

@@ -70,6 +70,8 @@ export class CctvService {
     return this.httpClient.get<ICctvs[]>(this.backendURL + 'cctvs', params);
   }
 
+
+
   // แก้ไขข้อมูลครุภัณฑ์
   put_cctv(id: any, value: ICctvs) {
     // return this.httpClient.put(this.backendURL + 'cctvs?id=' + id, value)
@@ -319,5 +321,7 @@ export namespace IReport {
     online: string
     duration?: string | null
     comment?: string | null
+    type_offline?: string
+    type_online?: string
   }
 }

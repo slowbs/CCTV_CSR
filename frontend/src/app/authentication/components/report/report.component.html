@@ -82,8 +82,20 @@
                                         <td>
                                             <ng-container *ngIf="(item.logs ?? []).length; else noComment">
                                                 {{ item.logs[0].comment || '' }} <br>
-                                                ออฟไลน์: {{ formatDate(item.logs[0].offline) }} <br>
-                                                ออนไลน์: {{ formatDate(item.logs[0].online) }} <br>
+                                                <!-- Start Time Label -->
+                                                <span>
+                                                    {{ item.logs[0].type_offline === '2' ? 'เริ่มซ่อมบำรุง:' :
+                                                    'ออฟไลน์:' }}
+                                                </span>
+                                                {{ formatDate(item.logs[0].offline) }} <br>
+
+                                                <!-- End Time Label -->
+                                                <span>
+                                                    {{ item.logs[0].type_online === '3' ? 'สิ้นสุดซ่อมบำรุง:' :
+                                                    (item.logs[0].type_online === '0' ? 'ออนไลน์:' : '') }}
+                                                </span>
+                                                {{ formatDate(item.logs[0].online) }} <br>
+
                                                 ระยะเวลา: {{ item.logs[0].duration }}
                                             </ng-container>
                                             <ng-template #noComment></ng-template>
@@ -92,8 +104,20 @@
                                     <tr *ngFor="let log of item.logs?.slice(1); let y = index">
                                         <td>
                                             {{ log.comment || '' }} <br>
-                                            ออฟไลน์: {{ formatDate(log.offline) }} <br>
-                                            ออนไลน์: {{ formatDate(log.online) }} <br>
+
+                                            <!-- Start Time Label -->
+                                            <span>
+                                                {{ log.type_offline === '2' ? 'เริ่มซ่อมบำรุง:' : 'ออฟไลน์:' }}
+                                            </span>
+                                            {{ formatDate(log.offline) }} <br>
+
+                                            <!-- End Time Label -->
+                                            <span>
+                                                {{ log.type_online === '3' ? 'สิ้นสุดซ่อมบำรุง:' : (log.type_online ===
+                                                '0' ? 'ออนไลน์:' : '') }}
+                                            </span>
+                                            {{ formatDate(log.online) }} <br>
+
                                             ระยะเวลา: {{ log.duration }}
                                         </td>
                                     </tr>

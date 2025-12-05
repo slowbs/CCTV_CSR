@@ -51,7 +51,7 @@ if (isset($_GET['id'])) {
         // }
 
         // Fetch old data for audit logging
-        $old_data_query = "SELECT ip, location, monitor, status, floor FROM cctv WHERE id = ?";
+        $old_data_query = "SELECT ip, location, monitor, status, floor, type, maintenance_mode FROM cctv WHERE id = ?";
         $stmt_old = mysqli_prepare($conn, $old_data_query);
         mysqli_stmt_bind_param($stmt_old, 'i', $_GET['id']);
         mysqli_stmt_execute($stmt_old);
@@ -78,11 +78,28 @@ if (isset($_GET['id'])) {
             mysqli_stmt_execute($stmt_audit);
         }
 
+        // Logic Maintenance Mode Log
+        $maintenance_mode = isset($data->maintenance_mode) ? $data->maintenance_mode : 0;
+        $old_maintenance_mode = $old_row['maintenance_mode'];
+        
+        if ($old_maintenance_mode != $maintenance_mode) {
+             // mode 1 (Start MA) -> ping_checked = 2
+             // mode 0 (End MA)   -> ping_checked = 3
+             // mode only 0 or 1
+             $ping_checked = ($maintenance_mode == 1) ? 2 : 3;
+             $cctv_type = $old_row['type']; // Use type from old data
+
+             $log_query = "INSERT INTO log_ping (cctv_id, type, ping_checked, date_created) VALUES (?, ?, ?, NOW())";
+             $stmt_log = mysqli_prepare($conn, $log_query);
+             mysqli_stmt_bind_param($stmt_log, 'iii', $_GET['id'], $cctv_type, $ping_checked);
+             mysqli_stmt_execute($stmt_log);
+        }
+
+
         $query = "UPDATE cctv SET durable_no = ?, durable_name = ?, location = ?, monitor = ?, brand = ?, model = ?, floor = ?, status = ?, 
         ip = ?, maintenance_mode = ?, date_updated = NOW() 
         where id = ?";
         $stmt = mysqli_prepare($conn, $query);
-        $maintenance_mode = isset($data->maintenance_mode) ? $data->maintenance_mode : 0;
         mysqli_stmt_bind_param(
             $stmt,
             'sssssssssii',
