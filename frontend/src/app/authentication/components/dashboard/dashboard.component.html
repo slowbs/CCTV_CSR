@@ -71,9 +71,18 @@
                                 <td>{{ change.location }}</td>
                                 <td>{{ change.ip }}</td>
                                 <td class="text-center">
-                                    <span class="badge"
-                                        [ngClass]="change.ping_checked === '0' ? 'bg-success' : 'bg-danger'">
-                                        {{ change.ping_checked === '0' ? 'Online' : 'Offline' }}
+                                    <span class="badge" [ngClass]="{
+                                            'bg-success': change.ping_checked === '0',
+                                            'bg-danger': change.ping_checked === '1',
+                                            'bg-secondary': change.ping_checked === '2',
+                                            'bg-info': change.ping_checked === '3'
+                                        }">
+                                        {{
+                                        change.ping_checked === '0' ? 'Online' :
+                                        (change.ping_checked === '1' ? 'Offline' :
+                                        (change.ping_checked === '2' ? 'Start MA' :
+                                        (change.ping_checked === '3' ? 'End MA' : 'Unknown')))
+                                        }}
                                     </span>
                                 </td>
                                 <td class="text-center">{{ change.date_created }}</td>
