@@ -1,5 +1,10 @@
 <div class="map-manager-container">
 
+    <!-- Hidden Drag Ghost Image -->
+    <div id="drag-ghost" class="cctv-marker" style="position: fixed; top: -1000px; left: -1000px; z-index: -1;">
+        <i class="bi bi-camera-video-fill"></i>
+    </div>
+
     <!-- LEFT: Map List -->
     <div class="sidebar-maps">
         <div class="sidebar-header">
@@ -11,7 +16,7 @@
         <div class="map-list" *ngIf="maps.length > 0; else noMaps">
             <div class="map-item" *ngFor="let map of maps" [class.active]="selectedMap?.id === map.id"
                 (click)="selectMap(map)">
-                <img [src]="map.image_url || 'assets/img/alert.png'" class="map-thumb" alt="map">
+                <!-- <img [src]="map.image_url || 'assets/img/alert.png'" class="map-thumb" alt="map"> -->
                 <div class="flex-grow-1">
                     <div class="fw-bold text-truncate" style="max-width: 150px;">{{ map.name }}</div>
                     <small class="text-muted">{{ map.cctv_count || 0 }} cameras</small>
@@ -41,18 +46,23 @@
             </div>
         </div>
 
-        <div class="canvas-viewport" (dragover)="onDragOver($event)" (drop)="onDropOnCanvas($event)">
+        <div class="canvas-viewport">
 
-            <div class="map-container" *ngIf="selectedMap; else selectMapPrompt" #mapContainer>
-                <img [src]="selectedMap.image_url" class="map-image" alt="Floor Plan"
-                    style="max-width: 100%; max-height: 70vh;" (load)="onImageLoad($event)">
+            <div class="map-container" *ngIf="selectedMap; else selectMapPrompt" #mapContainer
+                (dragover)="onDragOver($event)" (drop)="onDropOnCanvas($event)">
+                <img [src]="selectedMap.image_url" class="map-image" alt="Floor Plan" style="height: 80vh; width: auto;"
+                    (load)="onImageLoad($event)">
 
                 <!-- Markers -->
                 <div *ngFor="let cam of getMapCameras()" class="cctv-marker" [style.left.%]="cam.map_x"
                     [style.top.%]="cam.map_y" draggable="true" (dragstart)="onDragStart($event, cam)"
                     (contextmenu)="onContextMenu($event, cam)">
                     <i class="bi bi-camera-video-fill"></i>
-                    <div class="marker-tooltip">{{ cam.durable_name }} ({{ cam.ip }})</div>
+                    <div class="marker-tooltip">
+                        <div class="fw-bold">{{ cam.location || cam.durable_name }}</div>
+                        <div class="small">{{ cam.floor }} - {{ cam.monitor }}</div>
+                        <div class="small text-warning">{{ cam.ip }}</div>
+                    </div>
                 </div>
             </div>
 
@@ -72,12 +82,16 @@
             <span class="badge bg-light text-dark border">{{ filteredCameras.length }}</span>
         </div>
         <div class="filter-bar">
-            <input type="text" class="form-control form-control-sm mb-2" placeholder="Search name, IP..."
+            <input type="text" class="form-control form-control-sm mb-2" placeholder="Search Location, IP, Floor..."
                 [(ngModel)]="searchText" (keyup)="filterCameras()">
             <div class="btn-group w-100 btn-group-sm" role="group">
                 <input type="radio" class="btn-check" name="filterType" id="filterUnmapped" autocomplete="off"
                     [(ngModel)]="filterType" value="unmapped" (change)="filterCameras()">
                 <label class="btn btn-outline-secondary" for="filterUnmapped">Unmapped</label>
+
+                <input type="radio" class="btn-check" name="filterType" id="filterCurrent" autocomplete="off"
+                    [(ngModel)]="filterType" value="current" (change)="filterCameras()" [disabled]="!selectedMap">
+                <label class="btn btn-outline-secondary" for="filterCurrent">Map</label>
 
                 <input type="radio" class="btn-check" name="filterType" id="filterAll" autocomplete="off"
                     [(ngModel)]="filterType" value="all" (change)="filterCameras()">
@@ -89,8 +103,9 @@
                 (dragstart)="onDragStart($event, cam)">
                 <div class="camera-status-dot" [class.has-map]="cam.map_id" [class.no-map]="!cam.map_id"></div>
                 <div class="camera-info overflow-hidden">
-                    <div class="fw-bold text-truncate" [title]="cam.durable_name">{{ cam.durable_name }}</div>
-                    <div class="small text-muted">{{ cam.ip }}</div>
+                    <div class="fw-bold text-truncate" [title]="cam.durable_name">{{ cam.location || cam.durable_name }}
+                    </div>
+                    <div class="small text-muted">{{ cam.floor }} - {{ cam.monitor }}</div>
                     <div class="small text-primary" *ngIf="cam.map_id && filterType === 'all'">
                         <i class="bi bi-geo-alt-fill"></i> On Map: {{ getMapName(cam.map_id) }}
                     </div>
@@ -128,6 +143,30 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
                 <button type="button" class="btn btn-primary" (click)="createMap()">Create Map</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>ยกเลิกจุดติดตั้งกล้อง</h5>
+                <button type="button" class="btn-close btn-close-white" (click)="closeDeleteModal()"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="fs-1 text-danger mb-3"><i class="bi bi-x-circle"></i></div>
+                <h5 class="mb-2">นำกล้องออกจากแผนที่?</h5>
+                <p class="text-muted mb-0" *ngIf="cameraToRemove">
+                    คุณต้องการนำกล้อง <strong>{{ cameraToRemove.durable_name }}</strong><br>
+                    ออกจากแผนที่ <strong>{{ selectedMap?.name }}</strong> ใช่หรือไม่?
+                </p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" (click)="closeDeleteModal()">ยกเลิก</button>
+                <button type="button" class="btn btn-danger px-4" (click)="confirmUnmap()">นำออก</button>
             </div>
         </div>
     </div>

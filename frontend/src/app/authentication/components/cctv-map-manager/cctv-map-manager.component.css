@@ -146,10 +146,13 @@
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.8);
     color: #fff;
-    padding: 4px 8px;
+    padding: 6px 10px;
     border-radius: 4px;
     white-space: nowrap;
     font-size: 12px;
+    line-height: 1.2;
+    text-align: center;
+    z-index: 300;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s;

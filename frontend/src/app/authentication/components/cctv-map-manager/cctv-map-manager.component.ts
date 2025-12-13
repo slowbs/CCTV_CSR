@@ -23,11 +23,12 @@ export class CctvMapManagerComponent implements OnInit {
   maps: IMap[] = [];
   cameras: ICctvs[] = [];
   filteredCameras: ICctvs[] = [];
+  cameraToRemove: ICctvs | null = null;
 
   selectedMap: IMap | null = null;
   newMapData = { name: '', imageFile: null as File | null };
   searchText: string = '';
-  filterType: 'all' | 'unmapped' = 'unmapped';
+  filterType: 'all' | 'unmapped' | 'current' = 'unmapped';
 
   isLoading = false;
 
@@ -84,14 +85,22 @@ export class CctvMapManagerComponent implements OnInit {
 
   filterCameras() {
     this.filteredCameras = this.cameras.filter(c => {
+      const term = this.searchText.toLowerCase();
       const matchesSearch = !this.searchText ||
-        (c.durable_name && c.durable_name.toLowerCase().includes(this.searchText.toLowerCase())) ||
-        (c.ip && c.ip.includes(this.searchText));
+        (c.location && c.location.toLowerCase().includes(term)) ||
+        (c.ip && c.ip.includes(this.searchText)) ||
+        (c.floor && c.floor.toLowerCase().includes(term)) ||
+        (c.monitor && c.monitor.toLowerCase().includes(term)) ||
+        (c.durable_no && c.durable_no.toLowerCase().includes(term));
 
       if (!matchesSearch) return false;
 
       if (this.filterType === 'unmapped') {
         return !c.map_id;
+      }
+      if (this.filterType === 'current') {
+        // Loose equality to handle string vs number ID
+        return this.selectedMap && c.map_id == (this.selectedMap.id as any);
       }
       return true;
     });
@@ -178,8 +187,15 @@ export class CctvMapManagerComponent implements OnInit {
     if (event.dataTransfer) {
       event.dataTransfer.setData('cctv_id', cam.id!.toString());
       event.dataTransfer.effectAllowed = 'move';
+
+      // Use the ghost element as drag image
+      const ghost = document.getElementById('drag-ghost');
+      if (ghost) {
+        event.dataTransfer.setDragImage(ghost, 12, 12); // Center the 24x24 marker
+      }
     }
   }
+
 
   onDragOver(event: DragEvent) {
     event.preventDefault(); // Necessary to allow dropping
@@ -244,24 +260,33 @@ export class CctvMapManagerComponent implements OnInit {
 
   onContextMenu(event: MouseEvent, cam: ICctvs) {
     event.preventDefault();
-    if (confirm(`Unmap camera "${cam.durable_name}"?`)) {
-      // Unmap logic (set map_id to null)
-      // Since our update API accepts map_id as null, we can reuse it or make special call
-      // But our update_cctv.php handles map_id null? Let's check. 
-      // Yes, update_cctv.php: $map_id = $data['map_id'] ?? null;
-
-      const payload = {
-        cctv_id: cam.id,
-        map_id: null,
-        x: null,
-        y: null
-      };
-      this.http.put<any>(this.backendUrl + 'maps/cctv', payload).subscribe(res => {
-        this.loadCameras();
-        this.loadMaps();
-      });
-    }
+    this.cameraToRemove = cam;
+    $('#deleteConfirmModal').modal('show');
   }
+
+  closeDeleteModal() {
+    $('#deleteConfirmModal').modal('hide');
+    this.cameraToRemove = null;
+  }
+
+  confirmUnmap() {
+    if (!this.cameraToRemove) return;
+
+    const cam = this.cameraToRemove;
+    const payload = {
+      cctv_id: cam.id,
+      map_id: null,
+      x: null,
+      y: null
+    };
+
+    this.http.put<any>(this.backendUrl + 'maps/cctv', payload).subscribe(res => {
+      this.closeDeleteModal();
+      this.loadCameras();
+      this.loadMaps();
+    });
+  }
+
 
   onImageLoad(event: any) {
     // console.log('Image loaded, dimensions:', event.target.width, event.target.height);
