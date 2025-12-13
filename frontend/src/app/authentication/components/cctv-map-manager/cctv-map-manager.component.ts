@@ -110,6 +110,9 @@ export class CctvMapManagerComponent implements OnInit {
 
   selectMap(map: IMap) {
     this.selectedMap = map;
+    // Auto-switch to 'current' filter when a map is selected
+    this.filterType = 'current';
+    this.filterCameras();
   }
 
   getMapCameras() {

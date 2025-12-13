@@ -85,13 +85,13 @@
             <input type="text" class="form-control form-control-sm mb-2" placeholder="Search Location, IP, Floor..."
                 [(ngModel)]="searchText" (keyup)="filterCameras()">
             <div class="btn-group w-100 btn-group-sm" role="group">
-                <input type="radio" class="btn-check" name="filterType" id="filterUnmapped" autocomplete="off"
-                    [(ngModel)]="filterType" value="unmapped" (change)="filterCameras()">
-                <label class="btn btn-outline-secondary" for="filterUnmapped">Unmapped</label>
-
                 <input type="radio" class="btn-check" name="filterType" id="filterCurrent" autocomplete="off"
                     [(ngModel)]="filterType" value="current" (change)="filterCameras()" [disabled]="!selectedMap">
                 <label class="btn btn-outline-secondary" for="filterCurrent">Map</label>
+
+                <input type="radio" class="btn-check" name="filterType" id="filterUnmapped" autocomplete="off"
+                    [(ngModel)]="filterType" value="unmapped" (change)="filterCameras()">
+                <label class="btn btn-outline-secondary" for="filterUnmapped">Unmapped</label>
 
                 <input type="radio" class="btn-check" name="filterType" id="filterAll" autocomplete="off"
                     [(ngModel)]="filterType" value="all" (change)="filterCameras()">
