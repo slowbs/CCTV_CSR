@@ -235,6 +235,9 @@ export interface ICctvs {
   date_updated?: string;
   completed?: boolean;
   maintenance_mode?: string | number;
+  map_id?: number | null;
+  map_x?: number | null;
+  map_y?: number | null;
 }
 
 export interface IStatus {

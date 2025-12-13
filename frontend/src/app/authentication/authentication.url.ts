@@ -10,5 +10,7 @@ export const AuthenticationURL = {
     Report: 'report',
     Check_List: 'check_list',
     Monitor: 'monitor',
+    Monitor_CCTV: 'monitor-cctv',
+    Map_Manager: 'cctv-map-manager',
     History: 'history'
 }

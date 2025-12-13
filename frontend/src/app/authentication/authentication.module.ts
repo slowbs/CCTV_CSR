@@ -16,6 +16,8 @@ import { MonitorComponent } from './components/monitor/monitor.component';
 
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { HistoryComponent } from './components/history/history.component';
+import { MonitorCctvComponent } from './components/monitor-cctv/monitor-cctv.component';
+import { CctvMapManagerComponent } from './components/cctv-map-manager/cctv-map-manager.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,9 @@ import { HistoryComponent } from './components/history/history.component';
     ReportComponent,
     CheckListComponent,
     MonitorComponent,
-    HistoryComponent
+    HistoryComponent,
+    MonitorCctvComponent,
+    CctvMapManagerComponent
   ],
   imports: [
     CommonModule,

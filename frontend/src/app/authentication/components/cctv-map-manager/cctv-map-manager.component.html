@@ -1,0 +1,134 @@
+<div class="map-manager-container">
+
+    <!-- LEFT: Map List -->
+    <div class="sidebar-maps">
+        <div class="sidebar-header">
+            <h5 class="mb-0">Maps</h5>
+            <button class="btn btn-sm btn-primary" (click)="openCreateMapModal()">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+        </div>
+        <div class="map-list" *ngIf="maps.length > 0; else noMaps">
+            <div class="map-item" *ngFor="let map of maps" [class.active]="selectedMap?.id === map.id"
+                (click)="selectMap(map)">
+                <img [src]="map.image_url || 'assets/img/alert.png'" class="map-thumb" alt="map">
+                <div class="flex-grow-1">
+                    <div class="fw-bold text-truncate" style="max-width: 150px;">{{ map.name }}</div>
+                    <small class="text-muted">{{ map.cctv_count || 0 }} cameras</small>
+                </div>
+                <button class="btn btn-sm btn-light text-danger" (click)="deleteMap(map, $event)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+        <ng-template #noMaps>
+            <div class="empty-state">
+                <i class="bi bi-map fs-1 mb-2"></i>
+                <p>No maps yet.<br>Create one to start.</p>
+            </div>
+        </ng-template>
+    </div>
+
+    <!-- CENTER: Canvas -->
+    <div class="main-canvas">
+        <div class="canvas-toolbar" *ngIf="selectedMap">
+            <div class="d-flex align-items-center">
+                <h5 class="mb-0 me-3">{{ selectedMap.name }}</h5>
+                <span class="badge bg-secondary">{{ getMapCameras().length }} Cameras on map</span>
+            </div>
+            <div>
+                <small class="text-muted me-2"><i class="bi bi-info-circle"></i> Drag cameras to adjust position</small>
+            </div>
+        </div>
+
+        <div class="canvas-viewport" (dragover)="onDragOver($event)" (drop)="onDropOnCanvas($event)">
+
+            <div class="map-container" *ngIf="selectedMap; else selectMapPrompt" #mapContainer>
+                <img [src]="selectedMap.image_url" class="map-image" alt="Floor Plan"
+                    style="max-width: 100%; max-height: 70vh;" (load)="onImageLoad($event)">
+
+                <!-- Markers -->
+                <div *ngFor="let cam of getMapCameras()" class="cctv-marker" [style.left.%]="cam.map_x"
+                    [style.top.%]="cam.map_y" draggable="true" (dragstart)="onDragStart($event, cam)"
+                    (contextmenu)="onContextMenu($event, cam)">
+                    <i class="bi bi-camera-video-fill"></i>
+                    <div class="marker-tooltip">{{ cam.durable_name }} ({{ cam.ip }})</div>
+                </div>
+            </div>
+
+            <ng-template #selectMapPrompt>
+                <div class="empty-state">
+                    <i class="bi bi-cursor-fill fs-1 mb-2"></i>
+                    <p>Select a map from the left menu<br>to start editing.</p>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+
+    <!-- RIGHT: Camera Pool -->
+    <div class="sidebar-cameras">
+        <div class="sidebar-header">
+            <h5 class="mb-0">Cameras</h5>
+            <span class="badge bg-light text-dark border">{{ filteredCameras.length }}</span>
+        </div>
+        <div class="filter-bar">
+            <input type="text" class="form-control form-control-sm mb-2" placeholder="Search name, IP..."
+                [(ngModel)]="searchText" (keyup)="filterCameras()">
+            <div class="btn-group w-100 btn-group-sm" role="group">
+                <input type="radio" class="btn-check" name="filterType" id="filterUnmapped" autocomplete="off"
+                    [(ngModel)]="filterType" value="unmapped" (change)="filterCameras()">
+                <label class="btn btn-outline-secondary" for="filterUnmapped">Unmapped</label>
+
+                <input type="radio" class="btn-check" name="filterType" id="filterAll" autocomplete="off"
+                    [(ngModel)]="filterType" value="all" (change)="filterCameras()">
+                <label class="btn btn-outline-secondary" for="filterAll">All</label>
+            </div>
+        </div>
+        <div class="camera-scroller">
+            <div *ngFor="let cam of filteredCameras" class="camera-card" draggable="true"
+                (dragstart)="onDragStart($event, cam)">
+                <div class="camera-status-dot" [class.has-map]="cam.map_id" [class.no-map]="!cam.map_id"></div>
+                <div class="camera-info overflow-hidden">
+                    <div class="fw-bold text-truncate" [title]="cam.durable_name">{{ cam.durable_name }}</div>
+                    <div class="small text-muted">{{ cam.ip }}</div>
+                    <div class="small text-primary" *ngIf="cam.map_id && filterType === 'all'">
+                        <i class="bi bi-geo-alt-fill"></i> On Map: {{ getMapName(cam.map_id) }}
+                    </div>
+                </div>
+                <div *ngIf="cam.map_id && cam.map_id !== selectedMap?.id && selectedMap" class="ms-2">
+                    <button class="btn btn-xs btn-outline-primary" (click)="moveCameraToCurrentMap(cam)">
+                        <i class="bi bi-arrow-left-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Create Map Modal -->
+<div class="modal fade" id="createMapModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Map</h5>
+                <button type="button" class="btn-close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Map Name</label>
+                    <input type="text" class="form-control" [(ngModel)]="newMapData.name"
+                        placeholder="e.g., Floor 1 Zone A">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Floor Plan Image</label>
+                    <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" (click)="createMap()">Create Map</button>
+            </div>
+        </div>
+    </div>
+</div>

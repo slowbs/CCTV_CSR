@@ -1,0 +1,126 @@
+<div class="monitor-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+        <div>
+            <h2 class="text-light mb-0"><i class="bi bi-camera-video me-2"></i>CCTV Map View</h2>
+            <small class="text-secondary">Overview of all CCTV cameras by location</small>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="text-secondary small me-3">
+                <i class="bi bi-arrow-repeat me-1"></i> Auto-refresh: 60s
+            </span>
+            <button class="btn btn-outline-light btn-sm" (click)="loadData()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh Now
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="height: 300px;">
+        <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <span class="ms-3 text-light">Loading CCTV data...</span>
+    </div>
+
+    <div *ngIf="!isLoading">
+        <div *ngFor="let floor of floors" class="floor-section bounce-in">
+            <div class="floor-header">
+                <div class="floor-title">
+                    <i class="bi bi-layers-fill me-2"></i> {{ floor.floor_name }}
+                </div>
+                <div class="floor-stats">
+                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Online: {{ floor.onlineCount
+                        }}</span>
+                    <span class="badge bg-danger" *ngIf="floor.offlineCount > 0"><i
+                            class="bi bi-x-circle me-1"></i>Offline: {{ floor.offlineCount }}</span>
+                    <span class="badge bg-warning text-dark" *ngIf="floor.maCount > 0"><i
+                            class="bi bi-cone-striped me-1"></i>MA: {{ floor.maCount }}</span>
+                    <span class="badge bg-secondary">Total: {{ floor.items.length }}</span>
+                </div>
+            </div>
+
+            <div class="camera-grid">
+                <div *ngFor="let cam of floor.items" class="camera-item"
+                    [title]="cam.durable_name + ' (' + cam.ip + ')'" (click)="openDetailModal(cam)">
+
+                    <div class="status-dot" [ngClass]="{
+                            'bg-online': cam.ping === '0' && cam.maintenance_mode != 1,
+                            'bg-offline': cam.ping !== '0' && cam.maintenance_mode != 1,
+                            'bg-ma': cam.maintenance_mode == 1
+                         }">
+                    </div>
+
+                    <i class="bi bi-camera-video-fill camera-icon" [ngClass]="{
+                            'status-online': cam.ping === '0' && cam.maintenance_mode != 1,
+                            'status-offline': cam.ping !== '0' && cam.maintenance_mode != 1,
+                            'status-ma': cam.maintenance_mode == 1
+                       }">
+                    </i>
+                    <span class="camera-name">{{ cam.durable_name }}</span>
+                    <span class="camera-name text-muted" style="font-size: 0.7rem;">{{ cam.ip }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal fade" id="cctvDetailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content dark-theme">
+            <div class="modal-header dark-theme">
+                <h5 class="modal-title" id="detailModalLabel">
+                    <i class="bi bi-info-circle me-2"></i>Device Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                    (click)="closeDetailModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedItem">
+                <div class="text-center mb-4">
+                    <i class="bi bi-camera-video-fill display-1" [ngClass]="{
+                            'status-online': selectedItem.ping === '0' && selectedItem.maintenance_mode != 1,
+                            'status-offline': selectedItem.ping !== '0' && selectedItem.maintenance_mode != 1,
+                            'status-ma': selectedItem.maintenance_mode == 1
+                       }">
+                    </i>
+                    <h4 class="mt-2 text-white">{{ selectedItem.durable_name }}</h4>
+                    <span class="badge" [ngClass]="{
+                            'bg-success': selectedItem.ping === '0' && selectedItem.maintenance_mode != 1,
+                            'bg-danger': selectedItem.ping !== '0' && selectedItem.maintenance_mode != 1,
+                            'bg-warning text-dark': selectedItem.maintenance_mode == 1
+                        }">
+                        {{ selectedItem.maintenance_mode == 1 ? 'Maintenance Mode' : (selectedItem.ping === '0' ?
+                        'Online' : 'Offline') }}
+                    </span>
+                </div>
+
+                <div class="detail-row row">
+                    <div class="col-4 detail-label">IP Address</div>
+                    <div class="col-8 detail-value">{{ selectedItem.ip }}</div>
+                </div>
+                <div class="detail-row row">
+                    <div class="col-4 detail-label">Durable No</div>
+                    <div class="col-8 detail-value">{{ selectedItem.durable_no }}</div>
+                </div>
+                <div class="detail-row row">
+                    <div class="col-4 detail-label">Location</div>
+                    <div class="col-8 detail-value">{{ selectedItem.location || '-' }}</div>
+                </div>
+                <div class="detail-row row">
+                    <div class="col-4 detail-label">Floor</div>
+                    <div class="col-8 detail-value">{{ selectedItem.floor || '-' }}</div>
+                </div>
+                <div class="detail-row row">
+                    <div class="col-4 detail-label">Monitor</div>
+                    <div class="col-8 detail-value">{{ selectedItem.monitor || '-' }}</div>
+                </div>
+                <div class="detail-row row">
+                    <div class="col-4 detail-label">Last Checked</div>
+                    <div class="col-8 detail-value">{{ selectedItem.date_updated | date:'medium' }}</div>
+                </div>
+            </div>
+            <div class="modal-footer dark-theme">
+                <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

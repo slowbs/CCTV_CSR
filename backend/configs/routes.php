@@ -67,5 +67,15 @@ $routes['/api/checklist-logs']['POST'] = 'checklist_logs/post.php';
 $routes['/api/notify']['GET'] = 'notify/get.php';
 
 //ข้อมูล Audit Logs
+//ข้อมูล Audit Logs
 $routes['/api/audit_logs']['GET'] = 'audit_logs/get.php';
+
+//ข้อมูล CCTV Maps
+$routes['/api/maps']['GET'] = 'maps/get.php';
+$routes['/api/maps']['POST'] = 'maps/post.php';
+$routes['/api/maps']['PUT'] = 'maps/put.php';
+$routes['/api/maps']['DELETE'] = 'maps/delete.php';
+
+// อัปเดตพิกัด CCTV
+$routes['/api/maps/cctv']['PUT'] = 'maps/update_cctv.php';
 ?>

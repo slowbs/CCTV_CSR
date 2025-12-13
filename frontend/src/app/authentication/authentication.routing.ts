@@ -10,6 +10,8 @@ import { ReportComponent } from "./components/report/report.component";
 import { CheckListComponent } from "./components/check-list/check-list.component";
 import { MonitorComponent } from './components/monitor/monitor.component';
 import { HistoryComponent } from './components/history/history.component';
+import { MonitorCctvComponent } from "./components/monitor-cctv/monitor-cctv.component";
+import { CctvMapManagerComponent } from "./components/cctv-map-manager/cctv-map-manager.component";
 import { AuthGuard } from "../guards/auth.guard";
 
 const RouteLists: Routes = [
@@ -23,6 +25,8 @@ const RouteLists: Routes = [
     { path: AuthenticationURL.Create_Durable, component: DurableCreateComponent, canActivate: [AuthGuard] },
     { path: AuthenticationURL.Check_List, component: CheckListComponent, canActivate: [AuthGuard] },
     { path: AuthenticationURL.Monitor, component: MonitorComponent, canActivate: [AuthGuard] },
+    { path: AuthenticationURL.Monitor_CCTV, component: MonitorCctvComponent, canActivate: [AuthGuard] },
+    { path: AuthenticationURL.Map_Manager, component: CctvMapManagerComponent, canActivate: [AuthGuard] },
     { path: AuthenticationURL.History, component: HistoryComponent, canActivate: [AuthGuard] }
 ];
 

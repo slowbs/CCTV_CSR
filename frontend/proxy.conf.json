@@ -2,5 +2,9 @@
     "/backend": {
       "target": "http://localhost/cctv_csr",
       "secure": false
+    },
+    "/CCTV_CSR": {
+      "target": "http://localhost",
+      "secure": false
     }
   }

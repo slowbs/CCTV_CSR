@@ -1,0 +1,147 @@
+.monitor-container {
+    padding: 20px;
+    background-color: #1a1a1a;
+    min-height: 100vh;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.floor-section {
+    margin-bottom: 30px;
+    background: #2d2d2d;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    border: 1px solid #3d3d3d;
+}
+
+.floor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.floor-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.floor-stats {
+    display: flex;
+    gap: 10px;
+}
+
+.floor-stats .badge {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    font-weight: 500;
+}
+
+.camera-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px;
+}
+
+.camera-item {
+    background: #383838;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #444;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+}
+
+.camera-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    background: #424242;
+    z-index: 10;
+}
+
+.camera-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    display: block;
+    transition: color 0.3s;
+}
+
+.camera-name {
+    font-size: 0.85rem;
+    color: #ccc;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 5px;
+}
+
+/* Status Colors */
+.status-online { color: #2ecc71; text-shadow: 0 0 10px rgba(46, 204, 113, 0.3); }
+.status-offline { color: #e74c3c; text-shadow: 0 0 10px rgba(231, 76, 60, 0.3); }
+.status-ma { color: #f1c40f; text-shadow: 0 0 10px rgba(241, 196, 15, 0.3); }
+
+/* Status Dot Indicator */
+.status-dot {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #383838;
+}
+
+.bg-online { background-color: #2ecc71; box-shadow: 0 0 5px #2ecc71; }
+.bg-offline { background-color: #e74c3c; box-shadow: 0 0 8px #e74c3c; animation: pulse 2s infinite; }
+.bg-ma { background-color: #f1c40f; }
+
+@keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Modal Customization */
+.modal-content.dark-theme {
+    background-color: #2d2d2d;
+    color: #fff;
+    border: 1px solid #444;
+}
+
+.modal-header.dark-theme {
+    border-bottom: 1px solid #444;
+}
+
+.modal-footer.dark-theme {
+    border-top: 1px solid #444;
+}
+
+.detail-row {
+    padding: 8px 0;
+    border-bottom: 1px solid #3d3d3d;
+}
+
+.detail-label {
+    color: #aaa;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: #fff;
+    font-weight: 600;
+}
