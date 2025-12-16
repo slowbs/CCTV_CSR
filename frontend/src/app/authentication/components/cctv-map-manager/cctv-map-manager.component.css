@@ -1,8 +1,7 @@
 /* Layout */
 .map-manager-container {
     display: flex;
-    height: calc(100vh - 60px);
-    /* Adjust based on navbar height */
+    height: 100vh;
     background-color: #f5f5f5;
     overflow: hidden;
 }
