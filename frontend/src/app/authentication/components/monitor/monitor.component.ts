@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CctvService, ICctvs } from '../../../shareds/cctv.service';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
@@ -28,17 +28,26 @@ declare var $: any;
   templateUrl: './monitor.component.html',
   styleUrls: ['./monitor.component.css']
 })
-export class MonitorComponent implements OnInit {
+export class MonitorComponent implements OnInit, OnDestroy {
   AppUrl = AppURL;
   AuthUrl = AuthenticationURL;
   isLoading = true;
   floorRacks: FloorRack[] = [];
   selectedItem: ICctvs | null = null;
+  private intervalId: any;
 
   constructor(private cctvService: CctvService) { }
 
   ngOnInit(): void {
     this.loadData();
+    // Auto refresh every 60 seconds
+    this.intervalId = setInterval(() => this.loadData(), 60000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   openDetailModal(item: ICctvs): void {
