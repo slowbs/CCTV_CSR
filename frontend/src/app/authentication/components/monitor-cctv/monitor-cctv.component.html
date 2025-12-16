@@ -1,66 +1,173 @@
-<div class="monitor-container">
-    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
-        <div>
-            <h2 class="text-light mb-0"><i class="bi bi-camera-video me-2"></i>CCTV Map View</h2>
-            <small class="text-secondary">Overview of all CCTV cameras by location</small>
-        </div>
-        <div class="d-flex align-items-center">
-            <span class="text-secondary small me-3">
-                <i class="bi bi-arrow-repeat me-1"></i> Auto-refresh: 60s
-            </span>
-            <button class="btn btn-outline-light btn-sm" (click)="loadData()">
-                <i class="bi bi-arrow-clockwise"></i> Refresh Now
-            </button>
-        </div>
-    </div>
+<div class="monitor-map-container">
 
-    <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="height: 300px;">
-        <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
-            <span class="visually-hidden">Loading...</span>
+    <!-- LEFT: Map List -->
+    <div class="sidebar-maps">
+        <div class="sidebar-header">
+            <h5 class="mb-0"><i class="bi bi-map me-2"></i>Maps</h5>
+            <span class="badge bg-accent">{{ maps.length }}</span>
         </div>
-        <span class="ms-3 text-light">Loading CCTV data...</span>
-    </div>
-
-    <div *ngIf="!isLoading">
-        <div *ngFor="let floor of floors" class="floor-section bounce-in">
-            <div class="floor-header">
-                <div class="floor-title">
-                    <i class="bi bi-layers-fill me-2"></i> {{ floor.floor_name }}
+        <div class="map-list" *ngIf="maps.length > 0; else noMaps">
+            <div class="map-item" *ngFor="let map of maps" [class.active]="selectedMap?.id === map.id"
+                (click)="selectMap(map)">
+                <i class="bi bi-pin-map-fill map-icon me-2"></i>
+                <div class="flex-grow-1">
+                    <div class="fw-bold text-truncate" style="max-width: 150px;">{{ map.name }}</div>
+                    <small class="text-muted">{{ map.cctv_count || 0 }} cameras</small>
                 </div>
-                <div class="floor-stats">
-                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Online: {{ floor.onlineCount
-                        }}</span>
-                    <span class="badge bg-danger" *ngIf="floor.offlineCount > 0"><i
-                            class="bi bi-x-circle me-1"></i>Offline: {{ floor.offlineCount }}</span>
-                    <span class="badge bg-warning text-dark" *ngIf="floor.maCount > 0"><i
-                            class="bi bi-cone-striped me-1"></i>MA: {{ floor.maCount }}</span>
-                    <span class="badge bg-secondary">Total: {{ floor.items.length }}</span>
+                <div class="map-status-indicators">
+                    <div class="status-dot status-offline" *ngIf="hasMapOffline(map.id)"></div>
+                    <div class="status-dot status-ma" *ngIf="hasMapMa(map.id)"></div>
+                    <div class="status-dot status-online" *ngIf="!hasMapOffline(map.id) && !hasMapMa(map.id)"></div>
                 </div>
             </div>
+        </div>
+        <ng-template #noMaps>
+            <div class="empty-state">
+                <i class="bi bi-map fs-1 mb-2"></i>
+                <p>No maps available.<br>Contact admin.</p>
+            </div>
+        </ng-template>
+    </div>
 
-            <div class="camera-grid">
-                <div *ngFor="let cam of floor.items" class="camera-item"
-                    [title]="cam.durable_name + ' (' + cam.ip + ')'" (click)="openDetailModal(cam)">
+    <!-- CENTER: Map View -->
+    <div class="main-canvas">
+        <div class="canvas-toolbar">
+            <div class="status-summary-bar">
+                <div class="summary-stat total">
+                    <i class="bi bi-camera-video-fill"></i>
+                    <span class="stat-value">{{ getTotalCount() }}</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="summary-stat online">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span class="stat-value">{{ getTotalOnlineCount() }}</span>
+                    <span class="stat-label">Online</span>
+                </div>
+                <div class="summary-stat offline">
+                    <i class="bi bi-x-circle-fill"></i>
+                    <span class="stat-value">{{ getTotalOfflineCount() }}</span>
+                    <span class="stat-label">Offline</span>
+                </div>
+                <div class="summary-stat ma">
+                    <i class="bi bi-cone-striped"></i>
+                    <span class="stat-value">{{ getTotalMaCount() }}</span>
+                    <span class="stat-label">MA</span>
+                </div>
+            </div>
+        </div>
 
-                    <div class="status-dot" [ngClass]="{
-                            'bg-online': cam.ping === '0' && cam.maintenance_mode != 1,
-                            'bg-offline': cam.ping !== '0' && cam.maintenance_mode != 1,
-                            'bg-ma': cam.maintenance_mode == 1
-                         }">
+        <div class="canvas-viewport">
+            <div class="map-container" *ngIf="selectedMap; else selectMapPrompt" #mapContainer>
+                <img [src]="selectedMap.image_url" class="map-image" alt="Floor Plan">
+
+                <!-- Markers with status -->
+                <div *ngFor="let cam of getMapCameras()" class="cctv-marker" [style.left.%]="cam.map_x"
+                    [style.top.%]="cam.map_y" [ngClass]="{
+                        'marker-online': cam.ping === '0' && cam.maintenance_mode != 1,
+                        'marker-offline': cam.ping !== '0' && cam.maintenance_mode != 1,
+                        'marker-ma': cam.maintenance_mode == 1
+                    }" (click)="openDetailModal(cam)">
+                    <i class="bi bi-camera-video-fill"></i>
+                    <div class="marker-tooltip">
+                        <div class="fw-bold">{{ cam.location || cam.durable_name }}</div>
+                        <div class="small">{{ cam.floor }} - {{ cam.monitor }}</div>
+                        <div class="small text-accent">{{ cam.ip }}</div>
+                        <div class="status-badge mt-1" [ngClass]="{
+                            'badge-online': cam.ping === '0' && cam.maintenance_mode != 1,
+                            'badge-offline': cam.ping !== '0' && cam.maintenance_mode != 1,
+                            'badge-ma': cam.maintenance_mode == 1
+                        }">
+                            {{ cam.maintenance_mode == 1 ? 'MA Mode' : (cam.ping === '0' ? 'Online' : 'Offline') }}
+                        </div>
                     </div>
-
-                    <i class="bi bi-camera-video-fill camera-icon" [ngClass]="{
-                            'status-online': cam.ping === '0' && cam.maintenance_mode != 1,
-                            'status-offline': cam.ping !== '0' && cam.maintenance_mode != 1,
-                            'status-ma': cam.maintenance_mode == 1
-                       }">
-                    </i>
-                    <span class="camera-name">{{ cam.durable_name }}</span>
-                    <span class="camera-name text-muted" style="font-size: 0.7rem;">{{ cam.ip }}</span>
                 </div>
             </div>
+
+            <ng-template #selectMapPrompt>
+                <div class="empty-state-center">
+                    <i class="bi bi-pin-map fs-1 mb-3"></i>
+                    <h4>Select a Map</h4>
+                    <p class="text-muted">Choose a map from the left panel to view cameras.</p>
+                </div>
+            </ng-template>
         </div>
     </div>
+
+    <!-- RIGHT: Camera List -->
+    <div class="sidebar-cameras">
+        <div class="sidebar-header">
+            <h5 class="mb-0"><i class="bi bi-camera-video me-2"></i>{{ selectedMap ? selectedMap.name : 'Cameras' }}
+            </h5>
+            <span class="badge bg-accent" *ngIf="selectedMap">{{ getMapCameras().length }}</span>
+        </div>
+
+        <!-- Status Summary -->
+        <div class="status-summary" *ngIf="selectedMap">
+            <div class="summary-item online">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>{{ getOnlineCount() }}</span>
+            </div>
+            <div class="summary-item offline">
+                <i class="bi bi-x-circle-fill"></i>
+                <span>{{ getOfflineCount() }}</span>
+            </div>
+            <div class="summary-item ma">
+                <i class="bi bi-cone-striped"></i>
+                <span>{{ getMaCount() }}</span>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="filter-bar" *ngIf="selectedMap">
+            <input type="text" class="form-control form-control-sm" placeholder="Search camera..."
+                [(ngModel)]="searchText" (keyup)="filterCameras()">
+        </div>
+
+        <!-- Camera List -->
+        <div class="camera-scroller" *ngIf="selectedMap; else selectMapFirst">
+            <div *ngFor="let cam of filteredCameras" class="camera-card" (click)="openDetailModal(cam)" [ngClass]="{
+                    'card-online': cam.ping === '0' && cam.maintenance_mode != 1,
+                    'card-offline': cam.ping !== '0' && cam.maintenance_mode != 1,
+                    'card-ma': cam.maintenance_mode == 1
+                }">
+                <div class="camera-status-dot" [ngClass]="{
+                    'dot-online': cam.ping === '0' && cam.maintenance_mode != 1,
+                    'dot-offline': cam.ping !== '0' && cam.maintenance_mode != 1,
+                    'dot-ma': cam.maintenance_mode == 1
+                }"></div>
+                <div class="camera-info">
+                    <div class="fw-bold text-truncate" [title]="cam.durable_name">{{ cam.location || cam.durable_name }}
+                    </div>
+                    <div class="small text-muted">{{ cam.floor }} - {{ cam.monitor }}</div>
+                    <div class="small text-accent">{{ cam.ip }}</div>
+                </div>
+                <div class="camera-status-badge" [ngClass]="{
+                    'status-online': cam.ping === '0' && cam.maintenance_mode != 1,
+                    'status-offline': cam.ping !== '0' && cam.maintenance_mode != 1,
+                    'status-ma': cam.maintenance_mode == 1
+                }">
+                    <i class="bi" [ngClass]="{
+                        'bi-check-lg': cam.ping === '0' && cam.maintenance_mode != 1,
+                        'bi-x-lg': cam.ping !== '0' && cam.maintenance_mode != 1,
+                        'bi-cone-striped': cam.maintenance_mode == 1
+                    }"></i>
+                </div>
+            </div>
+
+            <div *ngIf="filteredCameras.length === 0 && searchText" class="empty-state mt-4">
+                <i class="bi bi-search fs-3 mb-2"></i>
+                <p class="small">No cameras found.</p>
+            </div>
+        </div>
+
+        <ng-template #selectMapFirst>
+            <div class="empty-state">
+                <i class="bi bi-arrow-left-circle fs-1 mb-2"></i>
+                <p>Select a map first<br>to see cameras.</p>
+            </div>
+        </ng-template>
+    </div>
+
 </div>
 
 <!-- Detail Modal -->
