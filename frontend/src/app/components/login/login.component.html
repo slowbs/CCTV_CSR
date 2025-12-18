@@ -8,28 +8,52 @@
     <div class="login-box">
         <form class="login-form" action="index.html" (submit)="onSubmit()" [noValidate]="false">
             <h3 class="login-head"><i class="bi bi-person me-2"></i>SIGN IN</h3>
+
+
             <div class="mb-3">
                 <label class="form-label">USERNAME</label>
-                <input class="form-control" type="text" [(ngModel)]="model.user_name" name="user_name" required placeholder="Username" autofocus>
+                <input class="form-control" type="text" [(ngModel)]="model.user_name" name="user_name" required
+                    placeholder="Username" autofocus>
             </div>
             <div class="mb-3">
                 <label class="form-label">PASSWORD</label>
-                <input class="form-control" type="password" [(ngModel)]="model.password" name="password" required placeholder="Password">
+                <input class="form-control" type="password" [(ngModel)]="model.password" name="password" required
+                    placeholder="Password">
             </div>
             <div class="mb-3">
                 <div class="utility">
                     <div class="form-check">
                         <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox" [(ngModel)]="model.remember" name="remember" ><span class="label-text">Stay Signed
+                            <input class="form-check-input" type="checkbox" [(ngModel)]="model.remember" name="remember"
+                                [disabled]="isLoading"><span class="label-text">Stay Signed
                                 in</span>
                         </label>
                     </div>
                 </div>
             </div>
             <div class="mb-3 btn-container d-grid">
-                <button class="btn btn-primary btn-block"><i class="bi bi-box-arrow-in-right me-2 fs-5"></i>SIGN
-                    IN</button>
+                <button class="btn btn-primary btn-block" [disabled]="isLoading">
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"
+                        aria-hidden="true"></span>
+                    <i *ngIf="!isLoading" class="bi bi-box-arrow-in-right me-2 fs-5"></i>
+                    {{ isLoading ? 'กำลังเข้าสู่ระบบ...' : 'SIGN IN' }}
+                </button>
             </div>
         </form>
     </div>
 </section>
+
+<!-- Toast Notification -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div class="toast align-items-center text-bg-danger border-0" [class.show]="errorMessage" role="alert"
+        aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {{ errorMessage }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="errorMessage = ''"
+                aria-label="Close"></button>
+        </div>
+    </div>
+</div>

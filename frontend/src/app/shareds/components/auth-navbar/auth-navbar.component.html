@@ -13,28 +13,48 @@
         <!--Notification Menu-->
         <li class="dropdown"><a class="app-nav__item" href="#" data-bs-toggle="dropdown"
                 aria-label="Show notifications">
-                <!-- แสดง Badge แจ้งเตือนด้านหน้าไอคอน -->
-                <span *ngIf="notifyItems && notifyItems.length > 0" class="badge bg-danger me-1">
-                    {{ notifyItems.length }}
+                <!-- Badge Offline (สีแดง) -->
+                <span *ngIf="offlineItems && offlineItems.length > 0" class="badge bg-danger me-1" title="Offline">
+                    {{ offlineItems.length }}
+                </span>
+                <!-- Badge MA (สีเหลือง) -->
+                <span *ngIf="maItems && maItems.length > 0" class="badge bg-warning text-dark me-1" title="Maintenance">
+                    {{ maItems.length }}
                 </span>
                 <i class="bi bi-bell fs-5"></i>
             </a>
             <ul class="app-notification dropdown-menu dropdown-menu-right">
-                <li class="app-notification__title">มีการแจ้งเตือน {{ notifyItems?.length || 0 }} รายการ</li>
+                <li class="app-notification__title">
+                    แจ้งเตือน: Offline {{ offlineItems?.length || 0 }} | MA {{ maItems?.length || 0 }}
+                </li>
                 <div class="app-notification__content">
-                    <li *ngFor="let notify of notifyItems">
+                    <!-- Offline Items -->
+                    <li *ngIf="offlineItems.length > 0" class="px-3 py-1 bg-danger bg-opacity-10">
+                        <small class="text-danger fw-bold"><i class="bi bi-exclamation-circle me-1"></i>Offline</small>
+                    </li>
+                    <li *ngFor="let notify of offlineItems">
                         <a class="app-notification__item"
                             [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping, notify.type]">
+                            <i class="bi bi-circle-fill text-danger me-2" style="font-size: 8px;"></i>
                             {{notify.durable_no}}
                         </a>
                     </li>
-                    <!-- <li><a class="app-notification__item" href="javascript:;"><span class="app-notification__icon"><i
-                                    class="bi bi-cash fs-4 text-success"></i></span>
-                            <div>
-                                <p class="app-notification__message">Transaction complete</p>
-                                <p class="app-notification__meta">2 days ago</p>
-                            </div>
-                        </a></li> -->
+                    <!-- MA Items -->
+                    <li *ngIf="maItems.length > 0" class="px-3 py-1 bg-warning bg-opacity-10">
+                        <small class="text-warning fw-bold"><i class="bi bi-tools me-1"></i>Maintenance</small>
+                    </li>
+                    <li *ngFor="let notify of maItems">
+                        <a class="app-notification__item"
+                            [routerLink]="['/', AppUrl.Authen, AuthUrl.Log_Ping, notify.type]">
+                            <i class="bi bi-circle-fill text-warning me-2" style="font-size: 8px;"></i>
+                            {{notify.durable_no}}
+                        </a>
+                    </li>
+                    <!-- No notifications -->
+                    <li *ngIf="offlineItems.length === 0 && maItems.length === 0"
+                        class="px-3 py-2 text-center text-muted">
+                        <small>ไม่มีการแจ้งเตือน</small>
+                    </li>
                 </div>
                 <!-- <li class="app-notification__footer"><a href="#">See all notifications.</a></li> -->
             </ul>
@@ -45,7 +65,7 @@
         <!-- User Menu-->
         <li class="dropdown" dropdown>
             <a class="app-nav__item" [routerLink]="[]" dropdownToggle aria-label="Open Profile Menu">
-                <i class="fs-4">{{ profileItem?.user_name }}</i>
+                <i class="fs-4">{{ profileItem?.name }}</i>
             </a>
             <ul class="dropdown-menu settings-menu dropdown-menu-right" *dropdownMenu>
                 <li><a class="dropdown-item" [routerLink]="['/', AppUrl.Authen, AuthUrl.Dashboard]">

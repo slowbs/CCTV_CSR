@@ -17,7 +17,8 @@
 /* ========== MAIN LAYOUT ========== */
 .monitor-map-container {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
+    /* Fixed height เท่ากับ viewport */
     width: 100%;
     background-color: var(--bg-primary);
     overflow: hidden;
@@ -29,12 +30,15 @@
 /* ========== LEFT SIDEBAR - MAP LIST ========== */
 .sidebar-maps {
     width: 260px;
-    min-height: 100vh;
+    height: 100%;
+    /* ใช้ height แทน min-height */
     background: var(--bg-secondary);
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    overflow: hidden;
+    /* ป้องกัน content ล้น */
 }
 
 .sidebar-header {
@@ -395,12 +399,15 @@
 /* ========== RIGHT SIDEBAR - CAMERA LIST ========== */
 .sidebar-cameras {
     width: 320px;
-    min-height: 100vh;
+    height: 100%;
+    /* ใช้ height แทน min-height */
     background: var(--bg-secondary);
     border-left: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    overflow: hidden;
+    /* ป้องกัน content ล้น */
 }
 
 .status-summary {

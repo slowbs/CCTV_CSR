@@ -17,6 +17,8 @@ export class AuthNavbarComponent implements OnInit, OnDestroy {
   AuthUrl = AuthenticationURL
   public profileItem: ISession.Session | null = null;
   public notifyItems: any[] = [];
+  public offlineItems: any[] = [];  // Offline notifications (ping_checked = 1)
+  public maItems: any[] = [];       // MA Start notifications (ping_checked = 2)
   private refreshSubscription: Subscription;
 
   constructor(
@@ -49,8 +51,13 @@ export class AuthNavbarComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (notifyResult) => {
         // ผลลัพธ์ที่ได้ใน next นี้ คือผลลัพธ์จาก get_notify()
-        this.notifyItems = notifyResult.result;
-        console.log('Final Notify Result:', this.notifyItems);
+        this.notifyItems = notifyResult.result || [];
+
+        // แยกประเภท notification
+        this.offlineItems = this.notifyItems.filter(item => item.notify_type === 'offline');
+        this.maItems = this.notifyItems.filter(item => item.notify_type === 'ma');
+
+        console.log('Offline Items:', this.offlineItems.length, '| MA Items:', this.maItems.length);
       },
       error: (err) => {
         // error handler นี้จะดักจับ error จากทั้ง get_profile และ get_notify

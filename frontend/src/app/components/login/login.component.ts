@@ -14,6 +14,10 @@ export class LoginComponent {
   AppUrl = AppURL;
   AuthUrl = AuthenticationURL
 
+  // ตัวแปรสำหรับแสดง error message
+  errorMessage: string = '';
+  isLoading: boolean = false;
+
   constructor(
     private cctvService: CctvService,
     private router: Router
@@ -27,17 +31,26 @@ export class LoginComponent {
   };
 
   onSubmit() {
-    // this.cctvService.post_login(this.model)
+    // Reset error message และเริ่ม loading
+    this.errorMessage = '';
+    this.isLoading = true;
+
     this.cctvService.post_login(this.model)
       .subscribe({
         next: (result) => {
-          // console.log(result)
+          this.isLoading = false;
           this.router.navigate(['/', this.AppUrl.Authen, this.AuthUrl.Dashboard])
         },
         error: (excep) => {
-          // console.log(excep)
-          // alert(excep.error.message)
-          console.log(excep.error.message)
+          this.isLoading = false;
+          // แสดง error message จาก backend หรือ default message
+          this.errorMessage = excep.error?.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+          console.error('Login error:', excep);
+
+          // Auto-hide toast หลัง 4 วินาที
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 4000);
         }
       })
   }
