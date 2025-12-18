@@ -64,6 +64,7 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
     this.http.get<any>(this.backendUrl + 'maps').subscribe({
       next: (res) => {
         if (res.result) {
+          // Backend จัดเรียงตาม sort_order แล้ว
           this.maps = res.result;
           // Update selected map info if exists
           if (this.selectedMap) {

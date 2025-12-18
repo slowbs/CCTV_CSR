@@ -3,7 +3,7 @@
 $sql = "SELECT m.*, 
         (SELECT COUNT(*) FROM cctv c WHERE c.map_id = m.id AND c.type = '1') as cctv_count 
         FROM cctv_maps m 
-        ORDER BY m.id ASC";
+        ORDER BY m.sort_order ASC, m.id ASC";
 
 $query = mysqli_query($conn, $sql);
 $result = [];

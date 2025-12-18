@@ -26,8 +26,13 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
 // Get other data
 $name = $_POST['name'] ?? 'Untitled Map';
 
-$stmt = $conn->prepare("INSERT INTO cctv_maps (name, image) VALUES (?, ?)");
-$stmt->bind_param("ss", $name, $imageName);
+// Get max sort_order and add 1
+$maxOrderQuery = mysqli_query($conn, "SELECT IFNULL(MAX(sort_order), 0) + 1 as next_order FROM cctv_maps");
+$maxOrderResult = mysqli_fetch_assoc($maxOrderQuery);
+$sortOrder = $maxOrderResult['next_order'];
+
+$stmt = $conn->prepare("INSERT INTO cctv_maps (name, image, sort_order) VALUES (?, ?, ?)");
+$stmt->bind_param("ssi", $name, $imageName, $sortOrder);
 
 if ($stmt->execute()) {
     echo json_encode(['result' => true, 'message' => 'Map created successfully', 'id' => $stmt->insert_id]);

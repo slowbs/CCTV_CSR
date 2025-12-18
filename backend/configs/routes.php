@@ -78,4 +78,7 @@ $routes['/api/maps']['DELETE'] = 'maps/delete.php';
 
 // อัปเดตพิกัด CCTV
 $routes['/api/maps/cctv']['PUT'] = 'maps/update_cctv.php';
+
+// จัดลำดับ Maps
+$routes['/api/maps/reorder']['PUT'] = 'maps/reorder.php';
 ?>

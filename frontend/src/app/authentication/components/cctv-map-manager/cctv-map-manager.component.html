@@ -14,16 +14,32 @@
             </button>
         </div>
         <div class="map-list" *ngIf="maps.length > 0; else noMaps">
-            <div class="map-item" *ngFor="let map of maps" [class.active]="selectedMap?.id === map.id"
+            <div class="map-item" *ngFor="let map of maps; let i = index" [class.active]="selectedMap?.id === map.id"
                 (click)="selectMap(map)">
-                <!-- <img [src]="map.image_url || 'assets/img/alert.png'" class="map-thumb" alt="map"> -->
+                <!-- Reorder Buttons -->
+                <div class="reorder-buttons me-2">
+                    <button class="btn btn-xs btn-outline-secondary" (click)="moveMap(map, 'up', $event)"
+                        [disabled]="i === 0" title="เลื่อนขึ้น">
+                        <i class="bi bi-chevron-up"></i>
+                    </button>
+                    <button class="btn btn-xs btn-outline-secondary" (click)="moveMap(map, 'down', $event)"
+                        [disabled]="i === maps.length - 1" title="เลื่อนลง">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                </div>
                 <div class="flex-grow-1">
-                    <div class="fw-bold text-truncate" style="max-width: 150px;">{{ map.name }}</div>
+                    <div class="fw-bold text-truncate" style="max-width: 100px;">{{ map.name }}</div>
                     <small class="text-muted">{{ map.cctv_count || 0 }} cameras</small>
                 </div>
-                <button class="btn btn-sm btn-light text-danger" (click)="deleteMap(map, $event)">
-                    <i class="bi bi-trash"></i>
-                </button>
+                <div class="map-actions">
+                    <button class="btn btn-sm btn-light text-primary me-1" (click)="openEditMapModal(map, $event)"
+                        title="แก้ไขชื่อ">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-light text-danger" (click)="deleteMap(map, $event)" title="ลบแผนที่">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
             </div>
         </div>
         <ng-template #noMaps>
@@ -167,6 +183,58 @@
             <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary px-4" (click)="closeDeleteModal()">ยกเลิก</button>
                 <button type="button" class="btn btn-danger px-4" (click)="confirmUnmap()">นำออก</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Map Modal -->
+<div class="modal fade" id="editMapModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>แก้ไขชื่อแผนที่</h5>
+                <button type="button" class="btn-close btn-close-white" (click)="closeEditModal()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">ชื่อแผนที่</label>
+                    <input type="text" class="form-control" [(ngModel)]="editMapData.name" placeholder="กรอกชื่อแผนที่"
+                        autofocus>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeEditModal()">ยกเลิก</button>
+                <button type="button" class="btn btn-primary" (click)="updateMap()">บันทึก</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Map Confirmation Modal -->
+<div class="modal fade" id="deleteMapModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>ยืนยันการลบแผนที่</h5>
+                <button type="button" class="btn-close btn-close-white" (click)="closeDeleteMapModal()"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="fs-1 text-danger mb-3"><i class="bi bi-trash3"></i></div>
+                <h5 class="mb-2">ลบแผนที่นี้?</h5>
+                <p class="text-muted mb-2" *ngIf="mapToDelete">
+                    คุณต้องการลบแผนที่ <strong>"{{ mapToDelete.name }}"</strong> ใช่หรือไม่?
+                </p>
+                <div class="alert alert-warning py-2 mb-0" *ngIf="mapToDelete">
+                    <small><i class="bi bi-info-circle me-1"></i>กล้องที่อยู่ในแผนที่นี้ ({{ mapToDelete.cctv_count || 0
+                        }} ตัว) จะถูกนำออกจากแผนที่</small>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" (click)="closeDeleteMapModal()">ยกเลิก</button>
+                <button type="button" class="btn btn-danger px-4" (click)="confirmDeleteMap()">
+                    <i class="bi bi-trash me-1"></i>ลบแผนที่
+                </button>
             </div>
         </div>
     </div>

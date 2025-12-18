@@ -179,6 +179,43 @@ export class CctvService {
     this.refreshNavbarSubject.next();
   }
 
+  // ===== Maps Service =====
+
+  // ดึงข้อมูลแผนที่ทั้งหมด
+  get_maps(): Observable<any> {
+    return this.httpClient.get(this.backendURL + 'maps');
+  }
+
+  // สร้างแผนที่ใหม่
+  create_map(formData: FormData): Observable<any> {
+    return this.httpClient.post(this.backendURL + 'maps', formData);
+  }
+
+  // อัพเดตชื่อแผนที่
+  update_map(id: number, data: { name: string }): Observable<any> {
+    return this.httpClient.put(this.backendURL + 'maps', data, { params: { id: id.toString() } });
+  }
+
+  // ลบแผนที่
+  delete_map(id: number): Observable<any> {
+    return this.httpClient.delete(this.backendURL + 'maps', { params: { id: id.toString() } });
+  }
+
+  // จัดลำดับแผนที่ (move up/down)
+  reorder_map(mapId: number, direction: 'up' | 'down'): Observable<any> {
+    return this.httpClient.put(this.backendURL + 'maps/reorder', { map_id: mapId, direction: direction });
+  }
+
+  // อัพเดตตำแหน่งกล้องบนแผนที่
+  update_cctv_position(cctvId: any, mapId: number | null, x: number | null, y: number | null): Observable<any> {
+    return this.httpClient.put(this.backendURL + 'maps/cctv', {
+      cctv_id: cctvId,
+      map_id: mapId,
+      x: x,
+      y: y
+    });
+  }
+
 }
 
 // ส่วนของ User

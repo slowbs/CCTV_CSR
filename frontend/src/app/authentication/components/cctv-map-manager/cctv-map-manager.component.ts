@@ -27,6 +27,8 @@ export class CctvMapManagerComponent implements OnInit {
 
   selectedMap: IMap | null = null;
   newMapData = { name: '', imageFile: null as File | null };
+  editMapData: { id: number | null, name: string } = { id: null, name: '' };
+  mapToDelete: IMap | null = null;
   searchText: string = '';
   filterType: 'all' | 'unmapped' | 'current' = 'unmapped';
 
@@ -57,6 +59,7 @@ export class CctvMapManagerComponent implements OnInit {
   loadMaps() {
     this.http.get<any>(this.backendUrl + 'maps').subscribe(res => {
       if (res.result) {
+        // Backend จัดเรียงตาม sort_order แล้ว
         this.maps = res.result;
         // Update selected map info if exists
         if (this.selectedMap) {
@@ -64,6 +67,21 @@ export class CctvMapManagerComponent implements OnInit {
           if (updated) this.selectedMap = updated;
         }
       }
+    });
+  }
+
+  // Move map up/down
+  moveMap(map: IMap, direction: 'up' | 'down', event: Event) {
+    event.stopPropagation();
+
+    const payload = { map_id: map.id, direction: direction };
+    this.http.put<any>(this.backendUrl + 'maps/reorder', payload).subscribe({
+      next: (res) => {
+        if (res.result) {
+          this.loadMaps(); // Reload to get new order
+        }
+      },
+      error: (err) => console.error('Reorder error:', err)
     });
   }
 
@@ -172,16 +190,70 @@ export class CctvMapManagerComponent implements OnInit {
 
   deleteMap(map: IMap, event: Event) {
     event.stopPropagation();
-    if (!confirm(`Delete map "${map.name}"? Cameras will be unmapped.`)) return;
+    this.mapToDelete = map;
+    $('#deleteMapModal').modal('show');
+  }
 
-    this.http.delete<any>(this.backendUrl + 'maps', { params: { id: map.id.toString() } }).subscribe(res => {
+  closeDeleteMapModal() {
+    $('#deleteMapModal').modal('hide');
+    this.mapToDelete = null;
+  }
+
+  confirmDeleteMap() {
+    if (!this.mapToDelete) return;
+
+    const mapId = this.mapToDelete.id;
+    this.http.delete<any>(this.backendUrl + 'maps', { params: { id: mapId.toString() } }).subscribe(res => {
       if (res.result) {
         this.loadMaps();
-        if (this.selectedMap?.id === map.id) {
+        if (this.selectedMap?.id === mapId) {
           this.selectedMap = null;
         }
         // Reload cameras to refresh map_id status
         this.loadCameras();
+      }
+      this.closeDeleteMapModal();
+    });
+  }
+
+  // --- Edit Map ---
+  openEditMapModal(map: IMap, event: Event) {
+    event.stopPropagation();
+    this.editMapData = { id: map.id, name: map.name };
+    $('#editMapModal').modal('show');
+  }
+
+  closeEditModal() {
+    $('#editMapModal').modal('hide');
+    this.editMapData = { id: null, name: '' };
+  }
+
+  updateMap() {
+    if (!this.editMapData.id || !this.editMapData.name.trim()) {
+      alert('กรุณาใส่ชื่อแผนที่');
+      return;
+    }
+
+    const payload = { name: this.editMapData.name.trim() };
+
+    this.http.put<any>(this.backendUrl + 'maps', payload, {
+      params: { id: this.editMapData.id.toString() }
+    }).subscribe({
+      next: (res) => {
+        if (res.result) {
+          this.loadMaps();
+          this.closeEditModal();
+          // Update selected map name if editing current map
+          if (this.selectedMap?.id === this.editMapData.id) {
+            this.selectedMap.name = this.editMapData.name.trim();
+          }
+        } else {
+          alert('Error: ' + res.message);
+        }
+      },
+      error: (err) => {
+        console.error('Update map error:', err);
+        alert('เกิดข้อผิดพลาดในการอัพเดต');
       }
     });
   }

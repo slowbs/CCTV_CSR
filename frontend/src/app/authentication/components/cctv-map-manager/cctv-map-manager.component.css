@@ -52,6 +52,29 @@
     color: #1976d2;
 }
 
+/* Reorder Buttons */
+.reorder-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.reorder-buttons .btn {
+    padding: 2px 4px;
+    font-size: 10px;
+    line-height: 1;
+}
+
+.reorder-buttons .btn:disabled {
+    opacity: 0.3;
+}
+
+/* Map Actions */
+.map-actions {
+    display: flex;
+    gap: 2px;
+}
+
 .map-thumb {
     width: 40px;
     height: 40px;
