@@ -7,6 +7,39 @@
 //                 'id' => $_GET['id']
 //             ], JSON_UNESCAPED_UNICODE);
 
+// Telegram Bot Configuration
+define('TELEGRAM_BOT_TOKEN', '7725475514:AAESQ0vZWNyphDaa630sQaaLgvl7dMkCvuo');
+define('TELEGRAM_CHAT_ID', '-5011497123');
+
+/**
+ * ส่งข้อความแจ้งเตือนไปยัง Telegram
+ * @param string $message ข้อความที่ต้องการส่ง (รองรับ HTML)
+ * @return bool สถานะการส่ง
+ */
+function sendTelegramMessage($message) {
+    $url = "https://api.telegram.org/bot" . TELEGRAM_BOT_TOKEN . "/sendMessage";
+    
+    $postData = [
+        'chat_id' => TELEGRAM_CHAT_ID,
+        'text' => $message,
+        'parse_mode' => 'HTML'
+    ];
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    return $httpCode == 200;
+}
+
 $data = json_decode(file_get_contents('php://input'));
 
 if (isset($_GET['id'])) {
@@ -50,8 +83,12 @@ if (isset($_GET['id'])) {
         //     ]));
         // }
 
-        // Fetch old data for audit logging
-        $old_data_query = "SELECT ip, location, monitor, status, floor, type, maintenance_mode FROM cctv WHERE id = ?";
+        // Fetch old data for audit logging and Telegram notification
+        $old_data_query = "SELECT c.ip, c.location, c.monitor, c.status, c.floor, c.type, c.maintenance_mode, 
+                           c.durable_no, c.durable_name, IFNULL(f.floor_name, '') as floor_name 
+                           FROM cctv c 
+                           LEFT JOIN floor f ON c.floor = f.floor_id 
+                           WHERE c.id = ?";
         $stmt_old = mysqli_prepare($conn, $old_data_query);
         mysqli_stmt_bind_param($stmt_old, 'i', $_GET['id']);
         mysqli_stmt_execute($stmt_old);
@@ -93,6 +130,17 @@ if (isset($_GET['id'])) {
              $stmt_log = mysqli_prepare($conn, $log_query);
              mysqli_stmt_bind_param($stmt_log, 'iii', $_GET['id'], $cctv_type, $ping_checked);
              mysqli_stmt_execute($stmt_log);
+
+             // ส่งแจ้งเตือน Telegram เมื่อเปิด/ปิด MA mode
+             $ma_status = ($maintenance_mode == 1) ? 'เปิด Maintenance Mode 🔧' : 'ปิด Maintenance Mode ✅';
+             $telegram_message = "<b>{$ma_status}</b>\n" .
+                                 "หมายเลขครุภัณฑ์: <b>{$old_row['durable_no']}</b>\n" .
+                                 "รายการ: {$old_row['durable_name']}\n" .
+                                 "อาคาร: {$old_row['floor_name']}\n" .
+                                 "สถานที่: {$old_row['location']}\n" .
+                                 "Monitor: {$old_row['monitor']}\n" .
+                                 "หมายเลข IP: {$old_row['ip']}";
+             sendTelegramMessage($telegram_message);
         }
 
 

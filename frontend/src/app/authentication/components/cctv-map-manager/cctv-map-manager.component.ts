@@ -71,13 +71,15 @@ export class CctvMapManagerComponent implements OnInit {
     // Type '1' = CCTV
     this.cctvService.get_cctv('1').subscribe((res: any) => {
       if (res && res.result) {
-        this.cameras = res.result.map((c: any) => ({
-          ...c,
-          // Convert string position to number for calculations
-          map_x: c.map_x ? parseFloat(c.map_x) : null,
-          map_y: c.map_y ? parseFloat(c.map_y) : null,
-          map_id: c.map_id ? parseInt(c.map_id) : null
-        }));
+        this.cameras = res.result
+          .filter((c: any) => c.ip && c.ip.trim() !== '') // Only cameras with IP
+          .map((c: any) => ({
+            ...c,
+            // Convert string position to number for calculations
+            map_x: c.map_x ? parseFloat(c.map_x) : null,
+            map_y: c.map_y ? parseFloat(c.map_y) : null,
+            map_id: c.map_id ? parseInt(c.map_id) : null
+          }));
         this.filterCameras();
       }
     });

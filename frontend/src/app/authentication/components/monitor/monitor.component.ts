@@ -86,6 +86,9 @@ export class MonitorComponent implements OnInit, OnDestroy {
       // Filter by status_id = '1' (Active)
       if (item.status_id !== '1') return;
 
+      // Skip if no IP (DVR cameras that can't be monitored)
+      if (!item.ip || item.ip.trim() === '') return;
+
       // Skip if no floor
       if (!item.floor) return;
 
