@@ -100,22 +100,40 @@ export class CctvComponent implements OnInit {
     Object.assign(this.CctvSerivce.updateModel, items);
   }
 
-  selectedStatusIds: string[] = ['1', '2', '3', '4']; // Default show all (ids from DB usually 1-4)
+  selectedStatusIds: string[] = ['1', '2', '3', '4']; // Default show all
+
+  // Connection filter options
+  connectionOptions = [
+    { key: 'online', label: 'Online', icon: 'bi-wifi' },
+    { key: 'offline', label: 'Offline', icon: 'bi-wifi-off' },
+    { key: 'ma', label: 'Maintenance', icon: 'bi-tools' }
+  ];
+  selectedConnectionTypes: string[] = ['online', 'offline', 'ma']; // Default show all
 
   onSearchItem() {
     let tempItems = this.allItems;
 
-    // 1. Filter by Status
+    // 1. Filter by Status (lifecycle)
     if (this.statusItems.length > 0 && this.selectedStatusIds.length > 0) {
       tempItems = tempItems.filter(item => {
-        // Handle Maintenance Mode (usually overrides status?) 
-        // If user wants to filter specifically for MA, we might need a separate checkbox.
-        // For now, let's filter by status_id.
         return item.status_id && this.selectedStatusIds.includes(item.status_id);
       });
     }
 
-    // 2. Filter by Text
+    // 2. Filter by Connection (operational state)
+    if (this.selectedConnectionTypes.length > 0 && this.selectedConnectionTypes.length < 3) {
+      tempItems = tempItems.filter(item => {
+        const isMA = item.maintenance_mode == 1;
+        const isOnline = item.ping === '0' && !isMA;
+        const isOffline = item.ping !== '0' && !isMA;
+
+        return (this.selectedConnectionTypes.includes('ma') && isMA) ||
+          (this.selectedConnectionTypes.includes('online') && isOnline) ||
+          (this.selectedConnectionTypes.includes('offline') && isOffline);
+      });
+    }
+
+    // 3. Filter by Text
     if (this.searchText) {
       const term = this.searchText.toLowerCase();
       tempItems = tempItems.filter(item => {
@@ -143,15 +161,25 @@ export class CctvComponent implements OnInit {
     this.onSearchItem();
   }
 
+  onConnectionChange(connectionKey: string, isChecked: boolean) {
+    if (isChecked) {
+      if (!this.selectedConnectionTypes.includes(connectionKey)) {
+        this.selectedConnectionTypes.push(connectionKey);
+      }
+    } else {
+      this.selectedConnectionTypes = this.selectedConnectionTypes.filter(k => k !== connectionKey);
+    }
+    this.onSearchItem();
+  }
+
   onResetSearch() {
     this.searchText = '';
-    // Reset status to all available from statusItems if loaded, or keep current?
-    // User expectation for "Reset" usually implies resetting filters too.
     if (this.statusItems.length > 0) {
       this.selectedStatusIds = this.statusItems.map(s => s.status_id!);
     } else {
       this.selectedStatusIds = ['1', '2', '3', '4'];
     }
+    this.selectedConnectionTypes = ['online', 'offline', 'ma'];
     this.cctvItems = this.allItems;
   }
 
@@ -164,4 +192,15 @@ export class CctvComponent implements OnInit {
     this.selectedStatusIds = [];
     this.onSearchItem();
   }
+
+  selectAllConnections() {
+    this.selectedConnectionTypes = this.connectionOptions.map(c => c.key);
+    this.onSearchItem();
+  }
+
+  clearAllConnections() {
+    this.selectedConnectionTypes = [];
+    this.onSearchItem();
+  }
 }
+

@@ -59,6 +59,45 @@
                         </ul>
                     </div>
 
+                    <!-- Connection Dropdown -->
+                    <div class="dropdown" dropdown>
+                        <button dropdownToggle type="button" class="btn btn-outline-info dropdown-toggle"
+                            aria-controls="connectionDropdown">
+                            <i class="bi bi-broadcast"></i> การเชื่อมต่อ
+                            <span class="badge bg-info ms-1">{{ selectedConnectionTypes.length }}/{{
+                                connectionOptions.length }}</span>
+                        </button>
+                        <ul *dropdownMenu class="dropdown-menu p-2" style="min-width: 200px;">
+                            <li *ngFor="let conn of connectionOptions" class="dropdown-item-checkbox">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" [id]="'conn-' + conn.key"
+                                        [checked]="selectedConnectionTypes.includes(conn.key)"
+                                        (change)="onConnectionChange(conn.key, $any($event.target).checked)">
+                                    <label class="form-check-label w-100" [for]="'conn-' + conn.key"
+                                        style="cursor: pointer;">
+                                        <i class="bi" [ngClass]="conn.icon"></i>
+                                        <span class="badge ms-1" [ngClass]="{
+                                            'bg-success': conn.key === 'online',
+                                            'bg-danger': conn.key === 'offline',
+                                            'bg-warning text-dark': conn.key === 'ma'
+                                        }">
+                                            {{ conn.label }}
+                                        </span>
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li class="d-flex gap-1 px-2">
+                                <button class="btn btn-sm btn-outline-info flex-fill" type="button"
+                                    (click)="selectAllConnections()">เลือกทั้งหมด</button>
+                                <button class="btn btn-sm btn-outline-secondary flex-fill" type="button"
+                                    (click)="clearAllConnections()">ยกเลิกทั้งหมด</button>
+                            </li>
+                        </ul>
+                    </div>
+
                     <!-- Search Bar -->
                     <div class="flex-grow-1">
                         <div class="input-group">
@@ -100,26 +139,26 @@
                                 <td>{{ item.location }}</td>
                                 <td>{{ item.monitor }}</td>
                                 <td class="text-center">
-                                    <ng-container *ngIf="item.maintenance_mode == 1; else normalStatus">
-                                        <span class="badge bg-secondary"><i class="bi bi-tools"></i> Maintenance</span>
-                                    </ng-container>
-                                    <ng-template #normalStatus>
-                                        <span class="badge" [ngClass]="{
-                                                  'bg-success': item.status_id === '1',
-                                                  'bg-warning': item.status_id === '2',
-                                                  'bg-danger': item.status_id === '3',
-                                                  'bg-secondary': item.status_id === '4'
-                                              }">
-                                            {{ item.status }}
-                                        </span>
-                                    </ng-template>
+                                    <span class="badge" [ngClass]="{
+                                              'bg-success': item.status_id === '1',
+                                              'bg-warning text-dark': item.status_id === '2',
+                                              'bg-danger': item.status_id === '3',
+                                              'bg-secondary': item.status_id === '4'
+                                          }">
+                                        {{ item.status }}
+                                    </span>
                                 </td>
 
                                 <td><a href="http://{{ item.ip }}" target="_blank">{{ item.ip }}</a></td>
                                 <td class="text-center">
-                                    <span class="badge" [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
-                                        {{ item.ping === '0' ? 'Online' : 'Offline' }}
-                                    </span>
+                                    <ng-container *ngIf="item.maintenance_mode == 1; else normalPing">
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-tools"></i> MA</span>
+                                    </ng-container>
+                                    <ng-template #normalPing>
+                                        <span class="badge" [ngClass]="item.ping === '0' ? 'bg-success' : 'bg-danger'">
+                                            {{ item.ping === '0' ? 'Online' : 'Offline' }}
+                                        </span>
+                                    </ng-template>
                                 </td>
                                 <td align="center">
                                     <a [routerLink]="[]" data-bs-toggle="modal" data-bs-target="#editCctvModal"
