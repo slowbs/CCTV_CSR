@@ -1,6 +1,15 @@
 <div class="monitor-display-mode">
+    <div class="d-flex justify-content-end mb-3">
+        <div class="form-check form-switch custom-switch">
+            <input class="form-check-input" type="checkbox" id="rackToggle" [checked]="showDisconnected"
+                (change)="toggleDisconnected()">
+            <label class="form-check-label text-warning small" for="rackToggle">
+                Show Disconnected
+            </label>
+        </div>
+    </div>
     <div class="monitor-grid">
-        <div class="rack-cabinet" *ngFor="let rack of floorRacks" [ngClass]="{
+        <div class="rack-cabinet" *ngFor="let rack of floorRacks; trackBy: trackByRack" [ngClass]="{
                 'rack-42u': rack.floor_name.includes('3') || rack.floor_name.includes('Server'),
                 'rack-12u': rack.floor_name.includes('G') || rack.floor_name.includes('Ground'),
                 'rack-8u': !rack.floor_name.includes('3') && !rack.floor_name.includes('Server') && !rack.floor_name.includes('G') && !rack.floor_name.includes('Ground'),
@@ -30,9 +39,12 @@
                             </div>
                             <div class="slot-status">
                                 <div class="status-dot-group">
-                                    <div *ngFor="let item of slot.items" class="status-dot"
-                                        [ngClass]="{'online': item.ping === '0', 'offline': item.ping !== '0', 'maintenance': item.maintenance_mode == 1}"
-                                        (click)="openDetailModal(item)">
+                                    <div *ngFor="let item of slot.items" class="status-dot" [ngClass]="{
+                                            'online': item.ping === '0' && item.maintenance_mode != 1 && item.status_id == '1', 
+                                            'offline': item.ping !== '0' && item.maintenance_mode != 1 && item.status_id == '1', 
+                                            'maintenance': item.maintenance_mode == 1,
+                                            'disconnected': item.status_id == '2'
+                                        }" (click)="openDetailModal(item)">
                                     </div>
                                 </div>
                             </div>
@@ -83,12 +95,13 @@
                 <div class="row mb-2">
                     <div class="col-4 text-secondary">Status:</div>
                     <div class="col-8">
-                        <span
-                            [ngClass]="{'text-success': selectedItem.ping === '0', 'text-danger': selectedItem.ping !== '0'}">
-                            {{ getPingStatus(selectedItem.ping) }}
+                        <span [ngClass]="{
+                                'text-success': selectedItem.ping === '0' && selectedItem.status_id == '1', 
+                                'text-danger': selectedItem.ping !== '0' && selectedItem.status_id == '1',
+                                'text-muted': selectedItem.status_id == '2'
+                            }">
+                            {{ getDeviceStatus(selectedItem) }}
                         </span>
-                        <span *ngIf="selectedItem.maintenance_mode == 1"
-                            class="badge badge-warning ml-2">Maintenance</span>
                     </div>
                 </div>
             </div>

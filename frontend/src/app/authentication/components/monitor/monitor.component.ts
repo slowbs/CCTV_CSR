@@ -35,6 +35,13 @@ export class MonitorComponent implements OnInit, OnDestroy {
   floorRacks: FloorRack[] = [];
   selectedItem: ICctvs | null = null;
   private intervalId: any;
+  allItems: ICctvs[] = []; // Store all loaded items
+  showDisconnected: boolean = false;
+
+  toggleDisconnected(): void {
+    this.showDisconnected = !this.showDisconnected;
+    this.groupDevices(this.allItems);
+  }
 
   constructor(private cctvService: CctvService) { }
 
@@ -65,13 +72,13 @@ export class MonitorComponent implements OnInit, OnDestroy {
     const promises = types.map(type => this.cctvService.get_cctv(type).toPromise());
 
     Promise.all(promises).then(results => {
-      let allItems: ICctvs[] = [];
+      this.allItems = [];
       results.forEach((res: any) => {
         if (res && res.result) {
-          allItems = allItems.concat(res.result);
+          this.allItems = this.allItems.concat(res.result);
         }
       });
-      this.groupDevices(allItems);
+      this.groupDevices(this.allItems);
       this.isLoading = false;
     }).catch(err => {
       console.error('Error loading data', err);
@@ -83,11 +90,19 @@ export class MonitorComponent implements OnInit, OnDestroy {
     const floors: { [key: string]: FloorRack } = {};
 
     items.forEach(item => {
-      // Filter by status_id = '1' (Active)
-      if (item.status_id !== '1') return;
+      // 1. Global Filter: Always hide Write-off (3, 4)
+      if (item.status_id === '3' || item.status_id === '4') return;
 
-      // Skip if no IP (DVR cameras that can't be monitored)
-      if (!item.ip || item.ip.trim() === '') return;
+      // 2. Toggle Filter: Hide Disconnected (2) if toggle is OFF
+      if (!this.showDisconnected && item.status_id === '2') return;
+
+      // 3. Skip if not Active (1) and not Disconnected (2) - Safety check
+      // Also skip Status 2 if we are hiding them (handled above)
+      if (item.status_id !== '1' && item.status_id !== '2') return;
+
+      // Skip if no IP ONLY for Active devices (1)
+      // Disconnected devices (2) might be spares (no IP), so we show them.
+      if (item.status_id === '1' && (!item.ip || item.ip.trim() === '')) return;
 
       // Skip if no floor
       if (!item.floor) return;
@@ -130,7 +145,8 @@ export class MonitorComponent implements OnInit, OnDestroy {
 
       rack.slots.forEach(slot => {
         slot.items.forEach(item => {
-          if (item.ping !== '0') {
+          // Count Offline: Only if Active (Status 1) and ping is not 0
+          if (item.ping !== '0' && item.status_id == '1') {
             offlineCount++;
           }
           if (item.maintenance_mode == 1) {
@@ -145,8 +161,13 @@ export class MonitorComponent implements OnInit, OnDestroy {
       rack.hasMaintenance = maintenanceCount > 0;
     });
 
-    // Sort by floor_order
-    this.floorRacks = Object.values(floors).sort((a, b) => a.floor_order - b.floor_order);
+    // Sort by floor_order (asc), then floor_name (asc) for stability
+    this.floorRacks = Object.values(floors).sort((a, b) => {
+      if (a.floor_order !== b.floor_order) {
+        return a.floor_order - b.floor_order;
+      }
+      return a.floor_name.localeCompare(b.floor_name);
+    });
 
     this.floorRacks.forEach(rack => {
       rack.slots.sort((a, b) => a.durable_name.localeCompare(b.durable_name));
@@ -159,5 +180,16 @@ export class MonitorComponent implements OnInit, OnDestroy {
 
   getPingStatus(ping: string | undefined): string {
     return ping === '0' ? 'Online' : 'Offline';
+  }
+
+
+  getDeviceStatus(item: ICctvs): string {
+    if (item.status_id == '2') return 'Disconnected';
+    if (item.maintenance_mode == 1) return 'MA Mode';
+    return item.ping === '0' ? 'Online' : 'Offline';
+  }
+
+  trackByRack(index: number, item: FloorRack): string {
+    return item.floor_id; // Unique identifier for the rack
   }
 }
