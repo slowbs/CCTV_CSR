@@ -154,4 +154,14 @@ export class CctvComponent implements OnInit {
     }
     this.cctvItems = this.allItems;
   }
+
+  selectAllStatuses() {
+    this.selectedStatusIds = this.statusItems.map(s => s.status_id!).filter(id => id);
+    this.onSearchItem();
+  }
+
+  clearAllStatuses() {
+    this.selectedStatusIds = [];
+    this.onSearchItem();
+  }
 }
