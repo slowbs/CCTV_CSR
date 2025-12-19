@@ -14,27 +14,33 @@
         <div class="col-md-12">
             <div class="tile">
                 <form (submit)="onSearchItem()">
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold me-2"><i class="bi bi-funnel"></i> กรองตามสถานะ:</label>
+                        <div class="form-check form-check-inline" *ngFor="let status of statusItems">
+                            <input class="form-check-input" type="checkbox" [id]="'status-' + status.status_id"
+                                [checked]="selectedStatusIds.includes(status.status_id!)"
+                                (change)="onStatusChange(status.status_id!, $any($event.target).checked)">
+                            <label class="form-check-label" [for]="'status-' + status.status_id"
+                                style="cursor: pointer;">
+                                <span class="badge" [ngClass]="{
+                                    'bg-success': status.status_id === '1',
+                                    'bg-warning': status.status_id === '2',
+                                    'bg-danger': status.status_id === '3',
+                                    'bg-secondary': status.status_id === '4'
+                                }">
+                                    {{ status.status_name }}
+                                </span>
+                            </label>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <div class="input-group">
-                            <div class="input-group-prepend" dropdown>
-                                <button id="button-animated" dropdownToggle type="button"
-                                    class="btn btn-primary dropdown-toggle" aria-controls="dropdown-animated">
-                                    {{ searchType.value }} <span class="caret"></span>
-                                </button>
-                                <ul id="dropdown-animated" *dropdownMenu class="dropdown-menu" role="menu"
-                                    aria-labelledby="button-animated">
-                                    <li *ngFor="let item of searchTypeItem" role="menuitem">
-                                        <a [routerLink]="[]" class="dropdown-item" (click)="searchType = item">{{
-                                            item.value
-                                            }}</a>
-                                    </li>
-                                </ul>
-                            </div>
                             <input type="text" class="form-control" [(ngModel)]="searchText" (input)="onSearchItem()"
-                                placeholder="ค้นหาข้อมูล" name="searchText">
+                                placeholder="ค้นหา... (เลขครุภัณฑ์, ชื่อ, ยี่ห้อ, IP, สถานที่)" name="searchText">
                             <div class="input-group-append">
-                                <button class="btn btn-primary" type="submit" id="button-addon1"><i
-                                        class="bi bi-search"></i></button>
+                                <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                                <button class="btn btn-danger ml-1" type="button" (click)="onResetSearch()"><i
+                                        class="bi bi-x-circle"></i> Reset</button>
                             </div>
                         </div>
                     </div>

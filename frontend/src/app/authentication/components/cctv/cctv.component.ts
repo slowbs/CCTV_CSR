@@ -13,6 +13,7 @@ declare const $: any;
 export class CctvComponent implements OnInit {
 
   public cctvItems: ICctvs[] = [];
+  public allItems: ICctvs[] = []; // Store original data for filtering
   public model: ICctvs;
   public statusItems: IStatus[] = [];
   public floorItems: IFloor[] = [];
@@ -23,16 +24,9 @@ export class CctvComponent implements OnInit {
   Title = 'รายงานข้อมูล';
 
   searchText: string = '';
-  searchType: ICctvsSearchKey;
-  searchTypeItem: ICctvsSearchKey[] = [
-    { key: 'durable_no', value: 'เลขครุภัณฑ์' },
-    { key: 'durable_name', value: 'ชื่อครุภัณฑ์' },
-    { key: 'ip', value: 'หมายเลข IP' }
-  ];
 
   constructor(private CctvSerivce: CctvService, private route: ActivatedRoute) {
     this.model = this.CctvSerivce.updateModel;
-    this.searchType = this.searchTypeItem[0];
   }
 
   ngOnInit() {
@@ -50,7 +44,6 @@ export class CctvComponent implements OnInit {
       if (this.cctvType) {
         this.get_Cctv(this.cctvType); // เรียกใช้ get_Cctv พร้อมพารามิเตอร์
         this.searchText = '';
-        this.searchType = this.searchTypeItem[0];
         this.Title = titles[this.cctvType] || 'รายงานข้อมูล';
       }
     });
@@ -58,22 +51,16 @@ export class CctvComponent implements OnInit {
     this.getFloor(); //ดึงค่าชั้นมาแสดง
   }
 
-  get_Cctv(type?: string, options?: ICctvsSearch) {
+  get_Cctv(type?: string) {
     this.CctvSerivce.get_cctv(type) // ส่ง type ไปยัง service
       .subscribe(result => {
         if (result && result['result']) { // ตรวจสอบว่า result มีข้อมูล
-          if (options) {
-            this.cctvItems = result['result']
-              .filter(item => item[options.searchType]?.toString().toLowerCase()
-                .includes(options.searchText.toLowerCase()));
-            this.isLoading = false;
-          } else {
-            this.cctvItems = result['result'];
-            this.isLoading = false;
-          }
+          this.allItems = result['result'];
+          this.cctvItems = this.allItems; // Init display items
+          this.isLoading = false;
         } else {
           this.cctvItems = []; // หากไม่มีผลลัพธ์ให้กำหนดให้เป็นอาร์เรย์ว่าง
-
+          this.allItems = [];
         }
       });
   }
@@ -82,6 +69,8 @@ export class CctvComponent implements OnInit {
     return this.CctvSerivce.get_status()
       .subscribe(result => {
         this.statusItems = result['result'] || []; // ป้องกัน error หาก result เป็น null
+        // Default select all statuses
+        this.selectedStatusIds = this.statusItems.map(s => s.status_id!).filter(id => id);
       });
   }
 
@@ -111,23 +100,58 @@ export class CctvComponent implements OnInit {
     Object.assign(this.CctvSerivce.updateModel, items);
   }
 
+  selectedStatusIds: string[] = ['1', '2', '3', '4']; // Default show all (ids from DB usually 1-4)
+
   onSearchItem() {
-    this.get_Cctv(this.cctvType, { // ส่ง type ที่เก็บไว้
-      searchText: this.searchText,
-      searchType: this.searchType.key
-    });
+    let tempItems = this.allItems;
+
+    // 1. Filter by Status
+    if (this.statusItems.length > 0 && this.selectedStatusIds.length > 0) {
+      tempItems = tempItems.filter(item => {
+        // Handle Maintenance Mode (usually overrides status?) 
+        // If user wants to filter specifically for MA, we might need a separate checkbox.
+        // For now, let's filter by status_id.
+        return item.status_id && this.selectedStatusIds.includes(item.status_id);
+      });
+    }
+
+    // 2. Filter by Text
+    if (this.searchText) {
+      const term = this.searchText.toLowerCase();
+      tempItems = tempItems.filter(item => {
+        return (item.durable_no && item.durable_no.toLowerCase().includes(term)) ||
+          (item.durable_name && item.durable_name.toLowerCase().includes(term)) ||
+          (item.brand && item.brand.toLowerCase().includes(term)) ||
+          (item.model && item.model.toLowerCase().includes(term)) ||
+          (item.location && item.location.toLowerCase().includes(term)) ||
+          (item.floor && item.floor.toLowerCase().includes(term)) ||
+          (item.ip && item.ip.toLowerCase().includes(term));
+      });
+    }
+
+    this.cctvItems = tempItems;
   }
 
+  onStatusChange(statusId: string, isChecked: boolean) {
+    if (isChecked) {
+      if (!this.selectedStatusIds.includes(statusId)) {
+        this.selectedStatusIds.push(statusId);
+      }
+    } else {
+      this.selectedStatusIds = this.selectedStatusIds.filter(id => id !== statusId);
+    }
+    this.onSearchItem();
+  }
 
-}
-
-// ส่วนสำหรับการค้นหา
-export interface ICctvsSearchKey {
-  key: string;
-  value: string;
-}
-
-export interface ICctvsSearch {
-  searchText: string;
-  searchType: string;
+  onResetSearch() {
+    this.searchText = '';
+    // Reset status to all available from statusItems if loaded, or keep current?
+    // User expectation for "Reset" usually implies resetting filters too.
+    if (this.statusItems.length > 0) {
+      this.selectedStatusIds = this.statusItems.map(s => s.status_id!);
+    } else {
+      this.selectedStatusIds = ['1', '2', '3', '4'];
+    }
+    this.cctvItems = this.allItems;
+  }
 }
