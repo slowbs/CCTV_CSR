@@ -47,7 +47,7 @@ if (isset($_GET['user_id'])) {
         $stmt = mysqli_prepare($conn, $query);
         mysqli_stmt_bind_param(
             $stmt,
-            'sssis',
+            'ssssi',
             $data->user_name,
             $data->name,
             $data->status,
