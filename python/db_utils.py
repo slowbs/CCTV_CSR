@@ -15,7 +15,7 @@ def get_cctv_data():
     try:
         cursor.execute("""
             SELECT cctv.id, cctv.durable_no, cctv.ip, cctv.ping, cctv.count_ping, cctv.type, 
-                   cctv.durable_name, cctv.location, cctv.monitor, floor.floor_name, cctv.maintenance_mode
+                   cctv.durable_name, cctv.location, cctv.monitor, floor.floor_name, cctv.maintenance_mode, cctv.status
             FROM cctv 
             JOIN floor ON cctv.floor = floor.floor_id
         """)

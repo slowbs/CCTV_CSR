@@ -110,6 +110,11 @@ def ping_and_check(data, log_callback):
                 data['maintenance_mode'] = 0 # Update data for this run
                 # After disabling, continue to the normal ping process below
 
+    # Skip ping if Status is not Active (1 = ใช้งาน)
+    cctv_status = data.get('status', '1')
+    if str(cctv_status) != '1':
+        return data, f"Skipped (Status: {cctv_status})", False, False, True, durable_no, ip, ping_value, ping_value
+
     # Skip ping if IP is empty
     if not ip:
         return data, "Skipped (IP is Empty)", False, False, True, durable_no, ip, "", ping_value

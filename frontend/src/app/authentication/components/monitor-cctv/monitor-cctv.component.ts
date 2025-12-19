@@ -84,6 +84,7 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
         if (res && res.result) {
           this.cameras = res.result
             .filter((c: any) => c.ip && c.ip.trim() !== '') // Only cameras with IP
+            .filter((c: any) => c.status_id !== '3' && c.status_id !== '4') // Exclude Write-off
             .map((c: any) => ({
               ...c,
               map_x: c.map_x ? parseFloat(c.map_x) : null,
@@ -109,7 +110,15 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
 
   getMapCameras(): ICctvs[] {
     if (!this.selectedMap) return [];
-    return this.cameras.filter(c => c.map_id == this.selectedMap!.id);
+    return this.cameras.filter(c => {
+      if (c.map_id != this.selectedMap!.id) return false;
+
+      // Status Logic
+      if (c.status_id == '1') return true;
+      if (this.showDisconnected && c.status_id == '2') return true;
+
+      return false;
+    });
   }
 
   // Get cameras for a specific map (by map id)
@@ -134,8 +143,17 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
     return 'online';
   }
 
+  showDisconnected: boolean = false;
+
+  toggleDisconnected(): void {
+    this.showDisconnected = !this.showDisconnected;
+    this.filterCameras();
+  }
+
   filterCameras(): void {
     const mapCameras = this.getMapCameras();
+    // Logic moved to getMapCameras for consistency between Map and List
+
     if (!this.searchText) {
       this.filteredCameras = mapCameras;
       return;
@@ -157,28 +175,36 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
   }
 
   getTotalOnlineCount(): number {
-    return this.cameras.filter(c => c.ping === '0' && c.maintenance_mode != 1).length;
+    return this.cameras.filter(c => c.ping === '0' && c.maintenance_mode != 1 && c.status_id == '1').length;
   }
 
   getTotalOfflineCount(): number {
-    return this.cameras.filter(c => c.ping !== '0' && c.maintenance_mode != 1).length;
+    return this.cameras.filter(c => c.ping !== '0' && c.maintenance_mode != 1 && c.status_id == '1').length;
   }
 
   getTotalMaCount(): number {
     return this.cameras.filter(c => c.maintenance_mode == 1).length;
   }
 
+  getTotalDisconnectedCount(): number {
+    return this.cameras.filter(c => c.status_id == '2').length;
+  }
+
   // Status Count Helpers - Selected Map (เฉพาะ map ที่เลือก)
   getOnlineCount(): number {
-    return this.getMapCameras().filter(c => c.ping === '0' && c.maintenance_mode != 1).length;
+    return this.getMapCameras().filter(c => c.ping === '0' && c.maintenance_mode != 1 && c.status_id == '1').length;
   }
 
   getOfflineCount(): number {
-    return this.getMapCameras().filter(c => c.ping !== '0' && c.maintenance_mode != 1).length;
+    return this.getMapCameras().filter(c => c.ping !== '0' && c.maintenance_mode != 1 && c.status_id == '1').length;
   }
 
   getMaCount(): number {
     return this.getMapCameras().filter(c => c.maintenance_mode == 1).length;
+  }
+
+  getDisconnectedCount(): number {
+    return this.getMapCameras().filter(c => c.status_id == '2').length;
   }
 
   // Modal
