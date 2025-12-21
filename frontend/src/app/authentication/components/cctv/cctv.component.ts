@@ -56,7 +56,7 @@ export class CctvComponent implements OnInit {
       .subscribe(result => {
         if (result && result['result']) { // ตรวจสอบว่า result มีข้อมูล
           this.allItems = result['result'];
-          this.cctvItems = this.allItems; // Init display items
+          this.onSearchItem(); // Apply existing filters
           this.isLoading = false;
         } else {
           this.cctvItems = []; // หากไม่มีผลลัพธ์ให้กำหนดให้เป็นอาร์เรย์ว่าง
