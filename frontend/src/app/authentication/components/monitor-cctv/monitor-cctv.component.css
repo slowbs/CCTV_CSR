@@ -140,6 +140,11 @@
     box-shadow: 0 0 6px var(--ma-color);
 }
 
+.map-status-indicators .status-dot.status-disconnected {
+    background-color: var(--disconnected-color);
+    box-shadow: 0 0 4px var(--disconnected-color);
+}
+
 @keyframes pulse-indicator {
 
     0%,

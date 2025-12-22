@@ -17,7 +17,9 @@
                 <div class="map-status-indicators">
                     <div class="status-dot status-offline" *ngIf="hasMapOffline(map.id)"></div>
                     <div class="status-dot status-ma" *ngIf="hasMapMa(map.id)"></div>
-                    <div class="status-dot status-online" *ngIf="!hasMapOffline(map.id) && !hasMapMa(map.id)"></div>
+                    <div class="status-dot status-disconnected" *ngIf="hasMapDisconnected(map.id)"></div>
+                    <div class="status-dot status-online"
+                        *ngIf="!hasMapOffline(map.id) && !hasMapMa(map.id) && !hasMapDisconnected(map.id)"></div>
                 </div>
             </div>
         </div>

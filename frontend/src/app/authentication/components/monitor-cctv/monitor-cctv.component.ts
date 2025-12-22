@@ -126,14 +126,19 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
     return this.cameras.filter(c => c.map_id == mapId);
   }
 
-  // Check if map has offline cameras
+  // Check if map has offline cameras (Active status only)
   hasMapOffline(mapId: number): boolean {
-    return this.getCamerasByMapId(mapId).some(c => c.ping !== '0' && c.maintenance_mode != 1);
+    return this.getCamerasByMapId(mapId).some(c => c.ping !== '0' && c.maintenance_mode != 1 && c.status_id == '1');
   }
 
-  // Check if map has MA cameras
+  // Check if map has MA cameras (Active status only)
   hasMapMa(mapId: number): boolean {
-    return this.getCamerasByMapId(mapId).some(c => c.maintenance_mode == 1);
+    return this.getCamerasByMapId(mapId).some(c => c.maintenance_mode == 1 && c.status_id == '1');
+  }
+
+  // Check if map has Disconnected cameras (Cancelled status)
+  hasMapDisconnected(mapId: number): boolean {
+    return this.getCamerasByMapId(mapId).some(c => c.status_id == '2');
   }
 
   // Get map status: 'offline' | 'ma' | 'online'
