@@ -8,7 +8,7 @@ if (isset($_GET['type'])) {
     if (!empty($type) && is_numeric($type)) {
         // เตรียมคำสั่ง SQL
         $stmt = $conn->prepare("SELECT id, durable_no, durable_name, brand, model, location, floor.floor_name AS floor, status.status_name AS status, monitor, ip, ping,
-        cctv.date_updated, cctv.status AS status_id, cctv.floor AS floor_id, floor.order AS floor_order, notify, cctv.maintenance_mode, cctv.map_id, cctv.map_x, cctv.map_y
+        cctv.date_updated, cctv.status AS status_id, cctv.floor AS floor_id, floor.order AS floor_order, notify, cctv.maintenance_mode, cctv.map_id, cctv.map_x, cctv.map_y, cctv.image_path
         FROM cctv
         LEFT JOIN floor ON cctv.floor = floor.floor_id
         LEFT JOIN status ON cctv.status = status.status_id

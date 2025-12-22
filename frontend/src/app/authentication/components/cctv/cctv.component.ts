@@ -98,6 +98,79 @@ export class CctvComponent implements OnInit {
 
   onEditModal(items: ICctvs) {
     Object.assign(this.CctvSerivce.updateModel, items);
+    this.selectedImageFile = null; // Reset file selection when opening modal
+  }
+
+  // Image upload properties and methods
+  selectedImageFile: File | null = null;
+  isUploading: boolean = false;
+
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedImageFile = input.files[0];
+    }
+  }
+
+  getImageUrl(imagePath: string): string {
+    return `http://${window.location.hostname}/CCTV_CSR/backend/uploads/devices/${imagePath}`;
+  }
+
+  uploadImage() {
+    if (!this.selectedImageFile || !this.model.id) return;
+
+    this.isUploading = true;
+    this.CctvSerivce.uploadImage(this.model.id, this.selectedImageFile)
+      .subscribe({
+        next: (result: any) => {
+          this.model.image_path = result.image_path;
+          this.updateItemInArrays(this.model.id!, 'image_path', result.image_path);
+          this.selectedImageFile = null;
+          this.isUploading = false;
+          // Image will update in UI immediately, no alert needed
+        },
+        error: (err) => {
+          console.error(err);
+          this.isUploading = false;
+        }
+      });
+  }
+
+  deleteImage() {
+    if (!this.model.id || !this.model.image_path) return;
+    // Open confirmation modal instead of native confirm()
+    ($('#deleteImageModal') as any).modal('show');
+  }
+
+  confirmDeleteImage() {
+    if (!this.model.id) return;
+
+    this.isUploading = true;
+    ($('#deleteImageModal') as any).modal('hide');
+
+    this.CctvSerivce.deleteImage(this.model.id)
+      .subscribe({
+        next: () => {
+          this.model.image_path = undefined;
+          this.updateItemInArrays(this.model.id!, 'image_path', undefined);
+          this.isUploading = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.isUploading = false;
+          alert('เกิดข้อผิดพลาดในการลบ');
+        }
+      });
+  }
+
+  // Helper to update item in both arrays
+  updateItemInArrays(itemId: string, field: string, value: any) {
+    const updateItem = (arr: ICctvs[]) => {
+      const item = arr.find(i => i.id === itemId);
+      if (item) (item as any)[field] = value;
+    };
+    updateItem(this.allItems);
+    updateItem(this.cctvItems);
   }
 
   selectedStatusIds: string[] = ['1', '2', '3', '4']; // Default show all

@@ -1,0 +1,5 @@
+# Uploaded files
+backend/uploads/maps/*
+backend/uploads/devices/*
+!backend/uploads/maps/.gitkeep
+!backend/uploads/devices/.gitkeep

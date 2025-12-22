@@ -257,6 +257,47 @@
                             </div>
                         </div>
 
+                        <!-- Reference Image Section -->
+                        <div class="mt-4 p-3 rounded border bg-light">
+                            <h6 class="text-muted mb-3 border-bottom pb-2"><i class="bi bi-image me-2"></i>รูปภาพอ้างอิง
+                            </h6>
+                            <div class="row align-items-center">
+                                <div class="col-md-4 text-center">
+                                    <div class="border rounded p-2" style="min-height: 150px; background: #f8f9fa;">
+                                        <img *ngIf="model.image_path" [src]="getImageUrl(model.image_path)"
+                                            class="img-fluid rounded" style="max-height: 140px; object-fit: contain;"
+                                            alt="รูปอ้างอิง">
+                                        <div *ngIf="!model.image_path"
+                                            class="d-flex flex-column align-items-center justify-content-center h-100 text-muted"
+                                            style="min-height: 140px;">
+                                            <i class="bi bi-image" style="font-size: 3rem;"></i>
+                                            <small>ยังไม่มีรูปภาพ</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="mb-2">
+                                        <label class="form-label fw-bold">อัพโหลดรูปภาพใหม่</label>
+                                        <input type="file" class="form-control" accept="image/*"
+                                            (change)="onImageSelected($event)" #imageInput>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-primary btn-sm" (click)="uploadImage()"
+                                            [disabled]="!selectedImageFile || isUploading">
+                                            <i class="bi bi-upload me-1"></i>
+                                            {{ isUploading ? 'กำลังอัพโหลด...' : 'อัพโหลด' }}
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                            (click)="deleteImage()" [disabled]="!model.image_path || isUploading">
+                                            <i class="bi bi-trash me-1"></i>ลบรูป
+                                        </button>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">รองรับ: JPG, PNG, GIF, WebP (ขนาดไม่เกิน
+                                        5MB)</small>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Maintenance Mode Section -->
                         <div class="mt-4 p-3 rounded border"
                             [ngClass]="model.maintenance_mode == 1 ? 'bg-warning-subtle border-warning' : 'bg-light border-light'">
@@ -284,6 +325,32 @@
                         <button type="submit" class="btn btn-primary px-4">บันทึกข้อมูล</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Image Confirmation Modal -->
+    <div class="modal fade" id="deleteImageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>ยืนยันการลบรูปภาพ</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="fs-1 text-danger mb-3"><i class="bi bi-trash3"></i></div>
+                    <h5 class="mb-2">ลบรูปภาพอ้างอิง?</h5>
+                    <p class="text-muted mb-0">
+                        คุณต้องการลบรูปภาพอ้างอิงของ<br>
+                        <strong>{{ model.durable_name }}</strong> ใช่หรือไม่?
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-danger px-4" (click)="confirmDeleteImage()">
+                        <i class="bi bi-trash me-1"></i>ลบรูปภาพ
+                    </button>
+                </div>
             </div>
         </div>
     </div>

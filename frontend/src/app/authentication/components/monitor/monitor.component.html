@@ -104,6 +104,13 @@
                         </span>
                     </div>
                 </div>
+
+                <!-- Reference Image Section -->
+                <div class="mt-3 text-center" *ngIf="selectedItem.image_path">
+                    <div class="text-secondary mb-2 small">Reference Image</div>
+                    <img [src]="getDeviceImageUrl(selectedItem.image_path)" class="img-fluid rounded"
+                        style="max-height: 180px; border: 1px solid #3a3a3a;" alt="Device Image">
+                </div>
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Close</button>

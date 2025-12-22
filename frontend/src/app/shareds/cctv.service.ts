@@ -216,6 +216,19 @@ export class CctvService {
     });
   }
 
+  // อัพโหลดรูปภาพอ้างอิงครุภัณฑ์
+  uploadImage(cctvId: any, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('cctv_id', cctvId);
+    formData.append('image', file);
+    return this.httpClient.post(this.backendURL + 'cctvs/upload', formData);
+  }
+
+  // ลบรูปภาพอ้างอิงครุภัณฑ์
+  deleteImage(cctvId: any): Observable<any> {
+    return this.httpClient.post(this.backendURL + 'cctvs/delete-image', { cctv_id: cctvId });
+  }
+
 }
 
 // ส่วนของ User
@@ -275,6 +288,7 @@ export interface ICctvs {
   map_id?: number | null;
   map_x?: number | null;
   map_y?: number | null;
+  image_path?: string;
 }
 
 export interface IStatus {

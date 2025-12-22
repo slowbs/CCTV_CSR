@@ -81,4 +81,8 @@ $routes['/api/maps/cctv']['PUT'] = 'maps/update_cctv.php';
 
 // จัดลำดับ Maps
 $routes['/api/maps/reorder']['PUT'] = 'maps/reorder.php';
+
+// อัพโหลด/ลบ รูปภาพอ้างอิงครุภัณฑ์
+$routes['/api/cctvs/upload']['POST'] = 'cctvs/upload.php';
+$routes['/api/cctvs/delete-image']['POST'] = 'cctvs/delete_image.php';
 ?>

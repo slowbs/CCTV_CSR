@@ -192,4 +192,8 @@ export class MonitorComponent implements OnInit, OnDestroy {
   trackByRack(index: number, item: FloorRack): string {
     return item.floor_id; // Unique identifier for the rack
   }
+
+  getDeviceImageUrl(imagePath: string): string {
+    return `http://${window.location.hostname}/CCTV_CSR/backend/uploads/devices/${imagePath}`;
+  }
 }

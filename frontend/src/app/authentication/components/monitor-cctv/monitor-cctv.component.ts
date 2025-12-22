@@ -216,4 +216,8 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
   closeDetailModal(): void {
     $('#cctvDetailModal').modal('hide');
   }
+
+  getDeviceImageUrl(imagePath: string): string {
+    return `http://${window.location.hostname}/CCTV_CSR/backend/uploads/devices/${imagePath}`;
+  }
 }
