@@ -225,4 +225,20 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
   getDeviceImageUrl(imagePath: string): string {
     return `http://${window.location.hostname}/CCTV_CSR/backend/uploads/devices/${imagePath}`;
   }
+
+  // Image Preview Modal
+  previewImageUrl: string | null = null;
+
+  openImagePreview(imagePath: string): void {
+    this.previewImageUrl = this.getDeviceImageUrl(imagePath);
+    // Use a timeout to ensure variable is set before modal opens, though not strictly necessary with Angular
+    setTimeout(() => {
+      ($('#imagePreviewModal') as any).modal('show');
+    }, 0);
+  }
+
+  closeImagePreview(): void {
+    ($('#imagePreviewModal') as any).modal('hide');
+    this.previewImageUrl = null;
+  }
 }
