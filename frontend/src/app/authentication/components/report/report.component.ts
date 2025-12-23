@@ -6,11 +6,11 @@ import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from '../../../../assets/font/vfs_fonts';
 import { BsLocaleService, BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { defineLocale } from 'ngx-bootstrap/chronos';
-import { thLocale } from 'ngx-bootstrap/locale';
+import { thBeLocale } from 'ngx-bootstrap/locale';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
 
-defineLocale('th', thLocale);
+defineLocale('th-be', thBeLocale);
 (<any>pdfMake).addVirtualFileSystem(pdfFonts);
 
 pdfMake.addFonts({
@@ -42,10 +42,11 @@ export class ReportComponent implements OnInit {
     private datePipe: DatePipe,
     private localeService: BsLocaleService
   ) {
-    this.localeService.use('th');
+    this.localeService.use('th-be');
     this.bsConfig = Object.assign({}, {
-      dateInputFormat: 'DD/MM/YYYY',
-      isAnimated: true
+      dateInputFormat: 'DD/MM/YYYY', // Check if 'YYYY' needs to be preserved or if locale handles it
+      isAnimated: true,
+      showWeekNumbers: false
     });
   }
 
