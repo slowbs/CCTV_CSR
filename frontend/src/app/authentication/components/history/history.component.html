@@ -43,7 +43,7 @@
                 </div>
 
                 <div *ngIf="!isLoading && filteredLogs.length > 0" class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover">
+                    <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th style="width: 4%" class="text-center">ID</th>
@@ -52,64 +52,63 @@
                                 <th class="text-center">Location</th>
                                 <th class="text-center">Monitor</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-center" style="width: 18%">IP Address</th>
-                                <th style="width: 15%" class="text-center">Date/Time</th>
+                                <th class="text-center" style="width: 19%">IP Address</th>
+                                <th style="width: 10%" class="text-center">Date/Time</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let log of filteredLogs">
-                                <td class="text-center">{{ log.id }}</td>
-                                <td *ngIf="!cctvId">
-                                    <div class="fw-bold">{{ log.durable_name }}</div>
-                                    <small class="text-muted">{{ log.durable_no }}</small>
+                            <tr *ngFor="let log of filteredLogs" class="change-row">
+                                <td class="text-center text-muted">{{ log.id }}</td>
+                                <td *ngIf="!cctvId" class="device-info">
+                                    <div class="device-name fw-bold">{{ log.durable_name }}</div>
+                                    <div class="device-no">{{ log.durable_no }}</div>
                                 </td>
-                                <td>
-                                    <div *ngIf="log.old_floor !== log.new_floor">
+                                <td class="text-center">
+                                    <ng-container *ngIf="log.old_floor !== log.new_floor">
                                         <span class="diff-removed">{{ log.old_floor }}</span>
-                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                        <i class="bi bi-arrow-right diff-arrow"></i>
                                         <span class="diff-added">{{ log.new_floor }}</span>
-                                    </div>
-                                    <div *ngIf="log.old_floor === log.new_floor" class="text-muted">{{ log.new_floor }}
-                                    </div>
+                                    </ng-container>
+                                    <span *ngIf="log.old_floor === log.new_floor" class="value-unchanged">{{
+                                        log.new_floor }}</span>
                                 </td>
                                 <td>
-                                    <div *ngIf="log.old_location !== log.new_location">
+                                    <ng-container *ngIf="log.old_location !== log.new_location">
                                         <span class="diff-removed">{{ log.old_location }}</span>
-                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                        <i class="bi bi-arrow-right diff-arrow"></i>
                                         <span class="diff-added">{{ log.new_location }}</span>
-                                    </div>
-                                    <div *ngIf="log.old_location === log.new_location" class="text-muted">{{
-                                        log.new_location }}</div>
+                                    </ng-container>
+                                    <span *ngIf="log.old_location === log.new_location" class="value-unchanged">{{
+                                        log.new_location }}</span>
                                 </td>
                                 <td>
-                                    <div *ngIf="log.old_monitor !== log.new_monitor">
+                                    <ng-container *ngIf="log.old_monitor !== log.new_monitor">
                                         <span class="diff-removed">{{ log.old_monitor }}</span>
-                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                        <i class="bi bi-arrow-right diff-arrow"></i>
                                         <span class="diff-added">{{ log.new_monitor }}</span>
-                                    </div>
-                                    <div *ngIf="log.old_monitor === log.new_monitor" class="text-muted">{{
-                                        log.new_monitor
-                                        }}</div>
+                                    </ng-container>
+                                    <span *ngIf="log.old_monitor === log.new_monitor" class="value-unchanged">{{
+                                        log.new_monitor }}</span>
                                 </td>
                                 <td>
-                                    <div *ngIf="log.old_status !== log.new_status">
+                                    <ng-container *ngIf="log.old_status !== log.new_status">
                                         <span class="diff-removed">{{ log.old_status }}</span>
-                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                        <i class="bi bi-arrow-right diff-arrow"></i>
                                         <span class="diff-added">{{ log.new_status }}</span>
-                                    </div>
-                                    <div *ngIf="log.old_status === log.new_status" class="text-muted">{{ log.new_status
-                                        }}
-                                    </div>
+                                    </ng-container>
+                                    <span *ngIf="log.old_status === log.new_status" class="value-unchanged">{{
+                                        log.new_status }}</span>
                                 </td>
                                 <td>
-                                    <div *ngIf="log.old_ip !== log.new_ip">
-                                        <span class="diff-removed">{{ log.old_ip }}</span>
-                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
-                                        <span class="diff-added">{{ log.new_ip }}</span>
-                                    </div>
-                                    <div *ngIf="log.old_ip === log.new_ip" class="text-muted">{{ log.new_ip }}</div>
+                                    <ng-container *ngIf="log.old_ip !== log.new_ip">
+                                        <span class="diff-removed font-monospace">{{ log.old_ip }}</span>
+                                        <i class="bi bi-arrow-right diff-arrow"></i>
+                                        <span class="diff-added font-monospace">{{ log.new_ip }}</span>
+                                    </ng-container>
+                                    <span *ngIf="log.old_ip === log.new_ip" class="value-unchanged font-monospace">{{
+                                        log.new_ip }}</span>
                                 </td>
-                                <td class="text-center">{{ log.updated_at }}</td>
+                                <td class="text-center timestamp">{{ formatDateBE(log.updated_at) }}</td>
                             </tr>
                         </tbody>
                     </table>

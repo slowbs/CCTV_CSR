@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
 import { CctvService, IAuditLog } from '../../../shareds/cctv.service';
@@ -27,8 +28,21 @@ export class HistoryComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private cctvService: CctvService
+    private cctvService: CctvService,
+    private datePipe: DatePipe
   ) { }
+
+  // Format date to Thai Buddhist Era (dd/mm/yyyy hh.mm)
+  formatDateBE(dateString: string): string {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const yearBE = date.getFullYear() + 543;
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month}/${yearBE} ${hours}:${minutes}`;
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
