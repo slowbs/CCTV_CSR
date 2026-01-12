@@ -56,7 +56,9 @@ def update_status(id_, success, ping_value, count_ping, ip, cctv_type, durable_n
     db_utils.update_device_count_ping(id_, count_ping) #อัปเดต count_ping
 
     # Check if status should change
-    if count_ping > 2:
+    # CCTV (type=1) uses higher threshold (6 minutes) to avoid false offline reports
+    threshold = 5 if str(cctv_type) == '1' else 2
+    if count_ping > threshold:
         if new_ping_value_based_on_current_ping != old_ping_value_from_db:
             db_utils.update_device_status(id_, new_ping_value_based_on_current_ping, 0) # อัปเดตสถานะและรีเซ็ต count_ping
             message = (
