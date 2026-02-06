@@ -25,6 +25,19 @@ export class CctvComponent implements OnInit {
 
   searchText: string = '';
 
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
+  }
+
   constructor(private CctvSerivce: CctvService, private route: ActivatedRoute) {
     this.model = this.CctvSerivce.updateModel;
   }
@@ -52,32 +65,54 @@ export class CctvComponent implements OnInit {
   }
 
   get_Cctv(type?: string) {
+    this.isLoading = true;
     this.CctvSerivce.get_cctv(type) // ส่ง type ไปยัง service
-      .subscribe(result => {
-        if (result && result['result']) { // ตรวจสอบว่า result มีข้อมูล
-          this.allItems = result['result'];
-          this.onSearchItem(); // Apply existing filters
+      .subscribe({
+        next: (result) => {
+          if (result && result['result']) { // ตรวจสอบว่า result มีข้อมูล
+            this.allItems = result['result'];
+            this.onSearchItem(); // Apply existing filters
+          } else {
+            this.cctvItems = []; // หากไม่มีผลลัพธ์ให้กำหนดให้เป็นอาร์เรย์ว่าง
+            this.allItems = [];
+          }
           this.isLoading = false;
-        } else {
-          this.cctvItems = []; // หากไม่มีผลลัพธ์ให้กำหนดให้เป็นอาร์เรย์ว่าง
+        },
+        error: (err) => {
+          console.error('Error loading CCTV:', err);
+          this.cctvItems = [];
           this.allItems = [];
+          this.isLoading = false;
+          this.showToast('ไม่สามารถโหลดข้อมูลครุภัณฑ์ได้ กรุณาลองใหม่อีกครั้ง', 'error');
         }
       });
   }
 
   getStatus() {
     return this.CctvSerivce.get_status()
-      .subscribe(result => {
-        this.statusItems = result['result'] || []; // ป้องกัน error หาก result เป็น null
-        // Default select all statuses
-        this.selectedStatusIds = this.statusItems.map(s => s.status_id!).filter(id => id);
+      .subscribe({
+        next: (result) => {
+          this.statusItems = result['result'] || []; // ป้องกัน error หาก result เป็น null
+          // Default select all statuses
+          this.selectedStatusIds = this.statusItems.map(s => s.status_id!).filter(id => id);
+        },
+        error: (err) => {
+          console.error('Error loading status:', err);
+          this.showToast('ไม่สามารถโหลดข้อมูลสถานะได้', 'warning');
+        }
       });
   }
 
   getFloor() {
     return this.CctvSerivce.get_floor()
-      .subscribe(result => {
-        this.floorItems = result['result'] || []; // ป้องกัน error หาก result เป็น null
+      .subscribe({
+        next: (result) => {
+          this.floorItems = result['result'] || []; // ป้องกัน error หาก result เป็น null
+        },
+        error: (err) => {
+          console.error('Error loading floor:', err);
+          this.showToast('ไม่สามารถโหลดข้อมูลชั้นได้', 'warning');
+        }
       });
   }
 
@@ -88,10 +123,12 @@ export class CctvComponent implements OnInit {
         next: (result) => {
           console.log(result);
           $('#editCctvModal').modal('hide');
+          this.showToast('บันทึกข้อมูลสำเร็จ', 'success');
           this.get_Cctv(this.cctvType); // เรียก get_Cctv ใหม่หลังการบันทึก
         },
-        error: (excep) => {
-          console.log(excep);
+        error: (err) => {
+          console.error('Error saving:', err);
+          this.showToast(err.error?.message || 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง', 'error');
         }
       });
   }
@@ -127,11 +164,12 @@ export class CctvComponent implements OnInit {
           this.updateItemInArrays(this.model.id!, 'image_path', result.image_path);
           this.selectedImageFile = null;
           this.isUploading = false;
-          // Image will update in UI immediately, no alert needed
+          this.showToast('อัพโหลดรูปภาพสำเร็จ', 'success');
         },
         error: (err) => {
-          console.error(err);
+          console.error('Error uploading image:', err);
           this.isUploading = false;
+          this.showToast(err.error?.message || 'ไม่สามารถอัพโหลดรูปภาพได้ กรุณาลองใหม่', 'error');
         }
       });
   }
@@ -154,11 +192,12 @@ export class CctvComponent implements OnInit {
           this.model.image_path = undefined;
           this.updateItemInArrays(this.model.id!, 'image_path', undefined);
           this.isUploading = false;
+          this.showToast('ลบรูปภาพสำเร็จ', 'success');
         },
         error: (err) => {
-          console.error(err);
+          console.error('Error deleting image:', err);
           this.isUploading = false;
-          alert('เกิดข้อผิดพลาดในการลบ');
+          this.showToast(err.error?.message || 'ไม่สามารถลบรูปภาพได้ กรุณาลองใหม่', 'error');
         }
       });
   }

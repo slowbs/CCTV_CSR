@@ -5,6 +5,7 @@ import { BsDatepickerConfig, BsDatepickerModule } from 'ngx-bootstrap/datepicker
 import { AuthNavbarComponent } from './components/auth-navbar/auth-navbar.component';
 import { AuthSidebarComponent } from './components/auth-sidebar/auth-sidebar.component';
 import { AuthContentComponent } from './components/auth-content/auth-content.component';
+import { ToastComponent } from './components/toast/toast.component';
 import { RouterModule } from '@angular/router';
 import { CctvService } from './cctv.service';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
@@ -21,7 +22,8 @@ registerLocaleData(localeTh); // ลงทะเบียน locale ภาษา
   declarations: [
     AuthNavbarComponent,
     AuthSidebarComponent,
-    AuthContentComponent
+    AuthContentComponent,
+    ToastComponent
   ],
   imports: [
     CommonModule,
@@ -35,6 +37,7 @@ registerLocaleData(localeTh); // ลงทะเบียน locale ภาษา
     AuthNavbarComponent,
     AuthSidebarComponent,
     AuthContentComponent,
+    ToastComponent,
     BsDropdownModule,
     PaginationModule,
     FormsModule,

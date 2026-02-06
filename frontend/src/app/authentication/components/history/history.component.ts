@@ -26,6 +26,19 @@ export class HistoryComponent implements OnInit {
   totalPages = 0;
   pages: number[] = [];
 
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
+  }
+
   constructor(
     private route: ActivatedRoute,
     private cctvService: CctvService,
@@ -58,42 +71,23 @@ export class HistoryComponent implements OnInit {
 
   loadLogs(): void {
     this.isLoading = true;
-    this.cctvService.get_audit_logs(this.cctvId || undefined, this.currentPage, this.pageSize).subscribe(
-      res => {
-        this.logs = res.result;
-        this.totalItems = res.total;
+    this.cctvService.get_audit_logs(this.cctvId || undefined, this.currentPage, this.pageSize).subscribe({
+      next: (res) => {
+        this.logs = res.result || [];
+        this.totalItems = res.total || 0;
         this.totalPages = Math.ceil(this.totalItems / this.pageSize);
         this.generatePages();
-        this.filterLogs(); // Apply search filter locally if needed, but ideally search should be server-side too. 
-        // For now, we are doing server-side pagination, so search should probably reset page or be handled by server.
-        // Wait, the plan said "Verify that searching resets to page 1". 
-        // If I do client-side filtering on server-side paginated data, it will only filter the current page.
-        // However, the user asked for "Search Bar" previously and I implemented client-side filtering.
-        // If I switch to server-side pagination, I should probably implement server-side search too, OR fetch all data and client-side paginate.
-        // But fetching all data defeats the purpose of pagination for large datasets.
-        // Given the constraints and current backend implementation (which I just modified for pagination),
-        // I should probably stick to server-side pagination.
-        // The search bar currently filters `this.logs`. If `this.logs` only contains 10 items, search is limited.
-        // I will assume for now that search is client-side on the current page, OR I need to update backend to support search.
-        // The user didn't explicitly ask for server-side search, but it's implied for large datasets.
-        // For this step, I will implement the pagination logic as requested. 
-        // I will keep `filterLogs` but it will only filter the current page's data.
-        // Actually, I should probably remove `filterLogs` if I'm relying on server pagination, 
-        // UNLESS I implement server-side search. 
-        // Let's stick to the plan: Implement pagination. 
-        // I'll leave `filterLogs` as is for now (filtering current page), 
-        // but I'll add a comment or just let it be.
-        // Wait, if I filter locally, I might end up with 0 items on a page even if there are matches on other pages.
-        // Ideally, search should be server-side. 
-        // But I haven't updated backend for search.
-        // I'll proceed with pagination logic first.
+        this.filterLogs();
         this.isLoading = false;
       },
-      err => {
+      error: (err) => {
         console.error('Error loading logs', err);
+        this.logs = [];
+        this.filteredLogs = [];
         this.isLoading = false;
+        this.showToast('ไม่สามารถโหลดประวัติการเปลี่ยนแปลงได้', 'error');
       }
-    );
+    });
   }
 
   generatePages(): void {

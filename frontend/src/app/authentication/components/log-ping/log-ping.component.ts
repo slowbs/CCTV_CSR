@@ -30,6 +30,19 @@ export class LogPingComponent implements OnInit {
 
   private currentTypeId: string | null = null;
 
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
+  }
+
   constructor(
     private cctvService: CctvService,
     private route: ActivatedRoute
@@ -61,12 +74,21 @@ export class LogPingComponent implements OnInit {
   get_LogPing(id: string) {
     this.isLoading = true;
     this.cctvService.get_logping(id)
-      .subscribe(result => {
-        this.allLogpingItems = result['result'];
-        this.totalItems = this.allLogpingItems.length;
-        this.currentPage = 1; // กลับไปหน้าแรกเสมอเมื่อโหลดข้อมูลใหม่
-        this.updatePaginatedItems(); // แสดงผลข้อมูลหน้าแรก
-        this.isLoading = false;
+      .subscribe({
+        next: (result) => {
+          this.allLogpingItems = result['result'] || [];
+          this.totalItems = this.allLogpingItems.length;
+          this.currentPage = 1; // กลับไปหน้าแรกเสมอเมื่อโหลดข้อมูลใหม่
+          this.updatePaginatedItems(); // แสดงผลข้อมูลหน้าแรก
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading log ping:', err);
+          this.allLogpingItems = [];
+          this.logpingItems = [];
+          this.isLoading = false;
+          this.showToast('ไม่สามารถโหลดข้อมูล Log Ping ได้', 'error');
+        }
       });
   }
 
@@ -95,12 +117,14 @@ export class LogPingComponent implements OnInit {
         next: (result) => {
           console.log(result);
           $('#editCommentModal').modal('hide');
+          this.showToast('บันทึกข้อมูลสำเร็จ', 'success');
           // โหลดข้อมูลใหม่หลังจากแก้ไข
           this.cctvService.notifyNavbarToRefresh(); //Update Notify
           if (this.currentTypeId) this.get_LogPing(this.currentTypeId);
         },
-        error: (excep) => {
-          console.log(excep);
+        error: (err) => {
+          console.error('Error saving:', err);
+          this.showToast(err.error?.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
         }
       });
   }

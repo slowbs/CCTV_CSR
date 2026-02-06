@@ -22,10 +22,23 @@ export class UsersComponent implements OnInit {
   public isLoading: boolean = true; // กำลังโหลดข้อมูล
   public hasError: boolean = false; // เกิดข้อผิดพลาดในการโหลด
 
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
   constructor(
     private cctvService: CctvService,
   ) {
     this.model = this.cctvService.updateModelUser;
+  }
+
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
   }
 
 
@@ -47,6 +60,7 @@ export class UsersComponent implements OnInit {
           console.error('Error fetching users:', err);
           this.hasError = true;
           this.isLoading = false;
+          this.showToast('ไม่สามารถโหลดข้อมูลผู้ใช้งานได้', 'error');
         }
       });
   }
@@ -63,10 +77,12 @@ export class UsersComponent implements OnInit {
         next: (result) => {
           console.log(result);
           $('#editUserModal').modal('hide');
+          this.showToast('แก้ไขข้อมูลผู้ใช้งานสำเร็จ', 'success');
           this.get_users(); // เรียก get_users ใหม่หลังการบันทึก
         },
-        error: (excep) => {
-          console.log(excep);
+        error: (err) => {
+          console.error('Error updating user:', err);
+          this.showToast(err.error?.message || 'ไม่สามารถแก้ไขข้อมูลผู้ใช้งานได้', 'error');
         }
       });
   }
@@ -83,17 +99,19 @@ export class UsersComponent implements OnInit {
           next: (result) => {
             console.log(result)
             $('#addUserModal').modal('hide');
+            this.showToast('เพิ่มผู้ใช้งานสำเร็จ', 'success');
             this.get_users(); // เรียก get_users ใหม่หลังการบันทึก
             this.resetModel();
           },
-          error: (excep) => {
-            console.log(excep)
-            // alert(excep.error.message)
+          error: (err) => {
+            console.error('Error adding user:', err);
+            this.showToast(err.error?.message || 'ไม่สามารถเพิ่มผู้ใช้งานได้', 'error');
           }
         })
     }
-    else
-      console.log('Password not Compare')
+    else {
+      this.showToast('รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง', 'warning');
+    }
   }
 
   resetModel() {

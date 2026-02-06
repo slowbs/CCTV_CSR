@@ -34,6 +34,19 @@ export class CctvMapManagerComponent implements OnInit {
 
   isLoading = false;
 
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
+  }
+
   @ViewChild('mapContainer') mapContainer!: ElementRef;
 
   // Backend URL helper
@@ -57,15 +70,21 @@ export class CctvMapManagerComponent implements OnInit {
   // --- Data Loading ---
 
   loadMaps() {
-    this.http.get<any>(this.backendUrl + 'maps').subscribe(res => {
-      if (res.result) {
-        // Backend จัดเรียงตาม sort_order แล้ว
-        this.maps = res.result;
-        // Update selected map info if exists
-        if (this.selectedMap) {
-          const updated = this.maps.find(m => m.id == this.selectedMap!.id);
-          if (updated) this.selectedMap = updated;
+    this.http.get<any>(this.backendUrl + 'maps').subscribe({
+      next: (res) => {
+        if (res.result) {
+          // Backend จัดเรียงตาม sort_order แล้ว
+          this.maps = res.result;
+          // Update selected map info if exists
+          if (this.selectedMap) {
+            const updated = this.maps.find(m => m.id == this.selectedMap!.id);
+            if (updated) this.selectedMap = updated;
+          }
         }
+      },
+      error: (err) => {
+        console.error('Error loading maps:', err);
+        this.showToast('ไม่สามารถโหลดข้อมูลแผนที่ได้', 'error');
       }
     });
   }
@@ -87,18 +106,24 @@ export class CctvMapManagerComponent implements OnInit {
 
   loadCameras() {
     // Type '1' = CCTV
-    this.cctvService.get_cctv('1').subscribe((res: any) => {
-      if (res && res.result) {
-        this.cameras = res.result
-          .filter((c: any) => c.ip && c.ip.trim() !== '') // Only cameras with IP
-          .map((c: any) => ({
-            ...c,
-            // Convert string position to number for calculations
-            map_x: c.map_x ? parseFloat(c.map_x) : null,
-            map_y: c.map_y ? parseFloat(c.map_y) : null,
-            map_id: c.map_id ? parseInt(c.map_id) : null
-          }));
-        this.filterCameras();
+    this.cctvService.get_cctv('1').subscribe({
+      next: (res: any) => {
+        if (res && res.result) {
+          this.cameras = res.result
+            .filter((c: any) => c.ip && c.ip.trim() !== '') // Only cameras with IP
+            .map((c: any) => ({
+              ...c,
+              // Convert string position to number for calculations
+              map_x: c.map_x ? parseFloat(c.map_x) : null,
+              map_y: c.map_y ? parseFloat(c.map_y) : null,
+              map_id: c.map_id ? parseInt(c.map_id) : null
+            }));
+          this.filterCameras();
+        }
+      },
+      error: (err) => {
+        console.error('Error loading cameras:', err);
+        this.showToast('ไม่สามารถโหลดข้อมูลกล้องได้', 'error');
       }
     });
   }
@@ -169,7 +194,7 @@ export class CctvMapManagerComponent implements OnInit {
 
   createMap() {
     if (!this.newMapData.name || !this.newMapData.imageFile) {
-      alert('Please enter name and select image');
+      this.showToast('กรุณาใส่ชื่อและเลือกรูปภาพ', 'warning');
       return;
     }
 
@@ -177,13 +202,19 @@ export class CctvMapManagerComponent implements OnInit {
     formData.append('name', this.newMapData.name);
     formData.append('image', this.newMapData.imageFile);
 
-    this.http.post<any>(this.backendUrl + 'maps', formData).subscribe(res => {
-      if (res.result) {
-        this.loadMaps();
-        this.closeModal();
-        // Select the new map?
-      } else {
-        alert('Error creating map: ' + res.message);
+    this.http.post<any>(this.backendUrl + 'maps', formData).subscribe({
+      next: (res) => {
+        if (res.result) {
+          this.loadMaps();
+          this.closeModal();
+          this.showToast('สร้างแผนที่สำเร็จ', 'success');
+        } else {
+          this.showToast('ไม่สามารถสร้างแผนที่ได้: ' + res.message, 'error');
+        }
+      },
+      error: (err) => {
+        console.error('Error creating map:', err);
+        this.showToast(err.error?.message || 'ไม่สามารถสร้างแผนที่ได้', 'error');
       }
     });
   }
@@ -230,7 +261,7 @@ export class CctvMapManagerComponent implements OnInit {
 
   updateMap() {
     if (!this.editMapData.id || !this.editMapData.name.trim()) {
-      alert('กรุณาใส่ชื่อแผนที่');
+      this.showToast('กรุณาใส่ชื่อแผนที่', 'warning');
       return;
     }
 
@@ -243,17 +274,18 @@ export class CctvMapManagerComponent implements OnInit {
         if (res.result) {
           this.loadMaps();
           this.closeEditModal();
+          this.showToast('อัพเดตแผนที่สำเร็จ', 'success');
           // Update selected map name if editing current map
           if (this.selectedMap?.id === this.editMapData.id) {
             this.selectedMap.name = this.editMapData.name.trim();
           }
         } else {
-          alert('Error: ' + res.message);
+          this.showToast('ไม่สามารถอัพเดตแผนที่ได้: ' + res.message, 'error');
         }
       },
       error: (err) => {
         console.error('Update map error:', err);
-        alert('เกิดข้อผิดพลาดในการอัพเดต');
+        this.showToast(err.error?.message || 'เกิดข้อผิดพลาดในการอัพเดต', 'error');
       }
     });
   }

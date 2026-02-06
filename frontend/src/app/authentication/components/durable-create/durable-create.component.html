@@ -121,3 +121,6 @@
     </div>
 
 </app-auth-content>
+
+<!-- Toast Notification -->
+<app-toast [message]="toastMessage" [type]="toastType" (closed)="clearToast()"></app-toast>

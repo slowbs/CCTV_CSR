@@ -239,3 +239,6 @@
         </div>
     </div>
 </div>
+
+<!-- Toast Notification -->
+<app-toast [message]="toastMessage" [type]="toastType" (closed)="clearToast()"></app-toast>

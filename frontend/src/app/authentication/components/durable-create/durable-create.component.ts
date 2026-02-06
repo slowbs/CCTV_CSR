@@ -25,6 +25,19 @@ export class DurableCreateComponent {
   public floorItems: IFloor[] = [];
   public typeItems: IType[] = [];
 
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
+  }
+
   constructor(
     private CctvSerivce: CctvService,
     private router: Router
@@ -37,26 +50,41 @@ export class DurableCreateComponent {
 
   getStatus() {
     return this.CctvSerivce.get_status()
-      .subscribe(result => {
-        this.statusItems = result['result']
-        // console.log(this.statusItems)
+      .subscribe({
+        next: (result) => {
+          this.statusItems = result['result'] || [];
+        },
+        error: (err) => {
+          console.error('Error loading status:', err);
+          this.showToast('ไม่สามารถโหลดข้อมูลสถานะได้', 'warning');
+        }
       });
   }
 
   getFloor() {
     return this.CctvSerivce.get_floor()
-      .subscribe(result => {
-        this.floorItems = result['result']
-        // console.log(this.floorItems)
+      .subscribe({
+        next: (result) => {
+          this.floorItems = result['result'] || [];
+        },
+        error: (err) => {
+          console.error('Error loading floor:', err);
+          this.showToast('ไม่สามารถโหลดข้อมูลชั้นได้', 'warning');
+        }
       });
   }
 
   getType() {
     return this.CctvSerivce.get_type()
-      .subscribe(result => {
-        // console.log(result)
-        this.typeItems = result['result']
-      })
+      .subscribe({
+        next: (result) => {
+          this.typeItems = result['result'] || [];
+        },
+        error: (err) => {
+          console.error('Error loading type:', err);
+          this.showToast('ไม่สามารถโหลดข้อมูลประเภทได้', 'warning');
+        }
+      });
   }
 
   onSubmit() {
@@ -68,10 +96,12 @@ export class DurableCreateComponent {
       .subscribe({
         next: (result) => {
           console.log(result)
+          this.showToast('เพิ่มครุภัณฑ์สำเร็จ', 'success');
           this.router.navigate(['/', this.AppUrl.Authen, this.AuthUrl.Index])
         },
-        error: (excep) => {
-          console.log(excep)
+        error: (err) => {
+          console.error('Error adding item:', err);
+          this.showToast(err.error?.message || 'ไม่สามารถเพิ่มครุภัณฑ์ได้', 'error');
         }
       })
   }

@@ -30,6 +30,19 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
 
   private intervalId: any;
 
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
+  }
+
   // Backend URL helper
   private get backendUrl() {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
@@ -73,7 +86,10 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
           }
         }
       },
-      error: (err) => console.error('Error loading maps', err)
+      error: (err) => {
+        console.error('Error loading maps', err);
+        this.showToast('ไม่สามารถโหลดข้อมูลแผนที่ได้', 'error');
+      }
     });
   }
 
@@ -98,6 +114,7 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Error loading CCTV data', err);
         this.isLoading = false;
+        this.showToast('ไม่สามารถโหลดข้อมูลกล้องได้', 'error');
       }
     });
   }

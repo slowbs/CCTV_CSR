@@ -38,6 +38,19 @@ export class MonitorComponent implements OnInit, OnDestroy {
   allItems: ICctvs[] = []; // Store all loaded items
   showDisconnected: boolean = false;
 
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
+  }
+
   toggleDisconnected(): void {
     this.showDisconnected = !this.showDisconnected;
     this.groupDevices(this.allItems);
@@ -83,6 +96,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
     }).catch(err => {
       console.error('Error loading data', err);
       this.isLoading = false;
+      this.showToast('ไม่สามารถโหลดข้อมูล Monitor ได้', 'error');
     });
   }
 

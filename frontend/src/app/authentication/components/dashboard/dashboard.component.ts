@@ -15,6 +15,10 @@ export class DashboardComponent implements OnInit {
   public recentStatusChanges: ILogPing[] = []; // ตัวแปรใหม่สำหรับเก็บข้อมูลการเปลี่ยนแปลงสถานะ
   public isLoading: boolean = true; // กำลังโหลดข้อมูล
 
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
   constructor(private CctvSerivce: CctvService) { }
 
   ngOnInit(): void {
@@ -23,18 +27,40 @@ export class DashboardComponent implements OnInit {
     this.getRecentStatusChanges(); // เรียกใช้ฟังก์ชันใหม่
   }
 
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
+  }
+
   getCountPing() {
     return this.CctvSerivce.get_countping()
-      .subscribe(result => {
-        this.countPingItems = result['counts'] || [];
+      .subscribe({
+        next: (result) => {
+          this.countPingItems = result['counts'] || [];
+        },
+        error: (err) => {
+          console.error('Error loading count ping:', err);
+          this.showToast('ไม่สามารถโหลดข้อมูลสรุปสถานะได้', 'error');
+        }
       });
   }
 
   getRecentStatusChanges() {
     return this.CctvSerivce.getRecentStatusChanges()
-      .subscribe(result => {
-        this.recentStatusChanges = result['logs'] || []; // เก็บข้อมูลสถานะล่าสุด
-        this.isLoading = false;
+      .subscribe({
+        next: (result) => {
+          this.recentStatusChanges = result['logs'] || []; // เก็บข้อมูลสถานะล่าสุด
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading recent status changes:', err);
+          this.isLoading = false;
+          this.showToast('ไม่สามารถโหลดข้อมูลการเปลี่ยนแปลงสถานะได้', 'error');
+        }
       });
   }
 

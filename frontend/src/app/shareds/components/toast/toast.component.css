@@ -1,0 +1,11 @@
+.toast {
+    transition: opacity 0.3s ease-in-out;
+}
+
+.toast:not(.show) {
+    display: none;
+}
+
+.toast.show {
+    display: flex;
+}

@@ -35,6 +35,20 @@ export class ReportComponent implements OnInit {
   tempStartDate: Date | null = null;
   tempEndDate: Date | null = null;
   bsConfig: Partial<BsDatepickerConfig>;
+  public isLoading: boolean = false;
+
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
+  }
 
   constructor(
     private cctvService: CctvService,
@@ -185,19 +199,28 @@ export class ReportComponent implements OnInit {
     const start = this.datePipe.transform(startDate, 'yyyy-MM-dd') || undefined;
     const end = this.datePipe.transform(endDate, 'yyyy-MM-dd') || undefined;
 
-    this.cctvService.get_report(id, start, end).subscribe(result => {
-      this.reportItems = Object.values(result['result']);
-      // แก้ไขการเรียงลำดับโดยใช้ Number() แปลง string เป็นตัวเลข
-      this.reportItems.sort((a, b) => {
-        return Number(a.floor_order) - Number(b.floor_order);
-      });
-      this.reportItems.forEach(item => {
-        item.logs = item.logs.filter(log => log.offline);
-        item.logs.forEach(log => {
-          log.duration = this.calculateOfflineDuration(log.offline, log.online);
+    this.isLoading = true;
+    this.cctvService.get_report(id, start, end).subscribe({
+      next: (result) => {
+        this.reportItems = Object.values(result['result'] || {});
+        // แก้ไขการเรียงลำดับโดยใช้ Number() แปลง string เป็นตัวเลข
+        this.reportItems.sort((a, b) => {
+          return Number(a.floor_order) - Number(b.floor_order);
         });
-      });
-      // console.log(this.reportItems)
+        this.reportItems.forEach(item => {
+          item.logs = item.logs.filter(log => log.offline);
+          item.logs.forEach(log => {
+            log.duration = this.calculateOfflineDuration(log.offline, log.online);
+          });
+        });
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading report:', err);
+        this.reportItems = [];
+        this.isLoading = false;
+        this.showToast('ไม่สามารถโหลดข้อมูลรายงานได้', 'error');
+      }
     });
   }
 

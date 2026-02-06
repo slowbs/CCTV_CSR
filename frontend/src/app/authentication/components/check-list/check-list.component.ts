@@ -28,6 +28,19 @@ export class CheckListComponent implements OnInit {
   checkListItems: any[] = [];
   bsConfig: Partial<BsDatepickerConfig>;
 
+  // Toast notification
+  toastMessage: string = '';
+  toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
+
+  showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
+    this.toastMessage = message;
+    this.toastType = type;
+  }
+
+  clearToast() {
+    this.toastMessage = '';
+  }
+
   constructor(
     private cctvService: CctvService,
     private datePipe: DatePipe,
@@ -56,9 +69,15 @@ export class CheckListComponent implements OnInit {
   }
 
   loadChecklist() {
-    this.cctvService.getChecklistItems().subscribe((data) => {
-      this.checkListItems = data;
-      this.loadChecklistLog();
+    this.cctvService.getChecklistItems().subscribe({
+      next: (data) => {
+        this.checkListItems = data || [];
+        this.loadChecklistLog();
+      },
+      error: (err) => {
+        console.error('Error loading checklist items:', err);
+        this.showToast('ไม่สามารถโหลดรายการ Checklist ได้', 'error');
+      }
     });
   }
 
@@ -69,24 +88,30 @@ export class CheckListComponent implements OnInit {
       selectedMonthString = this.datePipe.transform(this.selectedMonth, 'yyyy-MM') || "";
     }
 
-    this.cctvService.getChecklistLogs(selectedMonthString).subscribe((data) => {
-      if (data.length > 0) {
-        for (let i = 0; i < this.checkListItems.length; i++) {
-          const item = this.checkListItems[i];
-          const dbItem = data.find((x: any) => x.checklist_item_id == item.id);
-          if (dbItem) {
-            item.status = dbItem.status;
-            item.comment = dbItem.comment;
-          } else {
-            item.status = 'ปกติ';
-            item.comment = '';
+    this.cctvService.getChecklistLogs(selectedMonthString).subscribe({
+      next: (data) => {
+        if (data && data.length > 0) {
+          for (let i = 0; i < this.checkListItems.length; i++) {
+            const item = this.checkListItems[i];
+            const dbItem = data.find((x: any) => x.checklist_item_id == item.id);
+            if (dbItem) {
+              item.status = dbItem.status;
+              item.comment = dbItem.comment;
+            } else {
+              item.status = 'ปกติ';
+              item.comment = '';
+            }
+          }
+        } else {
+          for (let i = 0; i < this.checkListItems.length; i++) {
+            this.checkListItems[i].status = 'ปกติ';
+            this.checkListItems[i].comment = '';
           }
         }
-      } else {
-        for (let i = 0; i < this.checkListItems.length; i++) {
-          this.checkListItems[i].status = 'ปกติ';
-          this.checkListItems[i].comment = '';
-        }
+      },
+      error: (err) => {
+        console.error('Error loading checklist log:', err);
+        this.showToast('ไม่สามารถโหลดข้อมูล Log Checklist ได้', 'warning');
       }
     });
   }
@@ -108,8 +133,15 @@ export class CheckListComponent implements OnInit {
         }
       })
     };
-    this.cctvService.saveChecklistLogs(data).subscribe((result) => {
-      console.log(result);
+    this.cctvService.saveChecklistLogs(data).subscribe({
+      next: (result) => {
+        console.log(result);
+        this.showToast('บันทึก Checklist สำเร็จ', 'success');
+      },
+      error: (err) => {
+        console.error('Error saving checklist:', err);
+        this.showToast(err.error?.message || 'ไม่สามารถบันทึก Checklist ได้', 'error');
+      }
     });
   }
 
