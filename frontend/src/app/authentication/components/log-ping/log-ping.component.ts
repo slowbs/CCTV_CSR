@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CctvService, ILogPing } from '../../../shareds/cctv.service';
 import { AppURL } from '../../../app.url';
 import { PageChangedEvent } from 'ngx-bootstrap/pagination';
@@ -12,6 +13,7 @@ declare const $: any;
   styleUrls: ['./log-ping.component.css'] // แก้ไขเป็น styleUrls (มีตัว 's')
 })
 export class LogPingComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
 
   public allLogpingItems: ILogPing[] = []; // สำหรับเก็บข้อมูลทั้งหมดจาก Server
   public logpingItems: ILogPing[] = []; // สำหรับเก็บข้อมูลที่แสดงในหน้าปัจจุบัน
@@ -61,14 +63,16 @@ export class LogPingComponent implements OnInit {
 
     this.isLoading = true; //แสดง Loading
     // ดึงค่าพารามิเตอร์ id จาก route และใช้เรียกข้อมูล log ping
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      this.currentTypeId = id;
-      if (id) {
-        this.get_LogPing(id);
-        this.Title = titles[id] || 'รายงานข้อมูล';
-      }
-    });
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const id = params.get('id');
+        this.currentTypeId = id;
+        if (id) {
+          this.get_LogPing(id);
+          this.Title = titles[id] || 'รายงานข้อมูล';
+        }
+      });
   }
   
   get_LogPing(id: string) {

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CctvService } from '../../../shareds/cctv.service';
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from '../../../../assets/font/vfs_fonts';
@@ -24,6 +25,8 @@ pdfMake.addFonts({
   styleUrl: './check-list.component.css'
 })
 export class CheckListComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   selectedMonth: Date | null = null;
   checkListItems: any[] = [];
   bsConfig: Partial<BsDatepickerConfig>;
@@ -69,16 +72,18 @@ export class CheckListComponent implements OnInit {
   }
 
   loadChecklist() {
-    this.cctvService.getChecklistItems().subscribe({
-      next: (data) => {
-        this.checkListItems = data || [];
-        this.loadChecklistLog();
-      },
-      error: (err) => {
-        console.error('Error loading checklist items:', err);
-        this.showToast('ไม่สามารถโหลดรายการ Checklist ได้', 'error');
-      }
-    });
+    this.cctvService.getChecklistItems()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.checkListItems = data || [];
+          this.loadChecklistLog();
+        },
+        error: (err) => {
+          console.error('Error loading checklist items:', err);
+          this.showToast('ไม่สามารถโหลดรายการ Checklist ได้', 'error');
+        }
+      });
   }
 
   loadChecklistLog() {
@@ -88,32 +93,34 @@ export class CheckListComponent implements OnInit {
       selectedMonthString = this.datePipe.transform(this.selectedMonth, 'yyyy-MM') || "";
     }
 
-    this.cctvService.getChecklistLogs(selectedMonthString).subscribe({
-      next: (data) => {
-        if (data && data.length > 0) {
-          for (let i = 0; i < this.checkListItems.length; i++) {
-            const item = this.checkListItems[i];
-            const dbItem = data.find((x: any) => x.checklist_item_id == item.id);
-            if (dbItem) {
-              item.status = dbItem.status;
-              item.comment = dbItem.comment;
-            } else {
-              item.status = 'ปกติ';
-              item.comment = '';
+    this.cctvService.getChecklistLogs(selectedMonthString)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          if (data && data.length > 0) {
+            for (let i = 0; i < this.checkListItems.length; i++) {
+              const item = this.checkListItems[i];
+              const dbItem = data.find((x: any) => x.checklist_item_id == item.id);
+              if (dbItem) {
+                item.status = dbItem.status;
+                item.comment = dbItem.comment;
+              } else {
+                item.status = 'ปกติ';
+                item.comment = '';
+              }
+            }
+          } else {
+            for (let i = 0; i < this.checkListItems.length; i++) {
+              this.checkListItems[i].status = 'ปกติ';
+              this.checkListItems[i].comment = '';
             }
           }
-        } else {
-          for (let i = 0; i < this.checkListItems.length; i++) {
-            this.checkListItems[i].status = 'ปกติ';
-            this.checkListItems[i].comment = '';
-          }
+        },
+        error: (err) => {
+          console.error('Error loading checklist log:', err);
+          this.showToast('ไม่สามารถโหลดข้อมูล Log Checklist ได้', 'warning');
         }
-      },
-      error: (err) => {
-        console.error('Error loading checklist log:', err);
-        this.showToast('ไม่สามารถโหลดข้อมูล Log Checklist ได้', 'warning');
-      }
-    });
+      });
   }
 
   save() {

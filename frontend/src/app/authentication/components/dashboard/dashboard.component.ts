@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
 import { CctvService, ICountPing, ILogPing } from '../../../shareds/cctv.service';
@@ -9,6 +10,8 @@ import { CctvService, ICountPing, ILogPing } from '../../../shareds/cctv.service
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   AppUrl = AppURL;
   AuthUrl = AuthenticationURL;
   public countPingItems: ICountPing[] = [];
@@ -38,6 +41,7 @@ export class DashboardComponent implements OnInit {
 
   getCountPing() {
     return this.CctvSerivce.get_countping()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.countPingItems = result['counts'] || [];
@@ -51,6 +55,7 @@ export class DashboardComponent implements OnInit {
 
   getRecentStatusChanges() {
     return this.CctvSerivce.getRecentStatusChanges()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.recentStatusChanges = result['logs'] || []; // เก็บข้อมูลสถานะล่าสุด

@@ -1,5 +1,6 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, DestroyRef, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CctvService, ICctvs } from '../../../shareds/cctv.service';
 import { environment } from '../../../../environments/environment';
 
@@ -19,6 +20,7 @@ interface IMap {
   styleUrls: ['./cctv-map-manager.component.css']
 })
 export class CctvMapManagerComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
 
   maps: IMap[] = [];
   cameras: ICctvs[] = [];
@@ -70,23 +72,25 @@ export class CctvMapManagerComponent implements OnInit {
   // --- Data Loading ---
 
   loadMaps() {
-    this.http.get<any>(this.backendUrl + 'maps').subscribe({
-      next: (res) => {
-        if (res.result) {
-          // Backend จัดเรียงตาม sort_order แล้ว
-          this.maps = res.result;
-          // Update selected map info if exists
-          if (this.selectedMap) {
-            const updated = this.maps.find(m => m.id == this.selectedMap!.id);
-            if (updated) this.selectedMap = updated;
+    this.http.get<any>(this.backendUrl + 'maps')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          if (res.result) {
+            // Backend จัดเรียงตาม sort_order แล้ว
+            this.maps = res.result;
+            // Update selected map info if exists
+            if (this.selectedMap) {
+              const updated = this.maps.find(m => m.id == this.selectedMap!.id);
+              if (updated) this.selectedMap = updated;
+            }
           }
+        },
+        error: (err) => {
+          console.error('Error loading maps:', err);
+          this.showToast('ไม่สามารถโหลดข้อมูลแผนที่ได้', 'error');
         }
-      },
-      error: (err) => {
-        console.error('Error loading maps:', err);
-        this.showToast('ไม่สามารถโหลดข้อมูลแผนที่ได้', 'error');
-      }
-    });
+      });
   }
 
   // Move map up/down
@@ -106,26 +110,28 @@ export class CctvMapManagerComponent implements OnInit {
 
   loadCameras() {
     // Type '1' = CCTV
-    this.cctvService.get_cctv('1').subscribe({
-      next: (res: any) => {
-        if (res && res.result) {
-          this.cameras = res.result
-            .filter((c: any) => c.ip && c.ip.trim() !== '') // Only cameras with IP
-            .map((c: any) => ({
-              ...c,
-              // Convert string position to number for calculations
-              map_x: c.map_x ? parseFloat(c.map_x) : null,
-              map_y: c.map_y ? parseFloat(c.map_y) : null,
-              map_id: c.map_id ? parseInt(c.map_id) : null
-            }));
-          this.filterCameras();
+    this.cctvService.get_cctv('1')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res: any) => {
+          if (res && res.result) {
+            this.cameras = res.result
+              .filter((c: any) => c.ip && c.ip.trim() !== '') // Only cameras with IP
+              .map((c: any) => ({
+                ...c,
+                // Convert string position to number for calculations
+                map_x: c.map_x ? parseFloat(c.map_x) : null,
+                map_y: c.map_y ? parseFloat(c.map_y) : null,
+                map_id: c.map_id ? parseInt(c.map_id) : null
+              }));
+            this.filterCameras();
+          }
+        },
+        error: (err) => {
+          console.error('Error loading cameras:', err);
+          this.showToast('ไม่สามารถโหลดข้อมูลกล้องได้', 'error');
         }
-      },
-      error: (err) => {
-        console.error('Error loading cameras:', err);
-        this.showToast('ไม่สามารถโหลดข้อมูลกล้องได้', 'error');
-      }
-    });
+      });
   }
 
   filterCameras() {

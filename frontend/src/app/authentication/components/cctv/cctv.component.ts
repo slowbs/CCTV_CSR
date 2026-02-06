@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CctvService, ICctvs, IFloor, IStatus } from '../../../shareds/cctv.service';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
@@ -11,6 +12,7 @@ declare const $: any;
   styleUrls: ['./cctv.component.css']
 })
 export class CctvComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
 
   public cctvItems: ICctvs[] = [];
   public allItems: ICctvs[] = []; // Store original data for filtering
@@ -46,20 +48,22 @@ export class CctvComponent implements OnInit {
 
     this.isLoading = true; //แสดง Loading
     // ดึงค่าพารามิเตอร์จาก URL
-    this.route.paramMap.subscribe(params => {
-      this.cctvType = params.get('type') || undefined; // เก็บค่าประเภทของครุภัณฑ์
-      const titles: { [key: string]: string } = {
-        '1': 'กล้องโทรทัศน์วงจรปิด',
-        '2': 'เครื่องคอมพิวเตอร์แม่ข่าย',
-        '3': 'อุปกรณ์กระจายสัญญาณ',
-        '4': 'อุปกรณ์จัดเก็บข้อมูล'
-      };
-      if (this.cctvType) {
-        this.get_Cctv(this.cctvType); // เรียกใช้ get_Cctv พร้อมพารามิเตอร์
-        this.searchText = '';
-        this.Title = titles[this.cctvType] || 'รายงานข้อมูล';
-      }
-    });
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        this.cctvType = params.get('type') || undefined; // เก็บค่าประเภทของครุภัณฑ์
+        const titles: { [key: string]: string } = {
+          '1': 'กล้องโทรทัศน์วงจรปิด',
+          '2': 'เครื่องคอมพิวเตอร์แม่ข่าย',
+          '3': 'อุปกรณ์กระจายสัญญาณ',
+          '4': 'อุปกรณ์จัดเก็บข้อมูล'
+        };
+        if (this.cctvType) {
+          this.get_Cctv(this.cctvType); // เรียกใช้ get_Cctv พร้อมพารามิเตอร์
+          this.searchText = '';
+          this.Title = titles[this.cctvType] || 'รายงานข้อมูล';
+        }
+      });
     this.getStatus(); //ดึงค่าสถานะมาแสดง
     this.getFloor(); //ดึงค่าชั้นมาแสดง
   }

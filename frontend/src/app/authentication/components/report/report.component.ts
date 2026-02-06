@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { CctvService, IReport } from '../../../shareds/cctv.service';
 import * as pdfMake from "pdfmake/build/pdfmake";
@@ -26,6 +27,8 @@ pdfMake.addFonts({
   styleUrls: ['./report.component.css']
 })
 export class ReportComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   public reportItems: IReport.Report[] = [];
   AppUrl = AppURL
   AuthUrl = AuthenticationURL
@@ -65,29 +68,31 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      const titles: { [key: string]: string } = {
-        '1': 'กล้องโทรทัศน์วงจรปิด (CCTV)',
-        '2': 'เครื่องคอมพิวเตอร์แม่ข่าย (Server)',
-        '3': 'อุปกรณ์กระจายสัญญาณ (Nework)',
-        '4': 'อุปกรณ์จัดเก็บข้อมูล (NAS)'
-      };
-      if (id) {
-        const today = new Date();
-        // กำหนด tempStartDate เป็นวันที่ 1 ของเดือนก่อนหน้า
-        this.tempStartDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        // กำหนด tempEndDate เป็นวันสุดท้ายของเดือนก่อนหน้า
-        this.tempEndDate = new Date(today.getFullYear(), today.getMonth(), 0);
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const id = params.get('id');
+        const titles: { [key: string]: string } = {
+          '1': 'กล้องโทรทัศน์วงจรปิด (CCTV)',
+          '2': 'เครื่องคอมพิวเตอร์แม่ข่าย (Server)',
+          '3': 'อุปกรณ์กระจายสัญญาณ (Nework)',
+          '4': 'อุปกรณ์จัดเก็บข้อมูล (NAS)'
+        };
+        if (id) {
+          const today = new Date();
+          // กำหนด tempStartDate เป็นวันที่ 1 ของเดือนก่อนหน้า
+          this.tempStartDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+          // กำหนด tempEndDate เป็นวันสุดท้ายของเดือนก่อนหน้า
+          this.tempEndDate = new Date(today.getFullYear(), today.getMonth(), 0);
 
-        //กำหนดค่าเริ่มต้นให้ startDate และ endDate
-        this.startDate = this.tempStartDate;
-        this.endDate = this.tempEndDate;
+          //กำหนดค่าเริ่มต้นให้ startDate และ endDate
+          this.startDate = this.tempStartDate;
+          this.endDate = this.tempEndDate;
 
-        this.get_report(id, this.startDate, this.endDate);
-        this.Title = titles[id] || 'รายงานข้อมูล';
-      }
-    });
+          this.get_report(id, this.startDate, this.endDate);
+          this.Title = titles[id] || 'รายงานข้อมูล';
+        }
+      });
   }
 
   private segmentThaiText(text: string): string {

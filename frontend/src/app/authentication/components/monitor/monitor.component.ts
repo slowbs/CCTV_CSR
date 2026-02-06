@@ -1,4 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin } from 'rxjs';
 import { CctvService, ICctvs } from '../../../shareds/cctv.service';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
@@ -29,6 +31,8 @@ declare var $: any;
   styleUrls: ['./monitor.component.css']
 })
 export class MonitorComponent implements OnInit, OnDestroy {
+  private destroyRef = inject(DestroyRef);
+
   AppUrl = AppURL;
   AuthUrl = AuthenticationURL;
   isLoading = true;
@@ -82,22 +86,27 @@ export class MonitorComponent implements OnInit, OnDestroy {
   loadData(): void {
     this.isLoading = true;
     const types = ['2', '3', '4'];
-    const promises = types.map(type => this.cctvService.get_cctv(type).toPromise());
+    const requests = types.map(type => this.cctvService.get_cctv(type));
 
-    Promise.all(promises).then(results => {
-      this.allItems = [];
-      results.forEach((res: any) => {
-        if (res && res.result) {
-          this.allItems = this.allItems.concat(res.result);
+    forkJoin(requests)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (results) => {
+          this.allItems = [];
+          results.forEach((res: any) => {
+            if (res && res.result) {
+              this.allItems = this.allItems.concat(res.result);
+            }
+          });
+          this.groupDevices(this.allItems);
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading data', err);
+          this.isLoading = false;
+          this.showToast('ไม่สามารถโหลดข้อมูล Monitor ได้', 'error');
         }
       });
-      this.groupDevices(this.allItems);
-      this.isLoading = false;
-    }).catch(err => {
-      console.error('Error loading data', err);
-      this.isLoading = false;
-      this.showToast('ไม่สามารถโหลดข้อมูล Monitor ได้', 'error');
-    });
   }
 
   groupDevices(items: ICctvs[]): void {

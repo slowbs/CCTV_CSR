@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CctvService, IUsers } from '../../../shareds/cctv.service';
 declare const $: any;
 
@@ -8,6 +9,7 @@ declare const $: any;
   styleUrl: './users.component.css'
 })
 export class UsersComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
 
   public userItems: IUsers[] = [];
   public model: IUsers;
@@ -50,6 +52,7 @@ export class UsersComponent implements OnInit {
 
   get_users() {
     this.cctvService.get_users()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.userItems = result['result'] || []; // รับผลลัพธ์โดยตรง

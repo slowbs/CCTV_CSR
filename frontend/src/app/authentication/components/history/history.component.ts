@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
@@ -11,6 +12,8 @@ import { CctvService, IAuditLog } from '../../../shareds/cctv.service';
   styleUrls: ['./history.component.css']
 })
 export class HistoryComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   AppUrl = AppURL;
   AuthUrl = AuthenticationURL;
   logs: IAuditLog[] = [];
@@ -58,36 +61,40 @@ export class HistoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      if (params['id']) {
-        this.cctvId = +params['id'];
-      } else {
-        this.cctvId = null;
-      }
-      this.currentPage = 1;
-      this.loadLogs();
-    });
+    this.route.queryParams
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        if (params['id']) {
+          this.cctvId = +params['id'];
+        } else {
+          this.cctvId = null;
+        }
+        this.currentPage = 1;
+        this.loadLogs();
+      });
   }
 
   loadLogs(): void {
     this.isLoading = true;
-    this.cctvService.get_audit_logs(this.cctvId || undefined, this.currentPage, this.pageSize).subscribe({
-      next: (res) => {
-        this.logs = res.result || [];
-        this.totalItems = res.total || 0;
-        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-        this.generatePages();
-        this.filterLogs();
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error loading logs', err);
-        this.logs = [];
-        this.filteredLogs = [];
-        this.isLoading = false;
-        this.showToast('ไม่สามารถโหลดประวัติการเปลี่ยนแปลงได้', 'error');
-      }
-    });
+    this.cctvService.get_audit_logs(this.cctvId || undefined, this.currentPage, this.pageSize)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.logs = res.result || [];
+          this.totalItems = res.total || 0;
+          this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+          this.generatePages();
+          this.filterLogs();
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading logs', err);
+          this.logs = [];
+          this.filteredLogs = [];
+          this.isLoading = false;
+          this.showToast('ไม่สามารถโหลดประวัติการเปลี่ยนแปลงได้', 'error');
+        }
+      });
   }
 
   generatePages(): void {

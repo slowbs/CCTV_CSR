@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CctvService, ICctvs, IFloor, IStatus, IType } from '../../../shareds/cctv.service';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
@@ -10,6 +11,7 @@ import { Router } from '@angular/router';
   styleUrl: './durable-create.component.css'
 })
 export class DurableCreateComponent {
+  private destroyRef = inject(DestroyRef);
 
   AppUrl = AppURL;
   AuthUrl = AuthenticationURL
@@ -50,6 +52,7 @@ export class DurableCreateComponent {
 
   getStatus() {
     return this.CctvSerivce.get_status()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.statusItems = result['result'] || [];
@@ -63,6 +66,7 @@ export class DurableCreateComponent {
 
   getFloor() {
     return this.CctvSerivce.get_floor()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.floorItems = result['result'] || [];
@@ -76,6 +80,7 @@ export class DurableCreateComponent {
 
   getType() {
     return this.CctvSerivce.get_type()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.typeItems = result['result'] || [];
