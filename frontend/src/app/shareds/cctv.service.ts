@@ -111,6 +111,11 @@ export class CctvService {
     return this.httpClient.put(this.backendURL + 'log_ping', value, { params: { log_id: log_id } })
   }
 
+  // ลบ Log Ping
+  delete_logping(log_id: any) {
+    return this.httpClient.delete(this.backendURL + 'log_ping', { params: { log_id: log_id } })
+  }
+
   // ดึงข้อมูลจำนวนนับสถานะอุปกรณ์มาแสดงในหน้า dashboard
   get_countping() {
     return this.httpClient.get<ICountPing[]>(this.backendURL + 'dashboard');

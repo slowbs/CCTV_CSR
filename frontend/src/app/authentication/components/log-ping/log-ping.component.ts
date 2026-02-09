@@ -133,5 +133,42 @@ export class LogPingComponent implements OnInit {
       });
   }
 
+  // --- Delete Log ---
+  deleteTarget: ILogPing | null = null;
+
+  onDeleteModal(item: ILogPing) {
+    this.deleteTarget = item;
+    $('#deleteLogModal').modal('show');
+  }
+
+  onDeleteConfirm() {
+    if (!this.deleteTarget) return;
+
+    this.cctvService.delete_logping(this.deleteTarget.log_id)
+      .subscribe({
+        next: () => {
+          $('#deleteLogModal').modal('hide');
+          this.showToast('ลบ Log สำเร็จ', 'success');
+          this.deleteTarget = null;
+          // โหลดข้อมูลใหม่หลังจากลบ
+          this.cctvService.notifyNavbarToRefresh();
+          if (this.currentTypeId) this.get_LogPing(this.currentTypeId);
+        },
+        error: (err) => {
+          console.error('Error deleting:', err);
+          this.showToast(err.error?.message || 'ไม่สามารถลบ Log ได้', 'error');
+        }
+      });
+  }
+
+  getStatusText(pingChecked: string): string {
+    switch (pingChecked) {
+      case '0': return 'Online';
+      case '1': return 'Offline';
+      case '2': return 'Start MA';
+      case '3': return 'End MA';
+      default: return 'Unknown';
+    }
+  }
 
 }

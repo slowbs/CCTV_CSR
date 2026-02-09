@@ -31,7 +31,7 @@
                                 <th class="text-center">IP</th>
                                 <th class="text-center">สถานะ</th>
                                 <th class="text-center">เวลา</th>
-                                <th class="text-center">หมายเหตุ</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,23 +63,25 @@
                                     </span>
                                 </td>
                                 <td>{{ item.date_created }}</td>
-                                <!-- Allow editing for Offline(1), Start MA(2) only -->
-                                <ng-container *ngIf="['1', '2'].includes(item.ping_checked) ; else noComment">
-                                    <td class="text-center">
-                                        <a [routerLink]=" []" data-bs-toggle="modal" data-bs-target="#editCommentModal"
-                                            (click)="onEditModal(item)">
-                                            <!-- <span class="badge bg-warning"><i class="bi bi-pencil-square"
-                                                    title="Edit"></i></span> -->
-                                            <span class="badge"
-                                                [ngClass]="item.comment === null || item.comment === '' ? 'bg-warning' : 'bg-success'">
-                                                <i class="bi bi-pencil-square" title="Edit"></i>
-                                            </span>
-                                        </a>
-                                    </td>
-                                </ng-container>
-                                <ng-template #noComment>
-                                    <td></td>
-                                </ng-template>
+                                <!-- Action Column: Edit (for Offline/Start MA) + Delete (all) -->
+                                <td class="text-center">
+                                    <!-- Edit button - only for Offline(1), Start MA(2) -->
+                                    <a *ngIf="['1', '2'].includes(item.ping_checked)"
+                                        [routerLink]="[]" data-bs-toggle="modal" data-bs-target="#editCommentModal"
+                                        (click)="onEditModal(item)" class="me-1">
+                                        <span class="badge"
+                                            [ngClass]="item.comment === null || item.comment === '' ? 'bg-warning' : 'bg-success'"
+                                            title="แก้ไขหมายเหตุ">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </span>
+                                    </a>
+                                    <!-- Delete button - all rows -->
+                                    <a [routerLink]="[]" (click)="onDeleteModal(item)">
+                                        <span class="badge bg-danger" title="ลบ Log">
+                                            <i class="bi bi-trash"></i>
+                                        </span>
+                                    </a>
+                                </td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -132,6 +134,56 @@
                         <input type="button" class="btn btn-danger modal_button" data-bs-dismiss="modal" value="Cancel">
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteLogModal" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>ยืนยันการลบ Log</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" *ngIf="deleteTarget">
+                    <p class="mb-3">คุณต้องการลบ Log นี้ใช่หรือไม่?</p>
+                    <div class="card bg-light">
+                        <div class="card-body py-2">
+                            <div class="row mb-1">
+                                <div class="col-4 text-muted"><i class="bi bi-card-list me-1"></i>รายการ:</div>
+                                <div class="col-8 fw-bold">{{ deleteTarget.durable_name }}</div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-4 text-muted"><i class="bi bi-globe me-1"></i>IP:</div>
+                                <div class="col-8">{{ deleteTarget.ip }}</div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-4 text-muted"><i class="bi bi-clock me-1"></i>เวลา:</div>
+                                <div class="col-8">{{ deleteTarget.date_created }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4 text-muted"><i class="bi bi-wifi me-1"></i>สถานะ:</div>
+                                <div class="col-8">
+                                    <span class="badge" [ngClass]="{
+                                        'bg-success': deleteTarget.ping_checked === '0',
+                                        'bg-danger': deleteTarget.ping_checked === '1',
+                                        'bg-warning text-dark': deleteTarget.ping_checked === '2',
+                                        'bg-info': deleteTarget.ping_checked === '3'
+                                    }">
+                                        {{ getStatusText(deleteTarget.ping_checked) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-danger" (click)="onDeleteConfirm()">
+                        <i class="bi bi-trash me-1"></i>ลบ
+                    </button>
+                </div>
             </div>
         </div>
     </div>
