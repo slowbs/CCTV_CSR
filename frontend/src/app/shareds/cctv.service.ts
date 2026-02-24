@@ -150,6 +150,11 @@ export class CctvService {
     return this.httpClient.put(this.backendURL + 'users', value, { params: { user_id } })
   }
 
+  // ลบผู้ใช้งาน
+  delete_user(user_id: any) {
+    return this.httpClient.delete(this.backendURL + 'users', { params: { user_id } })
+  }
+
   //ดึงข้อมูลมาแสดงรายงาน
   // ใน CctvService
   get_report(id: any, startDate?: string, endDate?: string) {

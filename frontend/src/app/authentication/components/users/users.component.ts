@@ -70,7 +70,30 @@ export class UsersComponent implements OnInit {
 
   onEditModal(items: IUsers) {
     Object.assign(this.cctvService.updateModelUser, items);
-    // console.log(items)
+  }
+
+  deleteTarget: IUsers | null = null;
+
+  onDeleteModal(item: IUsers) {
+    this.deleteTarget = item;
+    ($('#deleteUserModal') as any).modal('show');
+  }
+
+  onDeleteConfirm() {
+    if (!this.deleteTarget?.user_id) return;
+    this.cctvService.delete_user(this.deleteTarget.user_id)
+      .subscribe({
+        next: () => {
+          ($('#deleteUserModal') as any).modal('hide');
+          this.showToast('ลบผู้ใช้งานสำเร็จ', 'success');
+          this.deleteTarget = null;
+          this.get_users();
+        },
+        error: (err) => {
+          console.error('Error deleting user:', err);
+          this.showToast(err.error?.message || 'ไม่สามารถลบผู้ใช้งานได้', 'error');
+        }
+      });
   }
 
   onEditSubmit() {
