@@ -29,7 +29,7 @@
                 </div>
                 <div class="flex-grow-1">
                     <div class="fw-bold text-truncate" style="max-width: 100px;">{{ map.name }}</div>
-                    <small class="text-muted">{{ map.cctv_count || 0 }} cameras</small>
+                    <small class="text-muted">กล้อง {{ map.cctv_count || 0 }} ตัว</small>
                 </div>
                 <div class="map-actions">
                     <button class="btn btn-sm btn-light text-primary me-1" (click)="openEditMapModal(map, $event)"
@@ -58,7 +58,7 @@
                 <span class="badge bg-secondary">{{ getMapCameras().length }} Cameras on map</span>
             </div>
             <div>
-                <small class="text-muted me-2"><i class="bi bi-info-circle"></i> Drag cameras to adjust position</small>
+                <small class="text-muted me-2"><i class="bi bi-info-circle"></i> ลากกล้องเพื่อปรับตำแหน่ง</small>
             </div>
         </div>
 
@@ -98,7 +98,7 @@
             <span class="badge bg-light text-dark border">{{ filteredCameras.length }}</span>
         </div>
         <div class="filter-bar">
-            <input type="text" class="form-control form-control-sm mb-2" placeholder="Search Location, IP, Floor..."
+            <input type="text" class="form-control form-control-sm mb-2" placeholder="ค้นหาจาก สถานที่, IP, ชั้น..."
                 [(ngModel)]="searchText" (keyup)="filterCameras()">
             <div class="btn-group w-100 btn-group-sm" role="group">
                 <input type="radio" class="btn-check" name="filterType" id="filterCurrent" autocomplete="off"
