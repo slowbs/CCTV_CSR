@@ -3,7 +3,7 @@
     <!-- LEFT: Map List -->
     <div class="sidebar-maps">
         <div class="sidebar-header">
-            <h5 class="mb-0"><i class="bi bi-map me-2"></i>Maps</h5>
+            <h5 class="mb-0"><i class="bi bi-map me-2"></i>แผนที่</h5>
             <span class="badge bg-accent">{{ maps.length }}</span>
         </div>
         <div class="map-list" *ngIf="maps.length > 0; else noMaps">
@@ -12,7 +12,7 @@
                 <i class="bi bi-pin-map-fill map-icon me-2"></i>
                 <div class="flex-grow-1">
                     <div class="fw-bold text-truncate" style="max-width: 150px;">{{ map.name }}</div>
-                    <small class="text-muted">{{ map.cctv_count || 0 }} cameras</small>
+                    <small class="text-muted">กล้อง {{ map.cctv_count || 0 }} ตัว</small>
                 </div>
                 <div class="map-status-indicators">
                     <div class="status-dot status-offline" *ngIf="hasMapOffline(map.id)"></div>
