@@ -6,9 +6,9 @@ import * as pdfFonts from '../../../../assets/font/vfs_fonts';
 import { DatePipe } from '@angular/common';
 import { BsLocaleService, BsDatepickerConfig, BsDatepickerViewMode } from 'ngx-bootstrap/datepicker';
 import { defineLocale } from 'ngx-bootstrap/chronos';
-import { thLocale } from 'ngx-bootstrap/locale';
+import { thBeLocale } from 'ngx-bootstrap/locale';
 
-defineLocale('th', thLocale);
+defineLocale('th-be', thBeLocale);
 
 (<any>pdfMake).addVirtualFileSystem(pdfFonts);
 
@@ -49,13 +49,13 @@ export class CheckListComponent implements OnInit {
     private datePipe: DatePipe,
     private localeService: BsLocaleService
   ) {
-    this.localeService.use('th');
+    this.localeService.use('th-be'); // พ.ศ.
     //กำหนดค่าเริ่มต้นให้ datepicker
     this.bsConfig = Object.assign({}, {
       minMode: 'month' as BsDatepickerViewMode, //กำหนดให้เลือกได้เฉพาะเดือน
-      isAnimated: true, // กำหนด animation
-      showClearButton: true, //แสดงปุ่ม clear
-      dateInputFormat: 'MM/YYYY' //กำหนด format ให้แสดงเป็น MM/YYYY
+      isAnimated: true,
+      showClearButton: true,
+      dateInputFormat: 'MM/YYYY' // locale th-be จะแสดงปีเป็น พ.ศ.
     });
   }
 
