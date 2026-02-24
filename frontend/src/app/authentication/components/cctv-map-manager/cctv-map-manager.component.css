@@ -25,6 +25,20 @@
     align-items: center;
 }
 
+/* ปุ่มที่มีแค่ icon ให้ icon อยู่กลางปุ่ม */
+.sidebar-header .btn,
+.sidebar-maps .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.sidebar-maps .btn i.bi {
+    margin: 0;
+}
+
 .map-list {
     flex: 1;
     overflow-y: auto;
@@ -52,7 +66,7 @@
     color: #1976d2;
 }
 
-/* Reorder Buttons */
+/* Reorder Buttons - icon อยู่กลางปุ่ม */
 .reorder-buttons {
     display: flex;
     flex-direction: column;
@@ -60,7 +74,12 @@
 }
 
 .reorder-buttons .btn {
-    padding: 2px 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px 4px;
+    min-width: 20px;
+    min-height: 16px;
     font-size: 10px;
     line-height: 1;
 }
@@ -69,10 +88,28 @@
     opacity: 0.3;
 }
 
-/* Map Actions */
+/* Map Actions - ปุ่มแก้ไข/ลบ icon อยู่กลาง */
 .map-actions {
     display: flex;
     gap: 2px;
+}
+
+.map-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    min-width: 30px;
+    min-height: 30px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.map-actions .btn:hover {
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+.map-actions .btn .bi {
+    margin: 0;
 }
 
 .map-thumb {
