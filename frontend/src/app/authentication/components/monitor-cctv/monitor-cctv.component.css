@@ -173,13 +173,26 @@
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     padding: 0 20px;
     z-index: 10;
 }
 
-.action-buttons {
+/* Left spacer to keep summary bar centered */
+.canvas-toolbar::before {
+    content: '';
+    flex: 1;
+}
+
+.status-summary-bar {
     display: flex;
+    gap: 30px;
+}
+
+.action-buttons {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
     gap: 10px;
 }
 
