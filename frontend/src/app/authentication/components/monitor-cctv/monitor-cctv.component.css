@@ -178,6 +178,27 @@
     z-index: 10;
 }
 
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-outline-accent {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    background: transparent;
+}
+
+.btn-outline-accent:hover:not(:disabled) {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+.btn-outline-accent:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Status Summary Bar */
 .status-summary-bar {
     display: flex;
@@ -393,6 +414,42 @@
         box-shadow: 0 0 8px var(--offline-color);
     }
 }
+
+/* ========== EXPORTING FIXES (Stabilize html2canvas) ========== */
+.exporting .cctv-marker {
+    transform: none !important; /* html2canvas hates translate() on relative positioned markers */
+    margin-left: -14px; /* 28px width / 2 */
+    margin-top: -14px;  /* 28px height / 2 */
+    box-shadow: none !important;
+    animation: none !important;
+}
+
+.exporting .marker-tooltip {
+    display: none !important; /* Hide tooltips in PDF */
+}
+
+.exporting .cctv-marker::before {
+    /* Fallback for clip-path during export: use a CSS triangle */
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+    border-left: 20px solid transparent !important;
+    border-right: 20px solid transparent !important;
+    border-top: 50px solid rgba(40, 167, 69, 0.5) !important;
+    clip-path: none !important;
+    border-radius: 0 !important;
+    transform: translate(-50%, -100%) rotate(var(--cone-rotation, 0deg)) !important;
+    transform-origin: bottom center !important;
+    top: 50% !important;
+    left: 50% !important;
+    transition: none !important;
+}
+
+.exporting .marker-online::before { border-top-color: rgba(46, 204, 113, 0.4) !important; }
+.exporting .marker-offline::before { border-top-color: rgba(231, 76, 60, 0.4) !important; }
+.exporting .marker-ma::before { border-top-color: rgba(241, 196, 15, 0.4) !important; }
+
+/* ================================= */
 
 .marker-tooltip {
     position: absolute;
@@ -780,4 +837,92 @@
 .camera-scroller::-webkit-scrollbar-thumb:hover,
 .canvas-viewport::-webkit-scrollbar-thumb:hover {
     background: var(--text-secondary);
+}
+
+/* ========== PRINT / PDF STYLES ========== */
+@media print {
+    /* Hide sidebars and toolbar only — NOT the viewport */
+    .sidebar-maps,
+    .sidebar-cameras,
+    .canvas-toolbar,
+    .action-buttons {
+        display: none !important;
+    }
+
+    /* Force white backgrounds on all dark containers */
+    .monitor-map-container,
+    .main-canvas,
+    .canvas-viewport,
+    .map-container {
+        background: white !important;
+        background-color: white !important;
+        background-image: none !important;
+    }
+
+    /* Layout: make map fill the page */
+    .monitor-map-container {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .main-canvas {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .canvas-viewport {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        min-height: unset !important;
+    }
+
+    .map-container {
+        display: inline-block !important;
+        box-shadow: none !important;
+        max-width: 100% !important;
+        max-height: calc(100vh - 10mm) !important;
+    }
+
+    .map-image {
+        display: block !important;
+        max-width: 100% !important;
+        max-height: calc(100vh - 10mm) !important;
+        width: auto !important;
+        height: auto !important;
+    }
+
+    /* Keep markers + cones printed with color */
+    .cctv-marker {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .cctv-marker.marker-online { background: #2ecc71 !important; }
+    .cctv-marker.marker-offline { background: #e74c3c !important; animation: none !important; }
+    .cctv-marker.marker-ma { background: #f1c40f !important; }
+    .cctv-marker.marker-disconnected { background: #6c757d !important; }
+
+    .cctv-marker::before {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Hide tooltips */
+    .marker-tooltip {
+        display: none !important;
+    }
+
+    @page {
+        size: landscape;
+        margin: 5mm;
+    }
 }

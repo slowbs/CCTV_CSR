@@ -5,6 +5,8 @@ import { Subject, of, tap, debounceTime } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { CctvService, ICctvs } from '../../../shareds/cctv.service';
 import { environment } from '../../../../environments/environment';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 declare var $: any;
 
@@ -486,6 +488,12 @@ export class CctvMapManagerComponent implements OnInit {
         },
         error: (err) => console.error(err)
       });
+  }
+
+  // --- Export PDF ---
+  exportToPdf() {
+    if (!this.selectedMap) return;
+    window.print();
   }
 
 }

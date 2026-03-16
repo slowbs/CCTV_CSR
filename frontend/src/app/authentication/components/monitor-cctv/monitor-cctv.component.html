@@ -61,6 +61,12 @@
                     <span class="stat-label">Disconnected</span>
                 </div>
             </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-outline-accent btn-sm" (click)="exportToPdf()" [disabled]="!selectedMap">
+                    <i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF
+                </button>
+            </div>
         </div>
 
         <div class="canvas-viewport">

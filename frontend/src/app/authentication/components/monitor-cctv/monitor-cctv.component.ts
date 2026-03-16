@@ -1,8 +1,10 @@
-import { Component, OnInit, OnDestroy, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, DestroyRef, inject, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CctvService, ICctvs } from '../../../shareds/cctv.service';
 import { environment } from '../../../../environments/environment';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 declare var $: any;
 
@@ -45,6 +47,8 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
   clearToast() {
     this.toastMessage = '';
   }
+
+  @ViewChild('mapContainer') mapContainer!: ElementRef;
 
   // Backend URL helper
   private get backendUrl() {
@@ -265,4 +269,11 @@ export class MonitorCctvComponent implements OnInit, OnDestroy {
     ($('#imagePreviewModal') as any).modal('hide');
     this.previewImageUrl = null;
   }
+
+  // --- Export PDF ---
+  exportToPdf() {
+    if (!this.selectedMap) return;
+    window.print();
+  }
 }
+

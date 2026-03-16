@@ -215,6 +215,36 @@
     transition: transform 0.1s ease-out;
 }
 
+/* ========== EXPORTING FIXES (Stabilize html2canvas) ========== */
+.exporting .cctv-marker {
+    transform: none !important;
+    margin-left: -12px; /* 24px width / 2 */
+    margin-top: -12px;  /* 24px height / 2 */
+    box-shadow: none !important;
+}
+
+.exporting .marker-tooltip {
+    display: none !important;
+}
+
+.exporting .cctv-marker::before {
+    /* Fallback for clip-path during export */
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+    border-left: 20px solid transparent !important;
+    border-right: 20px solid transparent !important;
+    border-top: 50px solid rgba(40, 167, 69, 0.5) !important;
+    clip-path: none !important;
+    border-radius: 0 !important;
+    transform: translate(-50%, -100%) rotate(var(--cone-rotation, 0deg)) !important;
+    transform-origin: bottom center !important;
+    top: 50% !important;
+    left: 50% !important;
+    transition: none !important;
+}
+/* ================================= */
+
 .cctv-marker:hover {
     z-index: 200;
     transform: translate(-50%, -50%) scale(1.2);
@@ -319,4 +349,74 @@
     height: 100%;
     color: #999;
     text-align: center;
+}
+
+/* ========== PRINT / PDF STYLES ========== */
+@media print {
+    .sidebar-maps,
+    .sidebar-cameras,
+    .canvas-toolbar {
+        display: none !important;
+    }
+
+    .map-manager-container,
+    .main-canvas,
+    .canvas-viewport,
+    .map-container {
+        background: white !important;
+        background-color: white !important;
+        background-image: none !important;
+    }
+
+    .map-manager-container,
+    .main-canvas {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .canvas-viewport {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .map-container {
+        display: inline-block !important;
+        box-shadow: none !important;
+        max-width: 100% !important;
+        max-height: calc(100vh - 10mm) !important;
+    }
+
+    .map-image {
+        display: block !important;
+        max-width: 100% !important;
+        max-height: calc(100vh - 10mm) !important;
+        width: auto !important;
+        height: auto !important;
+    }
+
+    .cctv-marker {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .cctv-marker::before {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .marker-tooltip {
+        display: none !important;
+    }
+
+    @page {
+        size: landscape;
+        margin: 5mm;
+    }
 }
