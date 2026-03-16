@@ -24,7 +24,8 @@ if ($conn->query($sql_create_table) === TRUE) {
 $columns_to_add = [
     "map_id" => "int(11) DEFAULT NULL",
     "map_x" => "varchar(50) DEFAULT NULL",
-    "map_y" => "varchar(50) DEFAULT NULL"
+    "map_y" => "varchar(50) DEFAULT NULL",
+    "map_rotation" => "int(11) DEFAULT 0"
 ];
 
 foreach ($columns_to_add as $column => $definition) {

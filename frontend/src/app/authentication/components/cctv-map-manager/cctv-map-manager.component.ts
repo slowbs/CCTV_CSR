@@ -1,6 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild, DestroyRef, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, of, tap, debounceTime } from 'rxjs';
+import { Observable } from 'rxjs/internal/Observable';
 import { CctvService, ICctvs } from '../../../shareds/cctv.service';
 import { environment } from '../../../../environments/environment';
 
@@ -40,6 +42,9 @@ export class CctvMapManagerComponent implements OnInit {
   toastMessage: string = '';
   toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
 
+  // Subject for debouncing rotation updates
+  private rotationSubject = new Subject<{ cam: ICctvs, mapId: number, x: number, y: number, rotation: number }>();
+
   showToast(message: string, type: 'error' | 'success' | 'warning' | 'info' = 'error') {
     this.toastMessage = message;
     this.toastType = type;
@@ -62,7 +67,15 @@ export class CctvMapManagerComponent implements OnInit {
     }
   }
 
-  constructor(private cctvService: CctvService, private http: HttpClient) { }
+  constructor(private cctvService: CctvService, private http: HttpClient) { 
+    // Set up debouncer for rotation to prevent API spam and UI flicker
+    this.rotationSubject.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      debounceTime(500) // Wait 500ms after last scroll before sending API request
+    ).subscribe((data: { cam: ICctvs, mapId: number, x: number, y: number, rotation: number }) => {
+      this.saveRotationPosition(data.cam, data.mapId, data.x, data.y, data.rotation);
+    });
+  }
 
   ngOnInit(): void {
     this.loadMaps();
@@ -122,6 +135,7 @@ export class CctvMapManagerComponent implements OnInit {
                 // Convert string position to number for calculations
                 map_x: c.map_x ? parseFloat(c.map_x) : null,
                 map_y: c.map_y ? parseFloat(c.map_y) : null,
+                map_rotation: c.map_rotation ? parseInt(c.map_rotation) : 0,
                 map_id: c.map_id ? parseInt(c.map_id) : null
               }));
             this.filterCameras();
@@ -345,17 +359,21 @@ export class CctvMapManagerComponent implements OnInit {
     }
   }
 
-  updateCameraPosition(cam: ICctvs, mapId: number, x: number, y: number) {
+  updateCameraPosition(cam: ICctvs, mapId: number, x: number, y: number, rotation: number | null = null) {
     // Optimistic Query Update (Instant feedback)
     cam.map_id = mapId; // Cast to any if type mismatch logic
     cam.map_x = x;
     cam.map_y = y;
+    if (rotation !== null) {
+        cam.map_rotation = rotation;
+    }
 
     const payload = {
       cctv_id: cam.id,
       map_id: mapId,
       x: x,
-      y: y
+      y: y,
+      rotation: cam.map_rotation
     };
 
     this.http.put<any>(this.backendUrl + 'maps/cctv', payload).subscribe({
@@ -405,6 +423,69 @@ export class CctvMapManagerComponent implements OnInit {
 
   onImageLoad(event: any) {
     // console.log('Image loaded, dimensions:', event.target.width, event.target.height);
+  }
+
+  // --- Rotation Logic ---
+  onWheel(event: WheelEvent, cam: ICctvs) {
+    if (!this.selectedMap) return;
+    
+    // Require Shift key to be held down to rotate, to prevent accidental rotation during normal scrolling
+    if (!event.shiftKey) {
+        return;
+    }
+
+    event.preventDefault(); // Prevent page scrolling
+
+    let currentRotation = cam.map_rotation ? cam.map_rotation : 0;
+    
+    // Rotate by 15 degrees per scroll "tick"
+    const rotationAmount = 15;
+
+    if (event.deltaY < 0) {
+      // Scrolling up -> rotate clockwise
+      currentRotation += rotationAmount;
+    } else {
+      // Scrolling down -> rotate counter-clockwise
+      currentRotation -= rotationAmount;
+    }
+
+    let rotationArgs: number | null = currentRotation !== undefined ? currentRotation : null;
+
+    // 1. Update LOCAL UI state immediately for smooth animation without waiting for API
+    cam.map_rotation = currentRotation;
+
+    // 2. Queue the API call instead of calling updateCameraPosition directly
+    if (cam.map_x !== null && cam.map_y !== null && cam.map_x !== undefined && cam.map_y !== undefined && rotationArgs !== null) {
+        this.rotationSubject.next({
+            cam: cam,
+            mapId: this.selectedMap.id,
+            x: cam.map_x,
+            y: cam.map_y,
+            rotation: rotationArgs
+        });
+    }
+  }
+
+  // Helper method actually performs the HTTP request for rotation
+  private saveRotationPosition(cam: ICctvs, mapId: number, x: number, y: number, rotation: number) {
+      const payload = {
+        cctv_id: cam.id,
+        map_id: mapId,
+        x: x,
+        y: y,
+        rotation: rotation
+      };
+  
+      this.http.put<any>(this.backendUrl + 'maps/cctv', payload).subscribe({
+        next: (res) => {
+          if (!res.result) {
+            console.error('Failed to save rotation', res);
+          }
+          // Do NOT call reloadCameras() or reloadMaps() here, 
+          // because reloading the array resets the DOM elements and causes tooltips to close/flicker.
+        },
+        error: (err) => console.error(err)
+      });
   }
 
 }

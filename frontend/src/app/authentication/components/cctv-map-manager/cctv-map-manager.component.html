@@ -58,7 +58,7 @@
                 <span class="badge bg-secondary">{{ getMapCameras().length }} Cameras on map</span>
             </div>
             <div>
-                <small class="text-muted me-2"><i class="bi bi-info-circle"></i> ลากกล้องเพื่อปรับตำแหน่ง</small>
+                <small class="text-muted me-2"><i class="bi bi-info-circle"></i> ลากเพื่อย้ายตำแหน่ง | กด Shift + เลื่อนลูกกลิ้งเมาส์ เพื่อหมุน</small>
             </div>
         </div>
 
@@ -71,9 +71,9 @@
 
                 <!-- Markers -->
                 <div *ngFor="let cam of getMapCameras()" class="cctv-marker" [style.left.%]="cam.map_x"
-                    [style.top.%]="cam.map_y" draggable="true" (dragstart)="onDragStart($event, cam)"
-                    (contextmenu)="onContextMenu($event, cam)">
-                    <i class="bi bi-camera-video-fill"></i>
+                    [style.top.%]="cam.map_y" [style.transform]="'translate(-50%, -50%)'" [style.--cone-rotation]="(cam.map_rotation || 0) + 'deg'" draggable="true" (dragstart)="onDragStart($event, cam)"
+                    (contextmenu)="onContextMenu($event, cam)" (wheel)="onWheel($event, cam)">
+                    <i class="bi bi-camera-video-fill" [style.transform]="'rotate(' + ((cam.map_rotation || 0) - 90) + 'deg)'" style="display: inline-block;"></i>
                     <div class="marker-tooltip">
                         <div class="fw-bold">{{ cam.location || cam.durable_name }}</div>
                         <div class="small">{{ cam.floor }} - {{ cam.monitor }}</div>

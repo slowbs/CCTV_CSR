@@ -217,12 +217,13 @@ export class CctvService {
   }
 
   // อัพเดตตำแหน่งกล้องบนแผนที่
-  update_cctv_position(cctvId: any, mapId: number | null, x: number | null, y: number | null): Observable<any> {
+  update_cctv_position(cctvId: any, mapId: number | null, x: number | null, y: number | null, rotation: number | null = null): Observable<any> {
     return this.httpClient.put(this.backendURL + 'maps/cctv', {
       cctv_id: cctvId,
       map_id: mapId,
       x: x,
-      y: y
+      y: y,
+      rotation: rotation
     });
   }
 
@@ -298,6 +299,7 @@ export interface ICctvs {
   map_id?: number | null;
   map_x?: number | null;
   map_y?: number | null;
+  map_rotation?: number | null;
   image_path?: string;
 }
 
