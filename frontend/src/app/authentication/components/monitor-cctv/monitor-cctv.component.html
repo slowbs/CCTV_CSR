@@ -69,13 +69,13 @@
 
                 <!-- Markers with status -->
                 <div *ngFor="let cam of getMapCameras()" class="cctv-marker" [style.left.%]="cam.map_x"
-                    [style.top.%]="cam.map_y" [ngClass]="{
+                    [style.top.%]="cam.map_y" [style.--cone-rotation]="(cam.map_rotation || 0) + 'deg'" [ngClass]="{
                         'marker-online': cam.ping === '0' && cam.maintenance_mode != 1 && cam.status_id == '1',
                         'marker-offline': cam.ping !== '0' && cam.maintenance_mode != 1 && cam.status_id == '1',
                         'marker-ma': cam.maintenance_mode == 1 && cam.status_id == '1',
                         'marker-disconnected': cam.status_id == '2'
                     }" (click)="openDetailModal(cam)">
-                    <i class="bi bi-camera-video-fill"></i>
+                    <i class="bi bi-camera-video-fill" [style.transform]="'rotate(' + ((cam.map_rotation || 0) - 90) + 'deg)'" style="display: inline-block;"></i>
                     <div class="marker-tooltip" [ngClass]="{
                         'tooltip-bottom': (cam.map_y || 0) < 15,
                         'tooltip-align-right': (cam.map_x || 0) < 15,

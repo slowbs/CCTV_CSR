@@ -322,6 +322,36 @@
     transition: all 0.2s ease;
 }
 
+/* Cone of Vision / Flashlight effect using clip-path for a curved bottom */
+.cctv-marker::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Size of the cone (radius) */
+    width: 60px;
+    height: 60px;
+    
+    /* Make the cone inherit the color from the marker status */
+    background: inherit;
+    opacity: 0.4;
+    
+    /* Center the cone pointing UPwards (0 deg) */
+    transform-origin: 50% 100%;
+    transform: translate(-50%, -100%) rotate(var(--cone-rotation, 0deg));
+    
+    /* Clip into a pie slice/cone shape */
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+    
+    /* Outer edge curved like a real flashlight beam */
+    border-radius: 50% 50% 0 0;
+    
+    /* Place behind the main icon */
+    z-index: -1;
+    pointer-events: none;
+    transition: transform 0.1s ease-out;
+}
+
 .cctv-marker:hover {
     z-index: 200;
     transform: translate(-50%, -50%) scale(1.3);
