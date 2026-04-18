@@ -95,51 +95,62 @@ if (isset($_GET['id'])) {
         $result_old = mysqli_stmt_get_result($stmt_old);
         $old_row = mysqli_fetch_assoc($result_old);
 
+        // Defensive check for missing properties to avoid PHP notices
+        $data->ip = $data->ip ?? '';
+        $data->location = $data->location ?? '';
+        $data->monitor = $data->monitor ?? '';
+        $data->status_id = $data->status_id ?? ($old_row['status'] ?? '');
+        $data->floor_id = $data->floor_id ?? ($old_row['floor'] ?? '');
+        $data->model = $data->model ?? '';
+        $maintenance_mode = $data->maintenance_mode ?? 0;
+
         // Prepare audit log data
-        $old_ip = $old_row['ip'];
+        $old_ip = $old_row['ip'] ?? '';
         $new_ip = $data->ip;
-        $old_location = $old_row['location'];
+        $old_location = $old_row['location'] ?? '';
         $new_location = $data->location;
-        $old_monitor = $old_row['monitor'];
+        $old_monitor = $old_row['monitor'] ?? '';
         $new_monitor = $data->monitor;
-        $old_status = $old_row['status']; // Assuming status is stored as ID in cctv table, need to check if it matches input
+        $old_status = $old_row['status'] ?? '';
         $new_status = $data->status_id;
-        $old_floor = $old_row['floor']; // Assuming floor is stored as ID
+        $old_floor = $old_row['floor'] ?? '';
         $new_floor = $data->floor_id;
 
-        // Check for changes
+        // Check for changes and log audit
         if ($old_ip != $new_ip || $old_location != $new_location || $old_monitor != $new_monitor || $old_status != $new_status || $old_floor != $new_floor) {
             $audit_query = "INSERT INTO cctv_audit_logs (cctv_id, old_ip, new_ip, old_location, new_location, old_monitor, new_monitor, old_status, new_status, old_floor, new_floor, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
             $stmt_audit = mysqli_prepare($conn, $audit_query);
-            mysqli_stmt_bind_param($stmt_audit, 'issssssssss', $_GET['id'], $old_ip, $new_ip, $old_location, $new_location, $old_monitor, $new_monitor, $old_status, $new_status, $old_floor, $new_floor);
-            mysqli_stmt_execute($stmt_audit);
+            if ($stmt_audit) {
+                mysqli_stmt_bind_param($stmt_audit, 'issssssssss', $_GET['id'], $old_ip, $new_ip, $old_location, $new_location, $old_monitor, $new_monitor, $old_status, $new_status, $old_floor, $new_floor);
+                mysqli_stmt_execute($stmt_audit);
+            }
         }
 
         // Logic Maintenance Mode Log
-        $maintenance_mode = isset($data->maintenance_mode) ? $data->maintenance_mode : 0;
-        $old_maintenance_mode = $old_row['maintenance_mode'];
+        $old_maintenance_mode = $old_row['maintenance_mode'] ?? 0;
         
         if ($old_maintenance_mode != $maintenance_mode) {
              // mode 1 (Start MA) -> ping_checked = 2
              // mode 0 (End MA)   -> ping_checked = 3
-             // mode only 0 or 1
              $ping_checked = ($maintenance_mode == 1) ? 2 : 3;
-             $cctv_type = $old_row['type']; // Use type from old data
+             $cctv_type = $old_row['type'] ?? 1;
 
              $log_query = "INSERT INTO log_ping (cctv_id, type, ping_checked, date_created) VALUES (?, ?, ?, NOW())";
              $stmt_log = mysqli_prepare($conn, $log_query);
-             mysqli_stmt_bind_param($stmt_log, 'iii', $_GET['id'], $cctv_type, $ping_checked);
-             mysqli_stmt_execute($stmt_log);
+             if ($stmt_log) {
+                mysqli_stmt_bind_param($stmt_log, 'iii', $_GET['id'], $cctv_type, $ping_checked);
+                mysqli_stmt_execute($stmt_log);
+             }
 
-             // ส่งแจ้งเตือน Telegram เมื่อเปิด/ปิด MA mode
+             // ส่งแจ้งเตือน Telegram
              $ma_status = ($maintenance_mode == 1) ? 'เปิด Maintenance Mode 🔧' : 'ปิด Maintenance Mode ✅';
              $telegram_message = "<b>{$ma_status}</b>\n" .
-                                 "หมายเลขครุภัณฑ์: <b>{$old_row['durable_no']}</b>\n" .
-                                 "รายการ: {$old_row['durable_name']}\n" .
-                                 "อาคาร: {$old_row['floor_name']}\n" .
-                                 "สถานที่: {$old_row['location']}\n" .
-                                 "Monitor: {$old_row['monitor']}\n" .
-                                 "หมายเลข IP: {$old_row['ip']}";
+                                 "หมายเลขครุภัณฑ์: <b>" . ($old_row['durable_no'] ?? '') . "</b>\n" .
+                                 "รายการ: " . ($old_row['durable_name'] ?? '') . "\n" .
+                                 "อาคาร: " . ($old_row['floor_name'] ?? '') . "\n" .
+                                 "สถานที่: " . ($old_row['location'] ?? '') . "\n" .
+                                 "Monitor: " . ($old_row['monitor'] ?? '') . "\n" .
+                                 "หมายเลข IP: " . ($old_row['ip'] ?? '');
              sendTelegramMessage($telegram_message);
         }
 
@@ -148,6 +159,14 @@ if (isset($_GET['id'])) {
         ip = ?, maintenance_mode = ?, date_updated = NOW() 
         where id = ?";
         $stmt = mysqli_prepare($conn, $query);
+        
+        if (!$stmt) {
+            http_response_code(500);
+            exit(json_encode([
+                'message' => 'เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL (UPDATE): ' . mysqli_error($conn)
+            ], JSON_UNESCAPED_UNICODE));
+        }
+
         mysqli_stmt_bind_param(
             $stmt,
             'sssssssssii',
@@ -163,19 +182,17 @@ if (isset($_GET['id'])) {
             $maintenance_mode,
             $_GET['id']
         );
-        mysqli_stmt_execute($stmt);
-        $error_message = mysqli_error($conn);
-
-        if ($error_message) { //ใช้ในการ เช็ค error
+        
+        if (!mysqli_stmt_execute($stmt)) {
             http_response_code(500);
             exit(json_encode([
-                'message' => $error_message
-            ]));
+                'message' => 'เกิดข้อผิดพลาดในการอัปเดตข้อมูล: ' . mysqli_stmt_error($stmt)
+            ], JSON_UNESCAPED_UNICODE));
         }
 
         exit(json_encode([
             'message' => 'แก้ไขสำเร็จ'
-        ]));
+        ], JSON_UNESCAPED_UNICODE));
     }
 }
 

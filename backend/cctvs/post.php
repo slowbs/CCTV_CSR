@@ -42,20 +42,27 @@ if (
         ]));
     }
 
-    // หาก ip เป็นค่าว่าง ให้กำหนดเป็น ''
-    if (!isset($data->ip)) {
-        $data->ip = '';
+    // กำหนดค่าเริ่มต้นสำหรับฟิลด์ที่ส่งมาไม่ครบ
+    $data->model = $data->model ?? '';
+    $data->location = $data->location ?? '';
+    $data->monitor = $data->monitor ?? '';
+    $data->ip = $data->ip ?? '';
+    $maintenance_mode = $data->maintenance_mode ?? 0;
+
+    $query = "INSERT INTO cctv (durable_no, durable_name, brand, model, location, type, monitor, ip, floor, status, maintenance_mode, count_ping) VALUES (?, ?, ?, ?, ?, ?, ?, ? ,? ,?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $query);
+    
+    if (!$stmt) {
+        http_response_code(500);
+        exit(json_encode([
+            'message' => 'เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: ' . mysqli_error($conn)
+        ], JSON_UNESCAPED_UNICODE));
     }
 
-    //กรณีที่เงือนไขครบถ้วน
-    //     'data' => $data->name
-    // ]);
-    $query = "INSERT INTO cctv (durable_no, durable_name, brand, model, location, type, monitor, ip, floor, status, maintenance_mode) VALUES (?, ?, ?, ?, ?, ?, ?, ? ,? ,?, ?)";
-    $stmt = mysqli_prepare($conn, $query);
-    $maintenance_mode = isset($data->maintenance_mode) ? $data->maintenance_mode : 0;
+    $count_ping = 0; // ค่าเริ่มต้นเป็น 0 สำหรับรายการที่มีใหม่
     mysqli_stmt_bind_param(
         $stmt,
-        'sssssissiii',
+        'sssssissiiii',
         $data->durable_no,
         $data->durable_name,
         $data->brand,
@@ -66,16 +73,15 @@ if (
         $data->ip,
         $data->floor,
         $data->status,
-        $maintenance_mode
+        $maintenance_mode,
+        $count_ping
     );
-    mysqli_stmt_execute($stmt);
-    $error_message = mysqli_error($conn);
-
-    if ($error_message) { //ใช้ในการ เช็ค error
+    
+    if (!mysqli_stmt_execute($stmt)) {
         http_response_code(500);
         exit(json_encode([
-            'message' => $error_message
-        ]));
+            'message' => 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' . mysqli_stmt_error($stmt)
+        ], JSON_UNESCAPED_UNICODE));
     }
 
     echo json_encode([

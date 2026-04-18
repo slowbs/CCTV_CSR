@@ -1,9 +1,9 @@
 <?php
 //แก้ปัญหา utf8
-header('Content-Type: application/json, charset=utf-8');
+header('Content-Type: application/json; charset=utf-8');
 
 // ปิดเพื่อไม่ให้แสดง Error หรือ warning
-// ini_set("display_errors", 0);
+ini_set("display_errors", 0);
 
 //แก้ปัญหาเรื่อง CORS
 if(isset($_SERVER["HTTP_ORIGIN"]))
