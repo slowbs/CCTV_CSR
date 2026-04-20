@@ -240,6 +240,23 @@ export class CctvService {
     return this.httpClient.post(this.backendURL + 'cctvs/delete-image', { cctv_id: cctvId });
   }
 
+  // Draft CRUD
+  getDrafts(mapId: any) {
+    return this.httpClient.get<any>(this.backendURL + 'maps/drafts', { params: { map_id: mapId } });
+  }
+
+  addDraft(data: IDraft) {
+    return this.httpClient.post<any>(this.backendURL + 'maps/drafts', data);
+  }
+
+  updateDraft(id: any, data: IDraft) {
+    return this.httpClient.put<any>(this.backendURL + 'maps/drafts', data, { params: { id } });
+  }
+
+  deleteDraft(id: any) {
+    return this.httpClient.delete<any>(this.backendURL + 'maps/drafts', { params: { id } });
+  }
+
 }
 
 // ส่วนของ User
@@ -301,6 +318,15 @@ export interface ICctvs {
   map_y?: number | null;
   map_rotation?: number | null;
   image_path?: string;
+}
+
+export interface IDraft {
+  id?: number;
+  map_id?: number;
+  x?: string | number;
+  y?: string | number;
+  rotation?: number;
+  note?: string;
 }
 
 export interface IStatus {

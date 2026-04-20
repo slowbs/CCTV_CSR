@@ -85,4 +85,10 @@ $routes['/api/maps/reorder']['PUT'] = 'maps/reorder.php';
 // อัพโหลด/ลบ รูปภาพอ้างอิงครุภัณฑ์
 $routes['/api/cctvs/upload']['POST'] = 'cctvs/upload.php';
 $routes['/api/cctvs/delete-image']['POST'] = 'cctvs/delete_image.php';
+
+// ข้อมูล CCTV Drafts
+$routes['/api/maps/drafts']['GET'] = 'maps/drafts.php';
+$routes['/api/maps/drafts']['POST'] = 'maps/drafts.php';
+$routes['/api/maps/drafts']['PUT'] = 'maps/drafts.php';
+$routes['/api/maps/drafts']['DELETE'] = 'maps/drafts.php';
 ?>

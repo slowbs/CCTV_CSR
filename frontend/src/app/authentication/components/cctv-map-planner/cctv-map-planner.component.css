@@ -1,0 +1,272 @@
+/* Layout - Match Map Manager exactly */
+.map-planner-container {
+    display: flex;
+    height: 100vh;
+    background-color: #f5f5f5;
+    overflow: hidden;
+}
+
+/* Column 1: Map List (Identical to Manager) */
+.sidebar-maps {
+    width: 280px;
+    background: #fff;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.sidebar-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    background: #fafafa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.map-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.map-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: 1px solid transparent;
+}
+
+.map-item:hover {
+    background-color: #f0f0f0;
+}
+
+.map-item.active {
+    background-color: #e3f2fd;
+    border-color: #90caf9;
+    color: #1976d2;
+}
+
+/* Column 2: Canvas Area */
+.main-canvas {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #e0e0e0;
+    position: relative;
+    overflow: hidden;
+}
+
+.canvas-toolbar {
+    height: 50px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    z-index: 10;
+}
+
+.canvas-viewport {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+}
+
+.map-container {
+    position: relative;
+    background: #fff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    display: inline-block;
+}
+
+.map-container.drafting-mode {
+    cursor: crosshair;
+}
+
+.map-image {
+    max-width: none;
+    display: block;
+    pointer-events: none;
+}
+
+/* Base Marker Style */
+.marker {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+.marker i {
+    font-size: 12px;
+}
+
+/* Real Camera (Reference) */
+.real-camera {
+    background: #28a745; /* Green */
+    opacity: 0.8;
+}
+
+/* Draft Camera (Interactive) */
+.draft-camera {
+    background: #ff9800; /* Orange */
+    cursor: move;
+    z-index: 101;
+    border-style: solid;
+}
+
+/* Draft Number Label */
+.draft-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #000;
+    color: #ff9800;
+    font-size: 9px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 1px solid #fff;
+}
+
+/* Cone of Vision (Same as Manager) */
+.marker::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    background: rgba(40, 167, 69, 0.3);
+    transform-origin: 50% 100%;
+    transform: translate(-50%, -100%) rotate(var(--cone-rotation, 0deg));
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+    border-radius: 50% 50% 0 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.draft-camera::before {
+    background: rgba(255, 152, 0, 0.4);
+}
+
+.marker-tooltip {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 11px;
+    z-index: 300;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.marker:hover .marker-tooltip {
+    opacity: 1;
+}
+
+/* Column 3: Draft List (Replacement for Camera Pool) */
+.sidebar-drafts {
+    width: 320px;
+    background: #fff;
+    border-left: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.draft-scroller {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.draft-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.draft-card:hover {
+    border-color: #ff9800;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.draft-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.draft-number {
+    background: #ff9800;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    margin-right: 10px;
+}
+
+.draft-note-input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 12px;
+    resize: none;
+}
+
+.draft-note-input:focus {
+    border-color: #ff9800;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+/* Print Styles */
+@media print {
+    .sidebar-maps, .sidebar-drafts, .canvas-toolbar {
+        display: none !important;
+    }
+    .map-planner-container, .main-canvas, .canvas-viewport, .map-container {
+        background: #fff !important;
+        overflow: visible !important;
+    }
+}

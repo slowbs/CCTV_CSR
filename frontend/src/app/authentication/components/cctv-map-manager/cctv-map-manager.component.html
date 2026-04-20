@@ -80,9 +80,11 @@
                     (contextmenu)="onContextMenu($event, cam)" (wheel)="onWheel($event, cam)">
                     <i class="bi bi-camera-video-fill" [style.transform]="'rotate(' + ((cam.map_rotation || 0) - 90) + 'deg)'" style="display: inline-block;"></i>
                     <div class="marker-tooltip">
-                        <div class="fw-bold">{{ cam.location || cam.durable_name }}</div>
-                        <div class="small">{{ cam.floor }} - {{ cam.monitor }}</div>
-                        <div class="small text-warning">{{ cam.ip }}</div>
+                        <ng-container>
+                            <div class="fw-bold">{{ cam.location || cam.durable_name }}</div>
+                            <div class="small">{{ cam.floor }} - {{ cam.monitor }}</div>
+                            <div class="small text-warning">{{ cam.ip }}</div>
+                        </ng-container>
                     </div>
                 </div>
             </div>
