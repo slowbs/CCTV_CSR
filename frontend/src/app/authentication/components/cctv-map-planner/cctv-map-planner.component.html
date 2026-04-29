@@ -1,4 +1,4 @@
-<div class="map-planner-container">
+<div class="map-planner-container" [class.print-map]="printMode === 'map'" *ngIf="printMode !== 'list'">
 
     <!-- Hidden Drag Ghost Image -->
     <div id="drag-ghost" class="marker draft-camera" style="position: fixed; top: -1000px; left: -1000px; z-index: -1;">
@@ -31,9 +31,21 @@
     <div class="main-canvas">
         <div class="canvas-toolbar" *ngIf="selectedMap">
             <div class="d-flex align-items-center">
-                <h5 class="mb-0 me-3">{{ selectedMap.name }}</h5>
-                <span class="badge bg-secondary me-2">กล้องเดิม {{ cameras.length }}</span>
-                <span class="badge bg-warning text-dark">จุดดราฟ {{ drafts.length }}</span>
+                <h5 class="mb-0 me-4">{{ selectedMap.name }}</h5>
+                
+                <div class="form-check form-switch me-3 d-flex align-items-center">
+                    <input class="form-check-input mt-0 me-2" type="checkbox" id="toggleRealCameras" [(ngModel)]="showRealCameras" style="cursor: pointer;">
+                    <label class="form-check-label d-flex align-items-center" for="toggleRealCameras" style="cursor: pointer;">
+                        <span class="badge bg-secondary">กล้องเดิม {{ cameras.length }}</span>
+                    </label>
+                </div>
+
+                <div class="form-check form-switch me-3 d-flex align-items-center">
+                    <input class="form-check-input mt-0 me-2" type="checkbox" id="toggleDraftCameras" [(ngModel)]="showDraftCameras" style="cursor: pointer;">
+                    <label class="form-check-label d-flex align-items-center" for="toggleDraftCameras" style="cursor: pointer;">
+                        <span class="badge bg-warning text-dark border">จุดดราฟ {{ drafts.length }}</span>
+                    </label>
+                </div>
             </div>
             <div>
                 <small class="text-muted me-3">
@@ -41,14 +53,21 @@
                     คลิกเพื่อปักจุด | ลากเพื่อย้าย | Shift + Scroll เพื่อหมุน
                 </small>
             </div>
-            <div class="ms-auto">
+            <div class="ms-auto d-flex">
                 <button class="btn btn-sm me-2" [class.btn-warning]="isDraftingMode" [class.btn-outline-warning]="!isDraftingMode" (click)="toggleDraftingMode()">
                     <i class="bi" [class.bi-plus-circle-fill]="isDraftingMode" [class.bi-plus-circle]="!isDraftingMode"></i>
                     {{ isDraftingMode ? 'โหมดปักจุด: เปิด' : 'เริ่มปักจุดติดตั้ง' }}
                 </button>
-                <button class="btn btn-outline-dark btn-sm" onclick="window.print()">
-                    <i class="bi bi-printer"></i> พิมพ์แผนผัง
-                </button>
+                <div class="dropdown">
+                    <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" id="printDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-printer"></i> พิมพ์
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="printDropdown">
+                        <li><a class="dropdown-item py-2" href="javascript:void(0)" (click)="printMap()"><i class="bi bi-map text-muted me-2"></i> พิมพ์แผนผังจุดติดตั้ง</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item py-2" href="javascript:void(0)" (click)="printList()"><i class="bi bi-list-task text-muted me-2"></i> พิมพ์รายการ และโน๊ต</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -58,28 +77,32 @@
                     (load)="onImageLoad($event)">
 
                 <!-- Real Cameras (Reference - Green) -->
-                <div *ngFor="let cam of cameras" class="marker real-camera" 
-                    [style.left.%]="cam.map_x" [style.top.%]="cam.map_y"
-                    [style.--cone-rotation]="(cam.map_rotation || 0) + 'deg'">
-                    <i class="bi bi-camera-video-fill" [style.transform]="'rotate(' + ((cam.map_rotation || 0) - 90) + 'deg)'" style="display: inline-block;"></i>
-                    <div class="marker-tooltip">
-                        <div class="fw-bold">{{ cam.location || cam.durable_name }}</div>
-                        <div class="small">สถานะปัจจุบัน</div>
+                <ng-container *ngIf="showRealCameras">
+                    <div *ngFor="let cam of cameras" class="marker real-camera" 
+                        [style.left.%]="cam.map_x" [style.top.%]="cam.map_y"
+                        [style.--cone-rotation]="(cam.map_rotation || 0) + 'deg'">
+                        <i class="bi bi-camera-video-fill" [style.transform]="'rotate(' + ((cam.map_rotation || 0) - 90) + 'deg)'" style="display: inline-block;"></i>
+                        <div class="marker-tooltip">
+                            <div class="fw-bold">{{ cam.location || cam.durable_name }}</div>
+                            <div class="small">สถานะปัจจุบัน</div>
+                        </div>
                     </div>
-                </div>
+                </ng-container>
 
                 <!-- Draft Markers (Interactive - Orange) -->
-                <div *ngFor="let d of drafts; let i = index" class="marker draft-camera" 
-                     draggable="true" (dragend)="onDragEnd($event, d)" (wheel)="onWheel($event, d)"
-                     [style.left.%]="d.x" [style.top.%]="d.y"
-                     [style.--cone-rotation]="(d.rotation || 0) + 'deg'">
-                    <i class="bi bi-camera-video-fill"></i>
-                    <div class="draft-badge">{{ i + 1 }}</div>
-                    <div class="marker-tooltip">
-                        <div class="fw-bold text-warning">จุดดราฟ #{{ i + 1 }}</div>
-                        <div class="small">{{ d.note || '(ไม่มีโน๊ต)' }}</div>
+                <ng-container *ngIf="showDraftCameras">
+                    <div *ngFor="let d of drafts; let i = index" class="marker draft-camera" 
+                         draggable="true" (dragend)="onDragEnd($event, d)" (wheel)="onWheel($event, d)"
+                         [style.left.%]="d.x" [style.top.%]="d.y"
+                         [style.--cone-rotation]="(d.rotation || 0) + 'deg'">
+                        <i class="bi bi-camera-video-fill"></i>
+                        <div class="draft-badge">{{ i + 1 }}</div>
+                        <div class="marker-tooltip">
+                            <div class="fw-bold text-warning">จุดดราฟ #{{ i + 1 }}</div>
+                            <div class="small">{{ d.note || '(ไม่มีโน๊ต)' }}</div>
+                        </div>
                     </div>
-                </div>
+                </ng-container>
             </div>
 
             <ng-template #selectMapPrompt>
@@ -125,6 +148,32 @@
                 <li>พิมพ์ข้อความที่โน๊ต ระบบจะบันทึกให้อัตโนมัติ</li>
             </ul>
         </div>
+    </div> <!-- End sidebar-drafts -->
+</div> <!-- End map-planner-container -->
+
+<!-- Print-only List View -->
+<div class="print-list-view" *ngIf="printMode === 'list'">
+    <div class="print-header mb-4 text-center">
+        <h2>รายการจุดติดตั้งกล้อง CCTV</h2>
+        <h4 class="text-muted">แผนที่: {{ selectedMap?.name }}</h4>
+    </div>
+    <table class="table table-bordered print-table">
+        <thead class="table-light">
+            <tr>
+                <th width="80" class="text-center">จุดที่</th>
+                <th>รายละเอียด/หมายเหตุ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngIf="drafts.length === 0">
+                <td colspan="2" class="text-center py-4">ไม่มีรายการจุดดราฟบนแผนที่นี้</td>
+            </tr>
+            <tr *ngFor="let d of drafts; let i = index">
+                <td class="text-center fw-bold">{{ i + 1 }}</td>
+                <td>{{ d.note || '-' }}</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <!-- Delete Confirmation Modal -->

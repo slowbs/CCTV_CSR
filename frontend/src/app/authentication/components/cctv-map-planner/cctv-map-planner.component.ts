@@ -20,6 +20,9 @@ export class CctvMapPlannerComponent implements OnInit {
   isDraftingMode: boolean = false;
   isLoading: boolean = false;
 
+  showRealCameras: boolean = true;
+  showDraftCameras: boolean = true;
+
   // Toast notification
   toastMessage: string = '';
   toastType: 'error' | 'success' | 'warning' | 'info' = 'error';
@@ -175,6 +178,24 @@ export class CctvMapPlannerComponent implements OnInit {
         this.showToast('ลบจุดดราฟเรียบร้อย', 'warning');
       }
     });
+  }
+
+  printMode: 'map' | 'list' | null = null;
+
+  printMap() {
+    this.printMode = 'map';
+    setTimeout(() => {
+      window.print();
+      this.printMode = null;
+    }, 100);
+  }
+
+  printList() {
+    this.printMode = 'list';
+    setTimeout(() => {
+      window.print();
+      this.printMode = null;
+    }, 100);
   }
 
   onImageLoad(event: any) {
