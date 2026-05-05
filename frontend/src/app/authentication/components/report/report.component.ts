@@ -33,6 +33,7 @@ export class ReportComponent implements OnInit {
   AppUrl = AppURL
   AuthUrl = AuthenticationURL
   Title = 'รายงานข้อมูล';
+  reportFileName = 'report';
   startDate: Date | null = null;
   endDate: Date | null = null;
   tempStartDate: Date | null = null;
@@ -91,6 +92,14 @@ export class ReportComponent implements OnInit {
 
           this.get_report(id, this.startDate, this.endDate);
           this.Title = titles[id] || 'รายงานข้อมูล';
+
+          const fileNames: { [key: string]: string } = {
+            '1': 'cctv_report',
+            '2': 'server_report',
+            '3': 'network_report',
+            '4': 'nas_report'
+          };
+          this.reportFileName = fileNames[id] || 'report';
         }
       });
   }
@@ -136,7 +145,7 @@ export class ReportComponent implements OnInit {
       }
     };
 
-    pdfMake.createPdf(documentDefinition).download('report.pdf');
+    pdfMake.createPdf(documentDefinition).download(`${this.reportFileName}.pdf`);
   }
 
   // แก้ไข getTableContent()
