@@ -25,10 +25,11 @@ switch ($method) {
     case 'POST':
         $data = json_decode(file_get_contents("php://input"));
         if (isset($data->map_id) && isset($data->x) && isset($data->y)) {
-            $stmt = $conn->prepare("INSERT INTO cctv_drafts (map_id, x, y, rotation, note) VALUES (?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO cctv_drafts (map_id, x, y, rotation, note, switch_name) VALUES (?, ?, ?, ?, ?, ?)");
             $rotation = isset($data->rotation) ? $data->rotation : 0;
             $note = isset($data->note) ? $data->note : null;
-            $stmt->bind_param("isdis", $data->map_id, $data->x, $data->y, $rotation, $note);
+            $switch_name = isset($data->switch_name) ? $data->switch_name : null;
+            $stmt->bind_param("isdiss", $data->map_id, $data->x, $data->y, $rotation, $note, $switch_name);
             
             if ($stmt->execute()) {
                 echo json_encode(['message' => 'เพิ่มจุดดราฟสำเร็จ', 'id' => $conn->insert_id]);
@@ -55,6 +56,7 @@ switch ($method) {
             if (isset($data->y)) { $fields[] = "y = ?"; $types .= "s"; $values[] = $data->y; }
             if (isset($data->rotation)) { $fields[] = "rotation = ?"; $types .= "i"; $values[] = $data->rotation; }
             if (isset($data->note)) { $fields[] = "note = ?"; $types .= "s"; $values[] = $data->note; }
+            if (isset($data->switch_name)) { $fields[] = "switch_name = ?"; $types .= "s"; $values[] = $data->switch_name; }
 
             if (count($fields) > 0) {
                 $sql = "UPDATE cctv_drafts SET " . implode(", ", $fields) . " WHERE id = ?";

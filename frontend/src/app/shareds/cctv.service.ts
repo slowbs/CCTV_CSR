@@ -257,6 +257,10 @@ export class CctvService {
     return this.httpClient.delete<any>(this.backendURL + 'maps/drafts', { params: { id } });
   }
 
+  renameSwitch(oldName: string, newName: string) {
+    return this.httpClient.post<any>(this.backendURL + 'cctvs/rename-switch', { old_name: oldName, new_name: newName });
+  }
+
 }
 
 // ส่วนของ User
@@ -318,6 +322,7 @@ export interface ICctvs {
   map_y?: number | null;
   map_rotation?: number | null;
   image_path?: string;
+  switch_name?: string;
 }
 
 export interface IDraft {
@@ -327,6 +332,7 @@ export interface IDraft {
   y?: string | number;
   rotation?: number;
   note?: string;
+  switch_name?: string;
 }
 
 export interface IStatus {

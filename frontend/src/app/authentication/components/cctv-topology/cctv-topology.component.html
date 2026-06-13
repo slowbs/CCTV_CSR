@@ -1,0 +1,350 @@
+<app-auth-content>
+  <!-- Main Title Toolbar -->
+  <div class="app-title d-flex justify-content-between align-items-center no-print">
+    <div>
+      <h1><i class="bi bi-diagram-3"></i> CCTV Topology View & Planner</h1>
+      <p>แผนผังโครงสร้างสายสัญญาณและการจับคู่ Switch PoE</p>
+    </div>
+    <ul class="app-breadcrumb breadcrumb">
+      <li class="breadcrumb-item"><i class="bi bi-house-door fs-6"></i></li>
+      <li class="breadcrumb-item">จัดการแผนที่</li>
+      <li class="breadcrumb-item">Topology View</li>
+    </ul>
+  </div>
+
+  <!-- Actions Toolbar -->
+  <div class="row mb-4 no-print">
+    <div class="col-md-12">
+      <div class="tile py-3 px-4 d-flex align-items-center justify-content-between gap-3 flex-wrap">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <div class="d-flex align-items-center gap-2">
+            <label class="fw-bold mb-0 me-2 text-muted">ตัวกรองแผนที่:</label>
+            <select class="form-select select-map-filter" [(ngModel)]="selectedMapId" (change)="onMapFilterChange()">
+              <option value="all">แสดงแผนที่ทั้งหมด</option>
+              <option *ngFor="let map of maps" [value]="map.id">{{ map.name }}</option>
+            </select>
+          </div>
+
+          <!-- Switch toggle to show/hide switches from other maps -->
+          <div class="form-check form-switch mb-0 d-flex align-items-center no-print" *ngIf="selectedMapId !== 'all'">
+            <input class="form-check-input me-2" type="checkbox" id="showAllSwitches" [(ngModel)]="showOtherMapSwitches" (change)="groupDevices()" style="cursor: pointer;">
+            <label class="form-check-label fw-bold text-muted mb-0 small" for="showAllSwitches" style="cursor: pointer; user-select: none;">
+              แสดง Switch จากแผนที่อื่นด้วย
+            </label>
+          </div>
+        </div>
+        
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary px-3" (click)="openAddSwitchModal()">
+            <i class="bi bi-plus-lg me-1"></i> เพิ่มกลุ่ม Switch ใหม่
+          </button>
+          <button class="btn btn-outline-secondary px-3" (click)="exportReport()">
+            <i class="bi bi-printer me-1"></i> พิมพ์ / ออกรายงาน PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center my-5 no-print">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">กำลังโหลด...</span>
+    </div>
+    <p class="text-muted mt-2">กำลังดึงข้อมูลและวิเคราะห์ความเชื่อมโยง...</p>
+  </div>
+
+  <!-- Main Board Area -->
+  <div class="row" *ngIf="!isLoading">
+    
+    <!-- LEFT: Unassigned Pool Column -->
+    <div class="col-lg-4 mb-4 no-print">
+      <div class="tile h-100 d-flex flex-column" style="min-height: 70vh;">
+        <div class="pool-header pb-2 mb-3 border-bottom d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 text-secondary"><i class="bi bi-layers me-2"></i>กล้องที่ยังไม่จัดกลุ่ม</h5>
+          <span class="badge bg-secondary">{{ unassignedReal.length + unassignedDraft.length }}</span>
+        </div>
+
+        <div class="pool-scroll flex-grow-1 overflow-auto" (dragover)="onDragOver($event)" (drop)="onDrop($event, null)">
+          
+          <!-- Real Cameras Subheading -->
+          <div class="pool-sub-header text-muted small fw-bold mb-2">กล้องใช้งานจริง ({{ unassignedReal.length }})</div>
+          <div *ngIf="unassignedReal.length === 0" class="empty-pool-text text-center text-muted py-3 border rounded mb-3 border-dashed">
+            ไม่มีกล้องจริงที่ยังไม่จัดกลุ่ม
+          </div>
+          
+          <div *ngFor="let cam of unassignedReal" 
+               class="device-card real-card mb-2 d-flex align-items-start justify-content-between"
+               draggable="true" 
+               (dragstart)="onDragStart($event, cam, false)">
+            <div class="d-flex align-items-start gap-2 flex-grow-1" style="min-width: 0;">
+              <span class="status-dot mt-1" [class.online]="cam.ping === '0' && cam.maintenance_mode != 1" [class.offline]="cam.ping !== '0' && cam.maintenance_mode != 1" [class.ma]="cam.maintenance_mode == 1"></span>
+              <div class="flex-grow-1">
+                <div class="fw-bold" [title]="cam.location || cam.durable_name">{{ cam.location || cam.durable_name }}</div>
+                <div class="small text-muted">{{ cam.ip || 'No IP' }} • {{ cam.floor }}</div>
+              </div>
+            </div>
+            <!-- Quick Assignment Dropdown Fallback -->
+            <select class="form-select form-select-xs w-auto ms-2" (change)="assignDeviceToSwitch(cam, false, $any($event.target).value)">
+              <option value="">--เลือก Switch--</option>
+              <option *ngFor="let sw of groupedSwitches" [value]="sw.switchName">{{ sw.switchName }}</option>
+            </select>
+          </div>
+
+          <!-- Draft Cameras Subheading -->
+          <div class="pool-sub-header text-muted small fw-bold mt-4 mb-2">กล้องแผนงาน / จุดดราฟ ({{ unassignedDraft.length }})</div>
+          <div *ngIf="unassignedDraft.length === 0" class="empty-pool-text text-center text-muted py-3 border rounded border-dashed">
+            ไม่มีกล้องแผนงานที่ยังไม่จัดกลุ่ม
+          </div>
+
+          <div *ngFor="let d of unassignedDraft" 
+               class="device-card draft-card mb-2 d-flex align-items-start justify-content-between"
+               draggable="true" 
+               (dragstart)="onDragStart($event, d, true)">
+            <div class="d-flex align-items-start gap-2 flex-grow-1" style="min-width: 0;">
+              <i class="bi bi-pencil-square text-warning mt-1"></i>
+              <div class="flex-grow-1">
+                <div class="fw-bold" [title]="'จุดดราฟ (' + getMapName(d.map_id) + ') ลำดับที่ ' + getDraftNumber(d)">
+                  จุดดราฟ ({{ getMapName(d.map_id) }}) ลำดับที่ {{ getDraftNumber(d) }}
+                </div>
+                <div class="small text-muted" [title]="d.note || 'ไม่มีโน๊ตรายละเอียด'">
+                  {{ d.note || 'ไม่มีโน๊ตรายละเอียด' }}
+                </div>
+              </div>
+            </div>
+            <!-- Quick Assignment Dropdown Fallback -->
+            <select class="form-select form-select-xs w-auto ms-2" (change)="assignDeviceToSwitch(d, true, $any($event.target).value)">
+              <option value="">--เลือก Switch--</option>
+              <option *ngFor="let sw of groupedSwitches" [value]="sw.switchName">{{ sw.switchName }}</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Switch Cards Grid Column -->
+    <div class="col-lg-8 mb-4">
+      
+      <!-- Print Header (Visible ONLY during print) -->
+      <div class="print-header d-none">
+        <h2 class="border-bottom pb-2">รายงานวางแผนการเชื่อมต่อ Switch PoE กล้องวงจรปิด</h2>
+        <p class="text-muted">กรองโดย: {{ selectedMapId === 'all' ? 'แสดงทั้งหมด' : getMapName(selectedMapId) }}</p>
+      </div>
+
+      <div *ngIf="groupedSwitches.length === 0" class="tile text-center py-5 empty-switches-state">
+        <i class="bi bi-diagram-3-fill text-muted fs-1 mb-3"></i>
+        <h4>ยังไม่มีกลุ่ม Switch บนแผนที่นี้</h4>
+        <p class="text-muted">กรุณากดปุ่ม <strong>"เพิ่มกลุ่ม Switch ใหม่"</strong> หรือป้อนข้อมูล Switch ในรายการกล้องเพื่อเริ่มต้น</p>
+        <button class="btn btn-primary no-print" (click)="openAddSwitchModal()">
+          <i class="bi bi-plus-lg me-1"></i> เพิ่มกลุ่ม Switch แรก
+        </button>
+      </div>
+
+      <div class="switches-grid row" *ngIf="groupedSwitches.length > 0">
+        <div class="col-md-6 col-xl-6 mb-4 switch-card-col" *ngFor="let group of groupedSwitches">
+          
+          <div class="tile h-100 d-flex flex-column switch-group-card"
+               [class.drag-over-active]="false"
+               (dragover)="onDragOver($event)"
+               (drop)="onDrop($event, group.switchName)">
+            
+            <!-- Card Header -->
+            <div class="switch-card-header pb-2 mb-3 border-bottom d-flex align-items-center justify-content-between">
+              
+              <!-- Inline rename layout -->
+              <div class="d-flex align-items-center gap-2 flex-grow-1 overflow-hidden" *ngIf="editingSwitchName !== group.switchName">
+                <i class="bi bi-hdd-network-fill text-primary fs-5"></i>
+                <h5 class="mb-0 text-truncate font-weight-bold" [title]="group.switchName">{{ group.switchName }}</h5>
+                <button class="btn btn-link btn-xs p-0 text-muted no-print" (click)="startRename(group.switchName)" title="เปลี่ยนชื่อ">
+                  <i class="bi bi-pencil small"></i>
+                </button>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 flex-grow-1 no-print" *ngIf="editingSwitchName === group.switchName">
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="newGroupNameInput" (keyup.enter)="saveRename(group.switchName)">
+                <button class="btn btn-sm btn-success btn-xs py-1 px-2" (click)="saveRename(group.switchName)"><i class="bi bi-check-lg"></i></button>
+                <button class="btn btn-sm btn-light btn-xs py-1 px-2 text-danger" (click)="cancelRename()"><i class="bi bi-x-lg"></i></button>
+              </div>
+
+              <!-- Delete button -->
+              <button class="btn btn-link btn-xs p-0 text-danger no-print ms-2" (click)="deleteSwitchGroup(group.switchName)" title="ลบกลุ่ม Switch">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+
+            <!-- Card Sub-header Stats -->
+            <div class="d-flex justify-content-between mb-3 text-muted small bg-light p-2 rounded border border-light">
+              <div>กล้องจริง: <strong class="text-dark">{{ group.realDevices.length }}</strong><span *ngIf="selectedMapId !== 'all'"> (ทั้งหมด: {{ group.totalRealCount }})</span></div>
+              <div>กล้องดราฟ: <strong class="text-warning">{{ group.draftDevices.length }}</strong><span *ngIf="selectedMapId !== 'all'"> (ทั้งหมด: {{ group.totalDraftCount }})</span></div>
+              <div>รวมพอร์ตที่ใช้: <strong class="text-primary font-weight-bold">{{ group.totalRealCount + group.totalDraftCount }}</strong></div>
+            </div>
+
+            <!-- Card Connected Devices List -->
+            <div class="devices-list flex-grow-1 overflow-auto" style="max-height: 250px;">
+              <div *ngIf="group.realDevices.length === 0 && group.draftDevices.length === 0" class="text-center py-4 text-muted small italic">
+                <i class="bi-info-circle small d-block mb-1"></i>
+                ไม่มีกล้องในแผนที่นี้เชื่อมต่ออยู่
+              </div>
+
+              <!-- Real Cameras in Switch -->
+              <div *ngFor="let cam of group.realDevices" 
+                   class="device-item d-flex align-items-start justify-content-between p-2 mb-2 rounded border"
+                   draggable="true" 
+                   (dragstart)="onDragStart($event, cam, false)">
+                <div class="d-flex align-items-start gap-2 flex-grow-1" style="min-width: 0;">
+                  <span class="status-dot mt-1" [class.online]="cam.ping === '0' && cam.maintenance_mode != 1" [class.offline]="cam.ping !== '0' && cam.maintenance_mode != 1" [class.ma]="cam.maintenance_mode == 1"></span>
+                  <div class="flex-grow-1">
+                    <div class="fw-bold small" [title]="cam.location || cam.durable_name">{{ cam.location || cam.durable_name }}</div>
+                    <div class="text-muted extra-small">{{ cam.ip }} • {{ cam.floor }} <span *ngIf="selectedMapId === 'all'" class="badge bg-secondary-subtle text-secondary-emphasis">Map: {{ getMapName(cam.map_id) }}</span></div>
+                  </div>
+                </div>
+
+                <!-- Unassign Quick Action Dropdown -->
+                <select class="form-select form-select-xs w-auto no-print ms-2" (change)="assignDeviceToSwitch(cam, false, $any($event.target).value === 'unassigned' ? null : $any($event.target).value)">
+                  <option [value]="group.switchName">{{ group.switchName }}</option>
+                  <option value="unassigned">--นำออกจากกลุ่ม--</option>
+                  <option *ngFor="let sw of groupedSwitches" [value]="sw.switchName" [hidden]="sw.switchName === group.switchName">{{ sw.switchName }}</option>
+                </select>
+              </div>
+
+              <!-- Draft Cameras in Switch -->
+              <div *ngFor="let d of group.draftDevices" 
+                   class="device-item draft-item d-flex align-items-start justify-content-between p-2 mb-2 rounded border"
+                   draggable="true" 
+                   (dragstart)="onDragStart($event, d, true)">
+                <div class="d-flex align-items-start gap-2 flex-grow-1" style="min-width: 0;">
+                  <i class="bi bi-pencil-square text-warning small mt-1"></i>
+                  <div class="flex-grow-1">
+                    <div class="fw-bold small" [title]="'จุดดราฟ (' + getMapName(d.map_id) + ') ลำดับที่ ' + getDraftNumber(d)">
+                      จุดดราฟ ({{ getMapName(d.map_id) }}) ลำดับที่ {{ getDraftNumber(d) }}
+                    </div>
+                    <div class="text-muted extra-small" [title]="d.note || 'ไม่มีโน๊ตรายละเอียด'">
+                      {{ d.note || 'ไม่มีโน๊ตรายละเอียด' }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Unassign Quick Action Dropdown -->
+                <select class="form-select form-select-xs w-auto no-print ms-2" (change)="assignDeviceToSwitch(d, true, $any($event.target).value === 'unassigned' ? null : $any($event.target).value)">
+                  <option [value]="group.switchName">{{ group.switchName }}</option>
+                  <option value="unassigned">--นำออกจากกลุ่ม--</option>
+                  <option *ngFor="let sw of groupedSwitches" [value]="sw.switchName" [hidden]="sw.switchName === group.switchName">{{ sw.switchName }}</option>
+                </select>
+              </div>
+
+              <!-- Other Maps Devices (Collapsible) -->
+              <div class="other-maps-section mt-2 border-top pt-2" *ngIf="selectedMapId !== 'all' && (group.otherRealDevices.length > 0 || group.otherDraftDevices.length > 0)">
+                <button type="button" class="other-maps-toggle-btn no-print" (click)="toggleOtherDevices(group.switchName)">
+                  <span>
+                    <i class="bi" [class.bi-chevron-down]="group.showOtherDevices" [class.bi-chevron-right]="!group.showOtherDevices"></i>
+                    กล้องจากแผนที่อื่น ({{ group.otherRealDevices.length + group.otherDraftDevices.length }} ตัว)
+                  </span>
+                </button>
+                
+                <div class="other-devices-list mt-2" *ngIf="group.showOtherDevices">
+                  <!-- Real Cameras in Switch (Other Maps) -->
+                  <div *ngFor="let cam of group.otherRealDevices" 
+                       class="device-item other-map-device d-flex align-items-start justify-content-between p-2 mb-2 rounded border"
+                       draggable="true" 
+                       (dragstart)="onDragStart($event, cam, false)">
+                    <div class="d-flex align-items-start gap-2 flex-grow-1" style="min-width: 0;">
+                      <span class="status-dot mt-1" [class.online]="cam.ping === '0' && cam.maintenance_mode != 1" [class.offline]="cam.ping !== '0' && cam.maintenance_mode != 1" [class.ma]="cam.maintenance_mode == 1"></span>
+                      <div class="flex-grow-1">
+                        <div class="fw-bold small text-muted" [title]="cam.location || cam.durable_name">{{ cam.location || cam.durable_name }}</div>
+                        <div class="text-muted extra-small">{{ cam.ip }} • {{ cam.floor }} <span class="badge bg-secondary-subtle text-secondary-emphasis">Map: {{ getMapName(cam.map_id) }}</span></div>
+                      </div>
+                    </div>
+
+                    <!-- Unassign Quick Action Dropdown -->
+                    <select class="form-select form-select-xs w-auto no-print ms-2" (change)="assignDeviceToSwitch(cam, false, $any($event.target).value === 'unassigned' ? null : $any($event.target).value)">
+                      <option [value]="group.switchName">{{ group.switchName }}</option>
+                      <option value="unassigned">--นำออกจากกลุ่ม--</option>
+                      <option *ngFor="let sw of groupedSwitches" [value]="sw.switchName" [hidden]="sw.switchName === group.switchName">{{ sw.switchName }}</option>
+                    </select>
+                  </div>
+
+                  <!-- Draft Cameras in Switch (Other Maps) -->
+                  <div *ngFor="let d of group.otherDraftDevices" 
+                       class="device-item draft-item other-map-device d-flex align-items-start justify-content-between p-2 mb-2 rounded border"
+                       draggable="true" 
+                       (dragstart)="onDragStart($event, d, true)">
+                    <div class="d-flex align-items-start gap-2 flex-grow-1" style="min-width: 0;">
+                      <i class="bi bi-pencil-square text-warning small mt-1"></i>
+                      <div class="flex-grow-1">
+                        <div class="fw-bold small text-muted" [title]="'จุดดราฟ (' + getMapName(d.map_id) + ') ลำดับที่ ' + getDraftNumber(d)">
+                          จุดดราฟ ({{ getMapName(d.map_id) }}) ลำดับที่ {{ getDraftNumber(d) }}
+                        </div>
+                        <div class="text-muted extra-small text-muted" [title]="d.note || 'ไม่มีโน๊ตรายละเอียด'">
+                          {{ d.note || 'ไม่มีโน๊ตรายละเอียด' }}
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Unassign Quick Action Dropdown -->
+                    <select class="form-select form-select-xs w-auto no-print ms-2" (change)="assignDeviceToSwitch(d, true, $any($event.target).value === 'unassigned' ? null : $any($event.target).value)">
+                      <option [value]="group.switchName">{{ group.switchName }}</option>
+                      <option value="unassigned">--นำออกจากกลุ่ม--</option>
+                      <option *ngFor="let sw of groupedSwitches" [value]="sw.switchName" [hidden]="sw.switchName === group.switchName">{{ sw.switchName }}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Simple non-interactive list for print layout (ALWAYS visible when printing) -->
+                <div class="other-devices-list-print d-none mt-2">
+                  <div class="small fw-bold text-muted mb-2 border-bottom pb-1">กล้องจากแผนที่อื่น:</div>
+                  <div *ngFor="let cam of group.otherRealDevices" class="p-1 mb-1 rounded border small d-flex align-items-center justify-content-between">
+                    <span>
+                      <span class="status-dot" [class.online]="cam.ping === '0' && cam.maintenance_mode != 1" [class.offline]="cam.ping !== '0' && cam.maintenance_mode != 1" [class.ma]="cam.maintenance_mode == 1"></span>
+                      <strong>{{ cam.location || cam.durable_name }}</strong> ({{ cam.ip }})
+                    </span>
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis">Map: {{ getMapName(cam.map_id) }}</span>
+                  </div>
+                  <div *ngFor="let d of group.otherDraftDevices" class="draft-item p-1 mb-1 rounded border small d-flex align-items-center justify-content-between">
+                    <span>
+                      <i class="bi bi-pencil-square text-warning small me-1"></i>
+                      <strong>จุดดราฟ ลำดับที่ {{ getDraftNumber(d) }}</strong>
+                    </span>
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis">Map: {{ getMapName(d.map_id) }}</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Custom Bootstrap Add Switch Modal -->
+  <div class="modal fade" [class.show]="showAddSwitchModal" [style.display]="showAddSwitchModal ? 'block' : 'none'" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title"><i class="bi bi-plus-circle-fill me-2"></i>เพิ่มกลุ่ม Switch PoE ใหม่</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="closeAddSwitchModal()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-bold">ชื่อกลุ่ม Switch / ตู้ Rack</label>
+            <input type="text" class="form-control" [(ngModel)]="newSwitchName" placeholder="เช่น Switch-OPD-FL1, Switch-BackOffice" autofocus (keyup.enter)="addNewSwitch()">
+            <div class="form-text text-muted">ตัวอย่าง: ระบุชื่อเล่นที่จดจำง่าย สอดคล้องกับโซนการเดินสายสัญญาณสัญญาณ</div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light border-0">
+          <button type="button" class="btn btn-secondary" (click)="closeAddSwitchModal()">ยกเลิก</button>
+          <button type="button" class="btn btn-primary px-4" (click)="addNewSwitch()">เพิ่มกลุ่ม</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</app-auth-content>
+
+<!-- Toast Notification Component -->
+<app-toast [message]="toastMessage" [type]="toastType" (closed)="clearToast()"></app-toast>

@@ -91,4 +91,7 @@ $routes['/api/maps/drafts']['GET'] = 'maps/drafts.php';
 $routes['/api/maps/drafts']['POST'] = 'maps/drafts.php';
 $routes['/api/maps/drafts']['PUT'] = 'maps/drafts.php';
 $routes['/api/maps/drafts']['DELETE'] = 'maps/drafts.php';
+
+// Bulk rename switch names
+$routes['/api/cctvs/rename-switch']['POST'] = 'cctvs/rename_switch.php';
 ?>

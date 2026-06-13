@@ -48,8 +48,9 @@ if (
     $data->monitor = $data->monitor ?? '';
     $data->ip = $data->ip ?? '';
     $maintenance_mode = $data->maintenance_mode ?? 0;
+    $data->switch_name = $data->switch_name ?? null;
 
-    $query = "INSERT INTO cctv (durable_no, durable_name, brand, model, location, type, monitor, ip, floor, status, maintenance_mode, count_ping) VALUES (?, ?, ?, ?, ?, ?, ?, ? ,? ,?, ?, ?)";
+    $query = "INSERT INTO cctv (durable_no, durable_name, brand, model, location, type, monitor, ip, floor, status, maintenance_mode, count_ping, switch_name) VALUES (?, ?, ?, ?, ?, ?, ?, ? ,? ,?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $query);
     
     if (!$stmt) {
@@ -62,7 +63,7 @@ if (
     $count_ping = 0; // ค่าเริ่มต้นเป็น 0 สำหรับรายการที่มีใหม่
     mysqli_stmt_bind_param(
         $stmt,
-        'sssssissiiii',
+        'sssssissiiiis',
         $data->durable_no,
         $data->durable_name,
         $data->brand,
@@ -74,7 +75,8 @@ if (
         $data->floor,
         $data->status,
         $maintenance_mode,
-        $count_ping
+        $count_ping,
+        $data->switch_name
     );
     
     if (!mysqli_stmt_execute($stmt)) {

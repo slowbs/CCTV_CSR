@@ -103,6 +103,7 @@ if (isset($_GET['id'])) {
         $data->floor_id = $data->floor_id ?? ($old_row['floor'] ?? '');
         $data->model = $data->model ?? '';
         $maintenance_mode = $data->maintenance_mode ?? 0;
+        $data->switch_name = $data->switch_name ?? null;
 
         // Prepare audit log data
         $old_ip = $old_row['ip'] ?? '';
@@ -156,7 +157,7 @@ if (isset($_GET['id'])) {
 
 
         $query = "UPDATE cctv SET durable_no = ?, durable_name = ?, location = ?, monitor = ?, brand = ?, model = ?, floor = ?, status = ?, 
-        ip = ?, maintenance_mode = ?, date_updated = NOW() 
+        ip = ?, maintenance_mode = ?, switch_name = ?, date_updated = NOW() 
         where id = ?";
         $stmt = mysqli_prepare($conn, $query);
         
@@ -169,7 +170,7 @@ if (isset($_GET['id'])) {
 
         mysqli_stmt_bind_param(
             $stmt,
-            'sssssssssii',
+            'sssssssssisi',
             $data->durable_no,
             $data->durable_name,
             $data->location,
@@ -180,6 +181,7 @@ if (isset($_GET['id'])) {
             $data->status_id,
             $data->ip,
             $maintenance_mode,
+            $data->switch_name,
             $_GET['id']
         );
         

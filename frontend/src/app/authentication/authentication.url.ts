@@ -13,5 +13,6 @@ export const AuthenticationURL = {
     Monitor_CCTV: 'monitor-cctv',
     Map_Manager: 'cctv-map-manager',
     Map_Planner: 'cctv-map-planner',
-    History: 'history'
+    History: 'history',
+    Topology: 'cctv-topology'
 }

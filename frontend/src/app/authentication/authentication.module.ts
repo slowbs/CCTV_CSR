@@ -19,6 +19,7 @@ import { HistoryComponent } from './components/history/history.component';
 import { MonitorCctvComponent } from './components/monitor-cctv/monitor-cctv.component';
 import { CctvMapManagerComponent } from './components/cctv-map-manager/cctv-map-manager.component';
 import { CctvMapPlannerComponent } from './components/cctv-map-planner/cctv-map-planner.component';
+import { CctvTopologyComponent } from './components/cctv-topology/cctv-topology.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { CctvMapPlannerComponent } from './components/cctv-map-planner/cctv-map-
     HistoryComponent,
     MonitorCctvComponent,
     CctvMapManagerComponent,
-    CctvMapPlannerComponent
+    CctvMapPlannerComponent,
+    CctvTopologyComponent
   ],
   imports: [
     CommonModule,

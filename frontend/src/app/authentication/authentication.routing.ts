@@ -13,6 +13,7 @@ import { HistoryComponent } from './components/history/history.component';
 import { MonitorCctvComponent } from "./components/monitor-cctv/monitor-cctv.component";
 import { CctvMapManagerComponent } from "./components/cctv-map-manager/cctv-map-manager.component";
 import { CctvMapPlannerComponent } from "./components/cctv-map-planner/cctv-map-planner.component";
+import { CctvTopologyComponent } from "./components/cctv-topology/cctv-topology.component";
 import { AuthGuard } from "../guards/auth.guard";
 
 const RouteLists: Routes = [
@@ -29,7 +30,8 @@ const RouteLists: Routes = [
     { path: AuthenticationURL.Monitor_CCTV, component: MonitorCctvComponent, canActivate: [AuthGuard] },
     { path: AuthenticationURL.Map_Manager, component: CctvMapManagerComponent, canActivate: [AuthGuard] },
     { path: AuthenticationURL.Map_Planner, component: CctvMapPlannerComponent, canActivate: [AuthGuard] },
-    { path: AuthenticationURL.History, component: HistoryComponent, canActivate: [AuthGuard] }
+    { path: AuthenticationURL.History, component: HistoryComponent, canActivate: [AuthGuard] },
+    { path: AuthenticationURL.Topology, component: CctvTopologyComponent, canActivate: [AuthGuard] }
 ];
 
 export const AuthenticationRouting = RouterModule.forChild(RouteLists);
