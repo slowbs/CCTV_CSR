@@ -73,6 +73,11 @@
 
         <div class="canvas-viewport">
             <div class="map-container" [class.drafting-mode]="isDraftingMode" *ngIf="selectedMap; else selectMapPrompt" #mapContainer (click)="onMapClick($event)">
+                <!-- Print Header inside Map Container -->
+                <div class="print-map-header" *ngIf="selectedMap">
+                    <h2>ผังตำแหน่งจุดติดตั้งกล้อง CCTV - {{ selectedMap.name }}</h2>
+                </div>
+
                 <img #mapImage [src]="selectedMap.image_url" class="map-image" alt="Floor Plan" style="height: 80vh; width: auto;"
                     (load)="onImageLoad($event)">
 
