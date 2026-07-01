@@ -432,17 +432,20 @@
                                             </span>
                                         </td>
                                         <td class="text-center">{{ formatDateBE(item.date_created) }}</td>
-                                        
+
                                         <!-- Merged Comment Column -->
-                                        <td *ngIf="item.rowSpan !== undefined && item.rowSpan > 0" [attr.rowspan]="item.rowSpan" class="text-wrap" style="max-width: 400px; word-break: break-all;">
+                                        <td *ngIf="item.rowSpan !== undefined && item.rowSpan > 0"
+                                            [attr.rowspan]="item.rowSpan" class="text-wrap"
+                                            style="max-width: 400px; word-break: break-all;">
                                             {{ item.mergedComment || '-' }}
                                         </td>
-                                        
+
                                         <!-- Merged Downtime Column -->
-                                        <td *ngIf="item.rowSpan !== undefined && item.rowSpan > 0" [attr.rowspan]="item.rowSpan" class="text-center fw-medium">
+                                        <td *ngIf="item.rowSpan !== undefined && item.rowSpan > 0"
+                                            [attr.rowspan]="item.rowSpan" class="text-center fw-medium">
                                             {{ item.durationText || '-' }}
                                         </td>
-                                        
+
                                         <td class="text-center">
                                             <!-- Edit button -->
                                             <a *ngIf="['1', '2'].includes(item.ping_checked)" [routerLink]="[]"
@@ -483,7 +486,7 @@
                                             <th class="text-center">รายละเอียด</th>
                                             <th class="text-center">สถานะ</th>
                                             <th class="text-center" style="width: 25%">IP Address</th>
-                                            <th class="text-center" style="width: 15%">วันเวลา</th>
+                                            <th class="text-center" style="width: 15%">วันเวลาที่แก้ไข</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -580,6 +583,14 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button *ngIf="activeHistoryTab === 'maintenance' && historyPingLogs.length > 0" type="button"
+                        class="btn btn-primary me-auto" (click)="exportHistoryPDF()">
+                        <i class="bi bi-file-earmark-arrow-down me-1"></i> ดาวน์โหลด PDF
+                    </button>
+                    <button *ngIf="activeHistoryTab === 'audit' && historyAuditLogs.length > 0" type="button"
+                        class="btn btn-primary me-auto" (click)="exportAuditPDF()">
+                        <i class="bi bi-file-earmark-arrow-down me-1"></i> ดาวน์โหลด PDF
+                    </button>
                     <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
                 </div>
             </div>

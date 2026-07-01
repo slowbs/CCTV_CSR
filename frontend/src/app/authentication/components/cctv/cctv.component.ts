@@ -4,6 +4,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CctvService, ICctvs, IFloor, IStatus, IAuditLog, ILogPing } from '../../../shareds/cctv.service';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from '../../../../assets/font/vfs_fonts';
+
+(<any>pdfMake).addVirtualFileSystem(pdfFonts);
+
+pdfMake.addFonts({
+  Sarabun: {
+    normal: 'Sarabun-Regular.ttf',
+    bold: 'Sarabun-Bold.ttf',
+  },
+});
+
 declare const $: any;
 
 @Component({
@@ -532,7 +544,7 @@ export class CctvComponent implements OnInit {
     // 2. Perform pairing using State-Machine from oldest to newest (newest is index 0)
     let pendingOffline: ILogPing | null = null;
     let pendingOfflineIndex: number | null = null;
-    
+
     let pendingMA: ILogPing | null = null;
     let pendingMAIndex: number | null = null;
 
@@ -545,7 +557,7 @@ export class CctvComponent implements OnInit {
       } else if (log.ping_checked === '0') {
         if (pendingOffline && pendingOfflineIndex !== null) {
           const duration = this.calculateOfflineDuration(pendingOffline.date_created, log.date_created);
-          
+
           // Check if adjacent in the array (meaning adjacent rows in descending display)
           if (pendingOfflineIndex === i + 1) {
             // Merge cells: online (top/current) gets rowSpan=2, offline (bottom/pending) gets rowSpan=0 (hidden)
@@ -558,7 +570,7 @@ export class CctvComponent implements OnInit {
             log.rowSpan = 1;
             log.durationText = '-';
             log.mergedComment = '';
-            
+
             pendingOffline.rowSpan = 1;
             pendingOffline.durationText = duration;
             pendingOffline.mergedComment = pendingOffline.comment || '';
@@ -607,6 +619,270 @@ export class CctvComponent implements OnInit {
       pendingMA.rowSpan = 1;
       pendingMA.durationText = `อยู่ระหว่างซ่อมบำรุง (สะสม ${activeDuration})`;
       pendingMA.mergedComment = pendingMA.comment || '';
+    }
+  }
+
+  exportHistoryPDF(): void {
+    if (!this.selectedCctvForHistory || this.historyPingLogs.length === 0) return;
+
+    const device = this.selectedCctvForHistory;
+    const titleText = `ประวัติการซ่อมบำรุงและการเชื่อมต่อ (${this.Title})`;
+
+    // Create details table
+    const detailsTable = {
+      margin: [0, 0, 0, 15] as [number, number, number, number],
+      table: {
+        widths: ['18%', '32%', '18%', '32%'],
+        body: [
+          [
+            { text: 'เลขครุภัณฑ์:', bold: true },
+            { text: device.durable_no || '-' },
+            { text: 'ชื่อครุภัณฑ์:', bold: true },
+            { text: this.segmentThaiText(device.durable_name || '-') }
+          ],
+          [
+            { text: 'สถานที่ / ชั้น:', bold: true },
+            { text: this.segmentThaiText(`${device.location || '-'} (ชั้น ${device.floor || '-'})`) },
+            { text: 'ยี่ห้อ / รุ่น:', bold: true },
+            { text: `${device.brand || '-'} / ${device.model || '-'}` }
+          ],
+          [
+            { text: 'IP Address:', bold: true },
+            { text: device.ip || '-' },
+            { text: 'วันที่ออกรายงาน:', bold: true },
+            { text: this.formatDateBE(new Date().toISOString()) }
+          ]
+        ]
+      },
+      layout: 'noBorders' as any
+    };
+
+    // Create table body
+    const tableBody: any[][] = [];
+
+    // Header row
+    tableBody.push([
+      { text: 'ลำดับ Log', style: 'tableHeader', alignment: 'center' },
+      { text: 'สถานะ', style: 'tableHeader', alignment: 'center' },
+      { text: 'วันเวลา', style: 'tableHeader', alignment: 'center' },
+      { text: 'หมายเหตุการปฏิบัติงาน / อาการเสีย', style: 'tableHeader', alignment: 'center' },
+      { text: 'ระยะเวลาขัดข้อง (Downtime)', style: 'tableHeader', alignment: 'center' }
+    ]);
+
+    // Data rows
+    this.historyPingLogs.forEach(log => {
+      const statusText = this.getHistoryPingStatusText(log.ping_checked);
+      const dateText = this.formatDateBE(log.date_created);
+
+      const commentCell = log.rowSpan !== undefined && log.rowSpan > 0
+        ? { text: this.segmentThaiText(log.mergedComment || '-'), rowSpan: log.rowSpan }
+        : '';
+
+      const durationCell = log.rowSpan !== undefined && log.rowSpan > 0
+        ? { text: this.segmentThaiText(log.durationText || '-'), rowSpan: log.rowSpan, alignment: 'center' as any, style: 'downtimeText' }
+        : '';
+
+      tableBody.push([
+        { text: log.log_id, alignment: 'center' },
+        { text: statusText, alignment: 'center', style: this.getStatusStyle(log.ping_checked) },
+        { text: dateText, alignment: 'center' },
+        commentCell,
+        durationCell
+      ]);
+    });
+
+    const docDefinition = {
+      defaultStyle: {
+        font: 'Sarabun',
+        fontSize: 9
+      },
+      content: [
+        { text: titleText, style: 'header', alignment: 'center', margin: [0, 0, 0, 15] as [number, number, number, number] },
+        detailsTable,
+        {
+          table: {
+            headerRows: 1,
+            widths: ['10%', '15%', '22%', '33%', '20%'],
+            body: tableBody
+          }
+        }
+      ],
+      styles: {
+        header: {
+          fontSize: 14,
+          bold: true
+        },
+        tableHeader: {
+          bold: true,
+          fillColor: '#f8f9fa',
+          alignment: 'center'
+        },
+        downtimeText: {
+          bold: true
+        },
+        statusOnline: {
+          color: '#198754',
+          bold: true
+        },
+        statusOffline: {
+          color: '#dc3545',
+          bold: true
+        },
+        statusMA: {
+          color: '#ffc107',
+          bold: true
+        },
+        statusEndMA: {
+          color: '#0dcaf0',
+          bold: true
+        }
+      }
+    };
+
+    const fileName = `history_${device.durable_no || 'device'}.pdf`;
+    pdfMake.createPdf(docDefinition).download(fileName);
+  }
+
+  exportAuditPDF(): void {
+    if (!this.selectedCctvForHistory || !this.selectedCctvForHistory.id) return;
+    this.historyLoading = true;
+
+    // Fetch all audit logs for this device (without pagination limit)
+    this.CctvSerivce.get_audit_logs(+this.selectedCctvForHistory.id, 1, 999999)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.generateAuditPDF(res.result || []);
+          this.historyLoading = false;
+        },
+        error: (err) => {
+          console.error('Error fetching audit logs for export:', err);
+          this.showToast('ไม่สามารถดาวน์โหลดรายงานประวัติการแก้ไขได้', 'error');
+          this.historyLoading = false;
+        }
+      });
+  }
+
+  generateAuditPDF(logs: IAuditLog[]): void {
+    if (!this.selectedCctvForHistory) return;
+
+    const device = this.selectedCctvForHistory;
+    const titleText = `ประวัติการแก้ไขรายละเอียดครุภัณฑ์ (${this.Title})`;
+
+    const detailsTable = {
+      margin: [0, 0, 0, 15] as [number, number, number, number],
+      table: {
+        widths: ['18%', '32%', '18%', '32%'],
+        body: [
+          [
+            { text: 'เลขครุภัณฑ์:', bold: true },
+            { text: device.durable_no || '-' },
+            { text: 'ชื่อครุภัณฑ์:', bold: true },
+            { text: this.segmentThaiText(device.durable_name || '-') }
+          ],
+          [
+            { text: 'สถานที่ / ชั้น:', bold: true },
+            { text: this.segmentThaiText(`${device.location || '-'} (ชั้น ${device.floor || '-'})`) },
+            { text: 'ยี่ห้อ / รุ่น:', bold: true },
+            { text: `${device.brand || '-'} / ${device.model || '-'}` }
+          ],
+          [
+            { text: 'IP Address:', bold: true },
+            { text: device.ip || '-' },
+            { text: 'วันที่ออกรายงาน:', bold: true },
+            { text: this.formatDateBE(new Date().toISOString()) }
+          ]
+        ]
+      },
+      layout: 'noBorders' as any
+    };
+
+    const tableBody: any[][] = [];
+    tableBody.push([
+      { text: 'ลำดับ', style: 'tableHeader', alignment: 'center' },
+      { text: 'ชั้น', style: 'tableHeader', alignment: 'center' },
+      { text: 'สถานที่', style: 'tableHeader', alignment: 'center' },
+      { text: 'รายละเอียด', style: 'tableHeader', alignment: 'center' },
+      { text: 'สถานะ', style: 'tableHeader', alignment: 'center' },
+      { text: 'IP Address', style: 'tableHeader', alignment: 'center' },
+      { text: 'วันเวลาที่แก้ไข', style: 'tableHeader', alignment: 'center' }
+    ]);
+
+    logs.forEach(log => {
+      tableBody.push([
+        { text: log.id.toString(), alignment: 'center' },
+        { text: this.getDiffPdfContent(log.old_floor, log.new_floor), alignment: 'center' },
+        { text: this.getDiffPdfContent(log.old_location, log.new_location) },
+        { text: this.getDiffPdfContent(log.old_monitor, log.new_monitor) },
+        { text: this.getDiffPdfContent(log.old_status, log.new_status), alignment: 'center' },
+        { text: this.getDiffPdfContent(log.old_ip, log.new_ip), alignment: 'center' },
+        { text: this.formatDateBE(log.updated_at), alignment: 'center' }
+      ]);
+    });
+
+    const docDefinition = {
+      defaultStyle: {
+        font: 'Sarabun',
+        fontSize: 9
+      },
+      content: [
+        { text: titleText, style: 'header', alignment: 'center', margin: [0, 0, 0, 15] as [number, number, number, number] },
+        detailsTable,
+        {
+          table: {
+            headerRows: 1,
+            widths: ['8%', '12%', '20%', '20%', '12%', '14%', '14%'],
+            body: tableBody
+          }
+        }
+      ],
+      styles: {
+        header: {
+          fontSize: 14,
+          bold: true
+        },
+        tableHeader: {
+          bold: true,
+          fillColor: '#f8f9fa',
+          alignment: 'center'
+        }
+      }
+    };
+
+    const fileName = `audit_history_${device.durable_no || 'device'}.pdf`;
+    pdfMake.createPdf(docDefinition).download(fileName);
+  }
+
+  getDiffPdfContent(oldVal: string | null | undefined, newVal: string | null | undefined): any {
+    const oldStr = oldVal || '-';
+    const newStr = newVal || '-';
+    if (oldStr !== newStr) {
+      return [
+        { text: this.segmentThaiText(oldStr), color: '#b02a37' },
+        { text: ' -> ', color: '#6c757d' },
+        { text: this.segmentThaiText(newStr), color: '#146c43', bold: true }
+      ];
+    }
+    return this.segmentThaiText(newStr);
+  }
+
+  private segmentThaiText(text: string): string {
+    if (!text) return "";
+    if ('Segmenter' in Intl) {
+      const segmenter = new Intl.Segmenter('th', { granularity: 'word' });
+      const segments = Array.from(segmenter.segment(text));
+      return segments.map(segment => segment.segment).join('\u00AD');
+    }
+    return text;
+  }
+
+  private getStatusStyle(pingChecked: string): string {
+    switch (pingChecked) {
+      case '0': return 'statusOnline';
+      case '1': return 'statusOffline';
+      case '2': return 'statusMA';
+      case '3': return 'statusEndMA';
+      default: return '';
     }
   }
 }
