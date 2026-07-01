@@ -393,6 +393,9 @@ export interface ILogPing {
   duration: string
   type: string
   comment: string
+  rowSpan?: number
+  durationText?: string
+  mergedComment?: string
 }
 
 export interface ICountPing {

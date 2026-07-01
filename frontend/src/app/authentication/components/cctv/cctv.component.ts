@@ -355,6 +355,7 @@ export class CctvComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           this.historyPingLogs = res.result || [];
+          this.preparePingLogsWithDowntime();
           this.historyLoading = false;
         },
         error: (err) => {
@@ -497,6 +498,115 @@ export class CctvComponent implements OnInit {
       case '2': return 'Start MA';
       case '3': return 'End MA';
       default: return 'Unknown';
+    }
+  }
+
+  calculateOfflineDuration(offline: string | Date | number, online: string | Date | number): string {
+    if (!offline || !online) return "";
+    const offlineDate = new Date(offline);
+    const onlineDate = new Date(online);
+    const diffInMs = onlineDate.getTime() - offlineDate.getTime();
+    if (diffInMs < 0) return 'N/A';
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    const days = Math.floor(diffInMinutes / (60 * 24));
+    const hours = Math.floor((diffInMinutes % (60 * 24)) / 60);
+    const minutes = diffInMinutes % 60;
+
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days} วัน`);
+    if (hours > 0) parts.push(`${hours} ชั่วโมง`);
+    if (minutes > 0 || parts.length === 0) parts.push(`${minutes} นาที`);
+    return parts.join(' ');
+  }
+
+  preparePingLogsWithDowntime(): void {
+    if (!this.historyPingLogs || this.historyPingLogs.length === 0) return;
+
+    // 1. Initialize properties for all logs
+    for (const log of this.historyPingLogs) {
+      log.rowSpan = 1;
+      log.durationText = '-';
+      log.mergedComment = log.comment || '';
+    }
+
+    // 2. Perform pairing using State-Machine from oldest to newest (newest is index 0)
+    let pendingOffline: ILogPing | null = null;
+    let pendingOfflineIndex: number | null = null;
+    
+    let pendingMA: ILogPing | null = null;
+    let pendingMAIndex: number | null = null;
+
+    for (let i = this.historyPingLogs.length - 1; i >= 0; i--) {
+      const log = this.historyPingLogs[i];
+
+      if (log.ping_checked === '1') {
+        pendingOffline = log;
+        pendingOfflineIndex = i;
+      } else if (log.ping_checked === '0') {
+        if (pendingOffline && pendingOfflineIndex !== null) {
+          const duration = this.calculateOfflineDuration(pendingOffline.date_created, log.date_created);
+          
+          // Check if adjacent in the array (meaning adjacent rows in descending display)
+          if (pendingOfflineIndex === i + 1) {
+            // Merge cells: online (top/current) gets rowSpan=2, offline (bottom/pending) gets rowSpan=0 (hidden)
+            log.rowSpan = 2;
+            pendingOffline.rowSpan = 0;
+            log.durationText = duration;
+            log.mergedComment = pendingOffline.comment || '';
+          } else {
+            // Interleaved: separate cells (rowSpan=1), duration and comment stay in their respective places
+            log.rowSpan = 1;
+            log.durationText = '-';
+            log.mergedComment = '';
+            
+            pendingOffline.rowSpan = 1;
+            pendingOffline.durationText = duration;
+            pendingOffline.mergedComment = pendingOffline.comment || '';
+          }
+          pendingOffline = null;
+          pendingOfflineIndex = null;
+        }
+      } else if (log.ping_checked === '2') {
+        pendingMA = log;
+        pendingMAIndex = i;
+      } else if (log.ping_checked === '3') {
+        if (pendingMA && pendingMAIndex !== null) {
+          const duration = this.calculateOfflineDuration(pendingMA.date_created, log.date_created);
+
+          // Check if adjacent in the array
+          if (pendingMAIndex === i + 1) {
+            log.rowSpan = 2;
+            pendingMA.rowSpan = 0;
+            log.durationText = duration;
+            log.mergedComment = pendingMA.comment || '';
+          } else {
+            log.rowSpan = 1;
+            log.durationText = '-';
+            log.mergedComment = '';
+
+            pendingMA.rowSpan = 1;
+            pendingMA.durationText = duration;
+            pendingMA.mergedComment = pendingMA.comment || '';
+          }
+          pendingMA = null;
+          pendingMAIndex = null;
+        }
+      }
+    }
+
+    // 3. Handle outstanding unpaired pending logs (currently active outages/MA)
+    const now = new Date();
+    if (pendingOffline) {
+      const activeDuration = this.calculateOfflineDuration(new Date(pendingOffline.date_created), now);
+      pendingOffline.rowSpan = 1;
+      pendingOffline.durationText = `ออฟไลน์อยู่ (สะสม ${activeDuration})`;
+      pendingOffline.mergedComment = pendingOffline.comment || '';
+    }
+    if (pendingMA) {
+      const activeDuration = this.calculateOfflineDuration(new Date(pendingMA.date_created), now);
+      pendingMA.rowSpan = 1;
+      pendingMA.durationText = `อยู่ระหว่างซ่อมบำรุง (สะสม ${activeDuration})`;
+      pendingMA.mergedComment = pendingMA.comment || '';
     }
   }
 }
