@@ -799,7 +799,7 @@ export class CctvComponent implements OnInit {
 
     const tableBody: any[][] = [];
     tableBody.push([
-      { text: 'ลำดับ', style: 'tableHeader', alignment: 'center' },
+      { text: 'ลำดับ Log', style: 'tableHeader', alignment: 'center' },
       { text: 'ชั้น', style: 'tableHeader', alignment: 'center' },
       { text: 'สถานที่', style: 'tableHeader', alignment: 'center' },
       { text: 'รายละเอียด', style: 'tableHeader', alignment: 'center' },
@@ -831,7 +831,7 @@ export class CctvComponent implements OnInit {
         {
           table: {
             headerRows: 1,
-            widths: ['8%', '12%', '20%', '20%', '12%', '14%', '14%'],
+            widths: ['10%', '12%', '19%', '19%', '12%', '14%', '14%'],
             body: tableBody
           }
         }
