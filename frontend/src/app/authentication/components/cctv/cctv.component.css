@@ -22,3 +22,45 @@
 .modal_button{
     width: 78px;
 }
+
+/* Diff styling - softer, more professional colors */
+.diff-removed {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #b02a37;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    display: inline;
+    word-wrap: break-word;
+}
+
+.diff-added {
+    background-color: rgba(25, 135, 84, 0.15);
+    color: #146c43;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid rgba(25, 135, 84, 0.3);
+    display: inline;
+    word-wrap: break-word;
+}
+
+/* Custom Tabs for History Modal */
+#historyCctvModal .nav-pills .nav-link {
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease-in-out;
+}
+
+#historyCctvModal .nav-pills .nav-link:hover {
+    background-color: #e9ecef;
+    color: #1a365d;
+    border-color: #c1c9d0;
+}
+
+#historyCctvModal .nav-pills .nav-link.active {
+    background-color: #1a365d;
+    color: #ffffff;
+    border-color: #1a365d;
+    box-shadow: 0 2px 4px rgba(26, 54, 93, 0.3);
+}

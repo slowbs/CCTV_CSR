@@ -1,7 +1,7 @@
 import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CctvService, ICctvs, IFloor, IStatus } from '../../../shareds/cctv.service';
+import { CctvService, ICctvs, IFloor, IStatus, IAuditLog, ILogPing } from '../../../shareds/cctv.service';
 import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
 declare const $: any;
@@ -317,6 +317,187 @@ export class CctvComponent implements OnInit {
   clearAllConnections() {
     this.selectedConnectionTypes = [];
     this.onSearchItem();
+  }
+
+  // --- History Modal Properties ---
+  selectedCctvForHistory: ICctvs | null = null;
+  activeHistoryTab: 'maintenance' | 'audit' = 'maintenance';
+  historyAuditLogs: IAuditLog[] = [];
+  historyPingLogs: ILogPing[] = [];
+  historyLoading: boolean = false;
+
+  // Pagination for History Audit Logs
+  historyAuditPage = 1;
+  historyAuditPageSize = 10;
+  historyAuditTotal = 0;
+  historyAuditPages: number[] = [];
+
+  // Log Ping action models
+  editCommentModel: any = { log_id: 0, comment: '' };
+  deletePingLogModel: ILogPing | null = null;
+
+  onHistoryModal(item: ICctvs) {
+    this.selectedCctvForHistory = item;
+    this.activeHistoryTab = 'maintenance';
+    this.historyAuditPage = 1;
+    this.historyAuditLogs = [];
+    this.historyPingLogs = [];
+    this.loadHistoryData();
+  }
+
+  loadHistoryData() {
+    if (!this.selectedCctvForHistory || !this.selectedCctvForHistory.id) return;
+    this.historyLoading = true;
+
+    // Load log pings (maintenance logs)
+    this.CctvSerivce.get_logping(undefined, this.selectedCctvForHistory.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res: any) => {
+          this.historyPingLogs = res.result || [];
+          this.historyLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading history log ping:', err);
+          this.historyPingLogs = [];
+          this.historyLoading = false;
+        }
+      });
+
+    // Load audit logs (detail change logs)
+    this.loadHistoryAuditLogs();
+  }
+
+  loadHistoryAuditLogs() {
+    if (!this.selectedCctvForHistory || !this.selectedCctvForHistory.id) return;
+    this.historyLoading = true;
+    this.CctvSerivce.get_audit_logs(+this.selectedCctvForHistory.id, this.historyAuditPage, this.historyAuditPageSize)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.historyAuditLogs = res.result || [];
+          this.historyAuditTotal = res.total || 0;
+          this.generateHistoryAuditPages();
+          this.historyLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading history audit logs:', err);
+          this.historyAuditLogs = [];
+          this.historyLoading = false;
+        }
+      });
+  }
+
+  changeHistoryAuditPage(page: number) {
+    const totalPages = Math.ceil(this.historyAuditTotal / this.historyAuditPageSize);
+    if (page >= 1 && page <= totalPages && page !== this.historyAuditPage) {
+      this.historyAuditPage = page;
+      this.loadHistoryAuditLogs();
+    }
+  }
+
+  generateHistoryAuditPages() {
+    const totalPages = Math.ceil(this.historyAuditTotal / this.historyAuditPageSize);
+    const maxPagesToShow = 5;
+    this.historyAuditPages = [];
+
+    if (totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalPages; i++) {
+        this.historyAuditPages.push(i);
+      }
+    } else {
+      this.historyAuditPages.push(1);
+      let startPage = Math.max(2, this.historyAuditPage - 1);
+      let endPage = Math.min(totalPages - 1, this.historyAuditPage + 1);
+
+      if (this.historyAuditPage <= 3) {
+        endPage = 4;
+      }
+      if (this.historyAuditPage >= totalPages - 2) {
+        startPage = totalPages - 3;
+      }
+
+      if (startPage > 2) {
+        this.historyAuditPages.push(-1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        this.historyAuditPages.push(i);
+      }
+
+      if (endPage < totalPages - 1) {
+        this.historyAuditPages.push(-1);
+      }
+      this.historyAuditPages.push(totalPages);
+    }
+  }
+
+  formatDateBE(dateString: string): string {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const yearBE = date.getFullYear() + 543;
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month}/${yearBE} ${hours}:${minutes}`;
+  }
+
+  onHistoryCommentEdit(log: any) {
+    this.editCommentModel = {
+      log_id: log.log_id,
+      comment: log.comment || ''
+    };
+    $('#historyEditCommentModal').modal('show');
+  }
+
+  onSubmitHistoryComment() {
+    this.CctvSerivce.put_logping(this.editCommentModel.log_id, this.editCommentModel)
+      .subscribe({
+        next: (res) => {
+          $('#historyEditCommentModal').modal('hide');
+          this.showToast('บันทึกข้อมูลสำเร็จ', 'success');
+          this.loadHistoryData();
+          this.CctvSerivce.notifyNavbarToRefresh();
+        },
+        error: (err) => {
+          console.error('Error saving comment:', err);
+          this.showToast('ไม่สามารถบันทึกข้อมูลได้', 'error');
+        }
+      });
+  }
+
+  onDeleteHistoryLog(log: ILogPing) {
+    this.deletePingLogModel = log;
+    $('#historyDeleteLogModal').modal('show');
+  }
+
+  onConfirmDeleteHistoryLog() {
+    if (!this.deletePingLogModel) return;
+    this.CctvSerivce.delete_logping(this.deletePingLogModel.log_id)
+      .subscribe({
+        next: () => {
+          $('#historyDeleteLogModal').modal('hide');
+          this.showToast('ลบ Log สำเร็จ', 'success');
+          this.deletePingLogModel = null;
+          this.loadHistoryData();
+          this.CctvSerivce.notifyNavbarToRefresh();
+        },
+        error: (err) => {
+          console.error('Error deleting log:', err);
+          this.showToast('ไม่สามารถลบ Log ได้', 'error');
+        }
+      });
+  }
+
+  getHistoryPingStatusText(pingChecked: string): string {
+    switch (pingChecked) {
+      case '0': return 'Online';
+      case '1': return 'Offline';
+      case '2': return 'Start MA';
+      case '3': return 'End MA';
+      default: return 'Unknown';
+    }
   }
 }
 

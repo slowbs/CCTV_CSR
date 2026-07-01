@@ -102,8 +102,11 @@ export class CctvService {
   }
 
   // แสดงข้อมูล Log
-  get_logping(id: any) {
-    return this.httpClient.get<ILogPing[]>(this.backendURL + 'log_ping', { params: { id: id } });
+  get_logping(id?: any, cctvId?: any) {
+    let params: any = {};
+    if (id !== undefined && id !== null) params.id = id;
+    if (cctvId !== undefined && cctvId !== null) params.cctv_id = cctvId;
+    return this.httpClient.get<ILogPing[]>(this.backendURL + 'log_ping', { params: params });
   }
 
   // แสดงข้อมูล Log
