@@ -85,7 +85,7 @@ if (isset($_GET['id'])) {
 
         // Fetch old data for audit logging and Telegram notification
         $old_data_query = "SELECT c.ip, c.location, c.monitor, c.status, c.floor, c.type, c.maintenance_mode, 
-                           c.durable_no, c.durable_name, IFNULL(f.floor_name, '') as floor_name 
+                           c.durable_no, c.durable_name, c.brand, c.model, c.switch_name, IFNULL(f.floor_name, '') as floor_name 
                            FROM cctv c 
                            LEFT JOIN floor f ON c.floor = f.floor_id 
                            WHERE c.id = ?";
@@ -117,12 +117,26 @@ if (isset($_GET['id'])) {
         $old_floor = $old_row['floor'] ?? '';
         $new_floor = $data->floor_id;
 
+        $old_durable_no = $old_row['durable_no'] ?? '';
+        $new_durable_no = $data->durable_no ?? '';
+        $old_durable_name = $old_row['durable_name'] ?? '';
+        $new_durable_name = $data->durable_name ?? '';
+        $old_switch_name = $old_row['switch_name'] ?? '';
+        $new_switch_name = $data->switch_name ?? '';
+        $old_brand = $old_row['brand'] ?? '';
+        $new_brand = $data->brand ?? '';
+        $old_model = $old_row['model'] ?? '';
+        $new_model = $data->model ?? '';
+
         // Check for changes and log audit
-        if ($old_ip != $new_ip || $old_location != $new_location || $old_monitor != $new_monitor || $old_status != $new_status || $old_floor != $new_floor) {
-            $audit_query = "INSERT INTO cctv_audit_logs (cctv_id, old_ip, new_ip, old_location, new_location, old_monitor, new_monitor, old_status, new_status, old_floor, new_floor, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        if ($old_ip != $new_ip || $old_location != $new_location || $old_monitor != $new_monitor || $old_status != $new_status || $old_floor != $new_floor ||
+            $old_durable_no != $new_durable_no || $old_durable_name != $new_durable_name || $old_switch_name != $new_switch_name || 
+            $old_brand != $new_brand || $old_model != $new_model) {
+            
+            $audit_query = "INSERT INTO cctv_audit_logs (cctv_id, old_ip, new_ip, old_location, new_location, old_monitor, new_monitor, old_status, new_status, old_floor, new_floor, old_durable_no, new_durable_no, old_durable_name, new_durable_name, old_switch_name, new_switch_name, old_brand, new_brand, old_model, new_model, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
             $stmt_audit = mysqli_prepare($conn, $audit_query);
             if ($stmt_audit) {
-                mysqli_stmt_bind_param($stmt_audit, 'issssssssss', $_GET['id'], $old_ip, $new_ip, $old_location, $new_location, $old_monitor, $new_monitor, $old_status, $new_status, $old_floor, $new_floor);
+                mysqli_stmt_bind_param($stmt_audit, 'issssssssssssssssssss', $_GET['id'], $old_ip, $new_ip, $old_location, $new_location, $old_monitor, $new_monitor, $old_status, $new_status, $old_floor, $new_floor, $old_durable_no, $new_durable_no, $old_durable_name, $new_durable_name, $old_switch_name, $new_switch_name, $old_brand, $new_brand, $old_model, $new_model);
                 mysqli_stmt_execute($stmt_audit);
             }
         }

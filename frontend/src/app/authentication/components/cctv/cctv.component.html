@@ -483,9 +483,9 @@
                                             <th class="text-center" style="width: 8%">ลำดับ Log</th>
                                             <th class="text-center">ชั้น</th>
                                             <th class="text-center">สถานที่</th>
-                                            <th class="text-center">รายละเอียด</th>
                                             <th class="text-center">สถานะ</th>
                                             <th class="text-center" style="width: 25%">IP Address</th>
+                                            <th class="text-center">ข้อมูลอื่นๆ ที่เปลี่ยนแปลง</th>
                                             <th class="text-center" style="width: 15%">วันเวลาที่แก้ไข</th>
                                         </tr>
                                     </thead>
@@ -511,16 +511,6 @@
                                                 <span *ngIf="log.old_location === log.new_location">{{ log.new_location
                                                     }}</span>
                                             </td>
-                                            <td>
-                                                <ng-container *ngIf="log.old_monitor !== log.new_monitor">
-                                                    <span class="diff-removed text-decoration-line-through">{{
-                                                        log.old_monitor }}</span>
-                                                    <i class="bi bi-arrow-right mx-1 text-secondary"></i>
-                                                    <span class="diff-added fw-semibold">{{ log.new_monitor }}</span>
-                                                </ng-container>
-                                                <span *ngIf="log.old_monitor === log.new_monitor">{{ log.new_monitor
-                                                    }}</span>
-                                            </td>
                                             <td class="text-center">
                                                 <ng-container *ngIf="log.old_status !== log.new_status">
                                                     <span class="diff-removed text-decoration-line-through">{{
@@ -541,6 +531,59 @@
                                                         }}</span>
                                                 </ng-container>
                                                 <span *ngIf="log.old_ip === log.new_ip">{{ log.new_ip }}</span>
+                                            </td>
+                                            <td>
+                                                <div *ngIf="log.old_monitor !== log.new_monitor" class="mb-1">
+                                                    <span class="text-muted small">รายละเอียด:</span><br>
+                                                    <span class="diff-removed text-decoration-line-through">{{
+                                                        log.old_monitor || '-' }}</span>
+                                                    <i class="bi bi-arrow-right mx-1 text-secondary"></i>
+                                                    <span class="diff-added fw-semibold">{{ log.new_monitor || '-'
+                                                        }}</span>
+                                                </div>
+                                                <div *ngIf="log.old_durable_no !== log.new_durable_no" class="mb-1">
+                                                    <span class="text-muted small">รหัสครุภัณฑ์:</span><br>
+                                                    <span class="diff-removed text-decoration-line-through">{{
+                                                        log.old_durable_no || '-' }}</span>
+                                                    <i class="bi bi-arrow-right mx-1 text-secondary"></i>
+                                                    <span class="diff-added fw-semibold">{{ log.new_durable_no || '-'
+                                                        }}</span>
+                                                </div>
+                                                <div *ngIf="log.old_durable_name !== log.new_durable_name" class="mb-1">
+                                                    <span class="text-muted small">ชื่อครุภัณฑ์:</span><br>
+                                                    <span class="diff-removed text-decoration-line-through">{{
+                                                        log.old_durable_name || '-' }}</span>
+                                                    <i class="bi bi-arrow-right mx-1 text-secondary"></i>
+                                                    <span class="diff-added fw-semibold">{{ log.new_durable_name || '-'
+                                                        }}</span>
+                                                </div>
+                                                <div *ngIf="log.old_switch_name !== log.new_switch_name" class="mb-1">
+                                                    <span class="text-muted small">อุปกรณ์กระจายสัญญาณ:</span><br>
+                                                    <span class="diff-removed text-decoration-line-through">{{
+                                                        log.old_switch_name || '-' }}</span>
+                                                    <i class="bi bi-arrow-right mx-1 text-secondary"></i>
+                                                    <span class="diff-added fw-semibold">{{ log.new_switch_name || '-'
+                                                        }}</span>
+                                                </div>
+                                                <div *ngIf="log.old_brand !== log.new_brand" class="mb-1">
+                                                    <span class="text-muted small">ยี่ห้อ:</span><br>
+                                                    <span class="diff-removed text-decoration-line-through">{{
+                                                        log.old_brand || '-' }}</span>
+                                                    <i class="bi bi-arrow-right mx-1 text-secondary"></i>
+                                                    <span class="diff-added fw-semibold">{{ log.new_brand || '-'
+                                                        }}</span>
+                                                </div>
+                                                <div *ngIf="log.old_model !== log.new_model" class="mb-1">
+                                                    <span class="text-muted small">รุ่น:</span><br>
+                                                    <span class="diff-removed text-decoration-line-through">{{
+                                                        log.old_model || '-' }}</span>
+                                                    <i class="bi bi-arrow-right mx-1 text-secondary"></i>
+                                                    <span class="diff-added fw-semibold">{{ log.new_model || '-'
+                                                        }}</span>
+                                                </div>
+                                                <span
+                                                    *ngIf="log.old_monitor === log.new_monitor && log.old_durable_no === log.new_durable_no && log.old_durable_name === log.new_durable_name && log.old_switch_name === log.new_switch_name && log.old_brand === log.new_brand && log.old_model === log.new_model"
+                                                    class="text-muted fst-italic">ไม่มี</span>
                                             </td>
                                             <td class="text-center">{{ formatDateBE(log.updated_at) }}
                                             </td>

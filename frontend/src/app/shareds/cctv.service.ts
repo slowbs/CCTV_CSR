@@ -377,6 +377,16 @@ export interface IAuditLog {
   updated_at: string;
   durable_name?: string;
   durable_no?: string;
+  old_durable_no?: string;
+  new_durable_no?: string;
+  old_durable_name?: string;
+  new_durable_name?: string;
+  old_switch_name?: string;
+  new_switch_name?: string;
+  old_brand?: string;
+  new_brand?: string;
+  old_model?: string;
+  new_model?: string;
 }
 
 export interface ILogPing {

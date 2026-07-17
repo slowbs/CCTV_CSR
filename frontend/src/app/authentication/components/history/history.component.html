@@ -54,6 +54,7 @@
                                 <th class="text-center">Status</th>
                                 <th class="text-center" style="width: 19%">IP Address</th>
                                 <th style="width: 10%" class="text-center">Date/Time</th>
+                                <th style="width: 5%" class="text-center">More</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -109,6 +110,15 @@
                                         log.new_ip }}</span>
                                 </td>
                                 <td class="text-center timestamp">{{ formatDateBE(log.updated_at) }}</td>
+                                <td class="text-center">
+                                    <a href="javascript:void(0)" 
+                                       *ngIf="log.old_durable_no !== log.new_durable_no || log.old_durable_name !== log.new_durable_name || log.old_switch_name !== log.new_switch_name || log.old_brand !== log.new_brand || log.old_model !== log.new_model"
+                                       (click)="openDetailsModal(log)">
+                                        <span class="badge text-white p-2" style="background-color: #1a365d !important; font-size: 0.85rem;" title="ดูรายละเอียดเพิ่มเติม">
+                                            <i class="bi bi-search"></i>
+                                        </span>
+                                    </a>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -149,6 +159,63 @@
         </div>
     </div>
 </app-auth-content>
+
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background-color: #1a365d;">
+                <h5 class="modal-title" id="detailsModalLabel"><i class="bi bi-info-circle me-2"></i>ข้อมูลอุปกรณ์ที่เปลี่ยนแปลง</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedLogForDetails">
+                <div *ngIf="selectedLogForDetails.old_durable_no !== selectedLogForDetails.new_durable_no" class="mb-3 border-bottom pb-2">
+                    <div class="text-muted small fw-bold">รหัสครุภัณฑ์</div>
+                    <div>
+                        <span class="diff-removed text-decoration-line-through">{{ selectedLogForDetails.old_durable_no || '-' }}</span>
+                        <i class="bi bi-arrow-right mx-2 text-secondary"></i>
+                        <span class="diff-added fw-semibold text-success">{{ selectedLogForDetails.new_durable_no || '-' }}</span>
+                    </div>
+                </div>
+                <div *ngIf="selectedLogForDetails.old_durable_name !== selectedLogForDetails.new_durable_name" class="mb-3 border-bottom pb-2">
+                    <div class="text-muted small fw-bold">ชื่อครุภัณฑ์</div>
+                    <div>
+                        <span class="diff-removed text-decoration-line-through">{{ selectedLogForDetails.old_durable_name || '-' }}</span>
+                        <i class="bi bi-arrow-right mx-2 text-secondary"></i>
+                        <span class="diff-added fw-semibold text-success">{{ selectedLogForDetails.new_durable_name || '-' }}</span>
+                    </div>
+                </div>
+                <div *ngIf="selectedLogForDetails.old_switch_name !== selectedLogForDetails.new_switch_name" class="mb-3 border-bottom pb-2">
+                    <div class="text-muted small fw-bold">อุปกรณ์กระจายสัญญาณ</div>
+                    <div>
+                        <span class="diff-removed text-decoration-line-through">{{ selectedLogForDetails.old_switch_name || '-' }}</span>
+                        <i class="bi bi-arrow-right mx-2 text-secondary"></i>
+                        <span class="diff-added fw-semibold text-success">{{ selectedLogForDetails.new_switch_name || '-' }}</span>
+                    </div>
+                </div>
+                <div *ngIf="selectedLogForDetails.old_brand !== selectedLogForDetails.new_brand" class="mb-3 border-bottom pb-2">
+                    <div class="text-muted small fw-bold">ยี่ห้อ</div>
+                    <div>
+                        <span class="diff-removed text-decoration-line-through">{{ selectedLogForDetails.old_brand || '-' }}</span>
+                        <i class="bi bi-arrow-right mx-2 text-secondary"></i>
+                        <span class="diff-added fw-semibold text-success">{{ selectedLogForDetails.new_brand || '-' }}</span>
+                    </div>
+                </div>
+                <div *ngIf="selectedLogForDetails.old_model !== selectedLogForDetails.new_model" class="mb-3">
+                    <div class="text-muted small fw-bold">รุ่น</div>
+                    <div>
+                        <span class="diff-removed text-decoration-line-through">{{ selectedLogForDetails.old_model || '-' }}</span>
+                        <i class="bi bi-arrow-right mx-2 text-secondary"></i>
+                        <span class="diff-added fw-semibold text-success">{{ selectedLogForDetails.new_model || '-' }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Toast Notification -->
 <app-toast [message]="toastMessage" [type]="toastType" (closed)="clearToast()"></app-toast>

@@ -6,6 +6,8 @@ import { AppURL } from '../../../app.url';
 import { AuthenticationURL } from '../../authentication.url';
 import { CctvService, IAuditLog } from '../../../shareds/cctv.service';
 
+declare var $: any;
+
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
@@ -40,6 +42,13 @@ export class HistoryComponent implements OnInit {
 
   clearToast() {
     this.toastMessage = '';
+  }
+
+  selectedLogForDetails: IAuditLog | null = null;
+  
+  openDetailsModal(log: IAuditLog) {
+    this.selectedLogForDetails = log;
+    ($('#detailsModal') as any).modal('show');
   }
 
   constructor(
