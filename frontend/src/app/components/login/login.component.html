@@ -25,8 +25,7 @@
                     <div class="form-check">
                         <label class="form-check-label">
                             <input class="form-check-input" type="checkbox" [(ngModel)]="model.remember" name="remember"
-                                [disabled]="isLoading"><span class="label-text">Stay Signed
-                                in</span>
+                                [disabled]="isLoading"><span class="label-text">เข้าสู่ระบบอัตโนมัติ</span>
                         </label>
                     </div>
                 </div>
@@ -36,7 +35,7 @@
                     <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"
                         aria-hidden="true"></span>
                     <i *ngIf="!isLoading" class="bi bi-box-arrow-in-right me-2 fs-5"></i>
-                    {{ isLoading ? 'กำลังเข้าสู่ระบบ...' : 'SIGN IN' }}
+                    {{ isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ' }}
                 </button>
             </div>
         </form>
