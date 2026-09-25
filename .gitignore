@@ -3,3 +3,10 @@ backend/uploads/maps/*
 backend/uploads/devices/*
 !backend/uploads/maps/.gitkeep
 !backend/uploads/devices/.gitkeep
+
+# Secrets & Configs
+telegram_config.json
+python/telegram_config.json
+.env
+*.log
+

@@ -7,9 +7,14 @@
 //                 'id' => $_GET['id']
 //             ], JSON_UNESCAPED_UNICODE);
 
-// Telegram Bot Configuration
-define('TELEGRAM_BOT_TOKEN', '7725475514:AAESQ0vZWNyphDaa630sQaaLgvl7dMkCvuo');
-define('TELEGRAM_CHAT_ID', '-5011497123');
+// Telegram Bot Configuration - Read securely from telegram_config.json
+$telegramConfigFile = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'telegram_config.json';
+$telegramConfig = [];
+if (file_exists($telegramConfigFile)) {
+    $telegramConfig = json_decode(file_get_contents($telegramConfigFile), true) ?: [];
+}
+define('TELEGRAM_BOT_TOKEN', $telegramConfig['bot_token'] ?? '');
+define('TELEGRAM_CHAT_ID', $telegramConfig['chat_id'] ?? '-5011497123');
 
 /**
  * ส่งข้อความแจ้งเตือนไปยัง Telegram
@@ -17,6 +22,11 @@ define('TELEGRAM_CHAT_ID', '-5011497123');
  * @return bool สถานะการส่ง
  */
 function sendTelegramMessage($message) {
+    if (empty(TELEGRAM_BOT_TOKEN) || TELEGRAM_BOT_TOKEN === 'YOUR_NEW_BOT_TOKEN_HERE') {
+        error_log("Telegram Bot Token is not configured in telegram_config.json");
+        return false;
+    }
+
     $url = "https://api.telegram.org/bot" . TELEGRAM_BOT_TOKEN . "/sendMessage";
     
     $postData = [

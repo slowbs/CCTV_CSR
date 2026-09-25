@@ -30,8 +30,8 @@ deploy ngrok
 ngrok http 4200
 
 api telegram
-https://api.telegram.org/bot<token?/sendMessage?chat_id=xxx&text=yy
-https://api.telegram.org/bot8145300216:AAFw_7rN05QxfgD_o60qWs4dbzSk5poaj-A/sendMessage?chat_id=6334503369&text=แจ้งเตือน : ขณะนี้อุณหภูมิ $temp องศา
+https://api.telegram.org/bot<token>/sendMessage?chat_id=xxx&text=yy
+https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage?chat_id=<CHAT_ID>&text=แจ้งเตือน : ขณะนี้อุณหภูมิ $temp องศา
 
 SELECT * FROM cctv
 left join floor on cctv.floor = floor.floor_id
